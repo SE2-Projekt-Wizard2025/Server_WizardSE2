@@ -9,6 +9,15 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @Configuration
 @EnableWebSocket
 public class WebSocketHandlerConfig implements WebSocketConfigurer {
+    /**
+     * Registers WebSocket handlers for incoming connections.
+     * <p>
+     * This handler is available at the endpoint <code>/ws</code>
+     * and allows connections from all origins (CORS = "*").
+     * </p>
+     *
+     * @param registry the {@link WebSocketHandlerRegistry} used to register WebSocket handlers
+     */
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(new WebSocketHandlerImpl(), "/ws")
