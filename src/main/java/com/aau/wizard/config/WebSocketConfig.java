@@ -37,6 +37,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOrigins("*"); // CORS for local tests
+                .setAllowedOrigins("https://websocketking.com", "http://localhost:8080"); // CORS for local tests
     }
 }
