@@ -25,6 +25,11 @@ public class GameWebSocketController {
     @MessageMapping("/game/play")
     @SendTo("/topic/game")
     public GameResponse startGame(GameRequest gameRequest) {
+
+        if(gameRequest == null){
+            throw new IllegalArgumentException("Game request cannot be null");
+        }
+
         return gameService.startGame(gameRequest);
     }
 }

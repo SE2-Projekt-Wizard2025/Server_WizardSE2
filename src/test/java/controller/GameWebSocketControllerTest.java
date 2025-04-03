@@ -64,4 +64,26 @@ class GameWebSocketControllerTest {
         // TODO: Add further attributes later on
         return new GameResponse(TEST_GAME_ID, TEST_PAYLOAD);
     }
+
+    @Test
+    public void testStartGame_ThrowsException() {
+        GameRequest request = createDefaultGameRequest();
+
+        when(gameService.startGame(any())).thenThrow(new IllegalArgumentException("Invalid game ID"));
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            gameWebSocketController.startGame(request);
+        });
+
+        verify(gameService, times(1)).startGame(any());
+    }
+
+    @Test
+    public void testStartGame_WithNullRequest() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            gameWebSocketController.startGame(null);
+        });
+
+        verify(gameService, never()).startGame(any());
+    }
 }
