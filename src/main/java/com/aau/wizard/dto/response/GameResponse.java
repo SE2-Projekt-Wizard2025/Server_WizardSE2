@@ -11,6 +11,11 @@ public class GameResponse {
      */
     private Object payload;
 
+    /**
+     * No args constructor needed for Jackson
+     */
+    public GameResponse() {}
+
     // TODO: Add further attributes to constructor
     public GameResponse(String gameId, Object payload) {
         this.gameId = gameId;

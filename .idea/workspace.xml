@@ -6,8 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="5a88b75e-a340-4aab-ba6f-5de17d4e4b2e" name="Changes" comment="Sonar + Jacoco Setup">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/config/WebSocketHandlerConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/config/WebSocketHandlerConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/controller/WebSocketHandlerImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/controller/WebSocketHandlerImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/dto/request/GameRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/dto/request/GameRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/dto/response/GameResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/dto/response/GameResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/integration/GameWebSocketIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/integration/GameWebSocketIntegrationTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,7 +57,8 @@
     "JUnit.GameServiceImplTest.executor": "Run",
     "JUnit.GameWebSocketControllerTest (1).executor": "Run",
     "JUnit.GameWebSocketControllerTest.executor": "Run",
-    "JUnit.GameWebSocketIntegrationTest.executor": "Debug",
+    "JUnit.GameWebSocketIntegrationTest (1).executor": "Run",
+    "JUnit.GameWebSocketIntegrationTest.executor": "Run",
     "JUnit.WebSocketIntegrationTest.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
@@ -74,7 +76,7 @@
       <recent name="$PROJECT_DIR$/.idea" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.GameWebSocketControllerTest (1)">
+  <component name="RunManager" selected="JUnit.GameWebSocketIntegrationTest">
     <configuration name="WizardApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.aau.wizard.WizardApplication" />
       <module name="Server_WizardSE2" />
@@ -118,10 +120,16 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="GameWebSocketControllerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="GameWebSocketIntegrationTest (1)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="Server_WizardSE2" />
-      <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="GameWebSocketControllerTest" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.aau.wizard.controller.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.aau.wizard.controller" />
+      <option name="MAIN_CLASS_NAME" value="com.aau.wizard.controller.GameWebSocketIntegrationTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -144,11 +152,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.GameWebSocketIntegrationTest" />
+        <item itemvalue="Application.WizardApplication" />
+        <item itemvalue="JUnit.GameWebSocketIntegrationTest (1)" />
         <item itemvalue="JUnit.GameWebSocketControllerTest (1)" />
         <item itemvalue="JUnit.GameServiceImplTest" />
-        <item itemvalue="Application.WizardApplication" />
-        <item itemvalue="JUnit.GameWebSocketControllerTest" />
-        <item itemvalue="JUnit.GameWebSocketIntegrationTest" />
       </list>
     </recent_temporary>
   </component>

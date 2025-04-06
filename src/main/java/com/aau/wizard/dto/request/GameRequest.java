@@ -4,6 +4,11 @@ public class GameRequest {
     // TODO: Add further attributes / getters / setters
     private String gameId;
 
+    /**
+     * No args constructor needed for Jackson
+     */
+    public GameRequest() {}
+
     public GameRequest(String gameId) {
         this.gameId = gameId;
     }
