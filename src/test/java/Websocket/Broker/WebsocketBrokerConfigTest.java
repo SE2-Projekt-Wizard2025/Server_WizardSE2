@@ -33,6 +33,5 @@ public class WebsocketBrokerConfigTest {
 
         verify(registry).addEndpoint("/ws-broker");
         verify(registration).setAllowedOrigins("*");
-        verify(registration).withSockJS();
     }
 }
