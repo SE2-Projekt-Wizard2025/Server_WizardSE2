@@ -1,25 +1,63 @@
 package com.aau.wizard.service.impl;
 
+import com.aau.wizard.dto.CardDto;
+import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.response.GameResponse;
 import com.aau.wizard.model.Game;
+import com.aau.wizard.model.Player;
 import com.aau.wizard.service.interfaces.GameService;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class GameServiceImpl implements GameService {
     /**
-     * Starts a new game session based on the provided game request.
-     *
-     * @param request Contains information needed to initiate the game session, such as player data or game settings.
-     * @return A {@link GameResponse} object including the newly created game's unique identifier and an optional payload.
-     *         TODO: Further attributes should be added to this JavaDoc when they are implemented
+     * A map that holds all the current active games
      */
-    @Override
-    public GameResponse startGame(GameRequest request) {
-        Game game = new Game();
-        // TODO: Add further logic to start game
+    private final Map<String, Game> games = new HashMap<>();
 
-        return new GameResponse(game.getGameId(), null);
+
+    @Override
+    public GameResponse joinGame(GameRequest request) {
+        // check if there is a game, if not create one with the given id
+        Game game = games.computeIfAbsent(request.getGameId(), Game::new);
+
+        if(isPlayerExistent(game, request)) {
+            Player newPlayer = new Player(request.getPlayerId(), request.getPlayerName());
+            game.getPlayers().add(newPlayer);
+        }
+
+        return createGameResponse(game, request.getPlayerId());
+    }
+
+    private GameResponse createGameResponse(Game game, String requestingPlayerId) {
+        List<PlayerDto> playerDtos = game.getPlayers().stream()
+                .map(PlayerDto::from)
+                .toList();
+
+        Player requestingPlayer = game.getPlayerById(requestingPlayerId);
+
+        List<CardDto> handCards = requestingPlayer != null
+                ? requestingPlayer.getHandCards().stream()
+                .map(CardDto::from)
+                .toList()
+                : List.of();
+
+        return new GameResponse(
+                game.getGameId(),
+                game.getStatus(),
+                game.getCurrentPlayerId(),
+                playerDtos,
+                handCards,
+                null // lastPlayedCard can be set here later on
+        );
+    }
+
+    private boolean isPlayerExistent(Game game, GameRequest request) {
+        return game.getPlayerById(request.getPlayerId()) == null;
     }
 }

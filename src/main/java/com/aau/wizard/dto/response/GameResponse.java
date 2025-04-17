@@ -1,28 +1,37 @@
 package com.aau.wizard.dto.response;
 
+import com.aau.wizard.dto.CardDto;
+import com.aau.wizard.dto.PlayerDto;
+import com.aau.wizard.model.enums.GameStatus;
+
+import java.util.List;
+
+/**
+ * Response object sent from server to client containing the current game state.
+ */
 public class GameResponse {
-    // TODO: Add further attributes
     private String gameId;
+    private GameStatus status;
+    private String currentPlayerId;
+    private List<PlayerDto> players;
+    private List<CardDto> handCards;
+    private String lastPlayedCard;
 
     /**
-     * Additional response data associated with the game.
-     * The payload content depends on the specific request type or game state
-     * and can vary accordingly.
-     */
-    private Object payload;
-
-    /**
-     * No args constructor needed for Jackson
+     * No args constructor needed for Jackson / JSON deserialization
      */
     public GameResponse() {}
 
-    // TODO: Add further attributes to constructor
-    public GameResponse(String gameId, Object payload) {
+    public GameResponse(String gameId, GameStatus status, String currentPlayerId,
+                        List<PlayerDto> players, List<CardDto> handCards, String lastPlayedCard) {
         this.gameId = gameId;
-        this.payload = payload;
+        this.status = status;
+        this.currentPlayerId = currentPlayerId;
+        this.players = players;
+        this.handCards = handCards;
+        this.lastPlayedCard = lastPlayedCard;
     }
 
-    // TODO: Add further getters and setters accordingly
     public String getGameId() {
         return gameId;
     }
@@ -31,11 +40,43 @@ public class GameResponse {
         this.gameId = gameId;
     }
 
-    public Object getPayload() {
-        return payload;
+    public GameStatus getStatus() {
+        return status;
     }
 
-    public void setPayload(Object payload) {
-        this.payload = payload;
+    public void setStatus(GameStatus status) {
+        this.status = status;
+    }
+
+    public String getCurrentPlayerId() {
+        return currentPlayerId;
+    }
+
+    public void setCurrentPlayerId(String currentPlayerId) {
+        this.currentPlayerId = currentPlayerId;
+    }
+
+    public List<PlayerDto> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(List<PlayerDto> players) {
+        this.players = players;
+    }
+
+    public String getLastPlayedCard() {
+        return lastPlayedCard;
+    }
+
+    public void setLastPlayedCard(String lastPlayedCard) {
+        this.lastPlayedCard = lastPlayedCard;
+    }
+
+    public List<CardDto> getHandCards() {
+        return handCards;
+    }
+
+    public void setHandCards(List<CardDto> handCards) {
+        this.handCards = handCards;
     }
 }

@@ -1,4 +1,4 @@
-package controller;
+package controller.unit;
 
 import com.aau.wizard.controller.GameWebSocketController;
 import com.aau.wizard.dto.request.GameRequest;

@@ -15,16 +15,9 @@ public class GameWebSocketController {
         this.gameService = gameService;
     }
 
-    /**
-     * Handles incoming WebSocket messages sent to "/game/play" endpoint.
-     * Initiates a game session based on the provided {@link GameRequest}.
-     *
-     * @param gameRequest The request payload containing details required to start a game.
-     * @return A {@link GameResponse} that is broadcasted to subscribers listening on "/topic/game".
-     */
-    @MessageMapping("/game/play")
+    @MessageMapping("/game/join")
     @SendTo("/topic/game")
-    public GameResponse startGame(GameRequest gameRequest) {
-        return gameService.startGame(gameRequest);
+    public GameResponse joinGame(GameRequest gameRequest) {
+        return gameService.joinGame(gameRequest);
     }
 }

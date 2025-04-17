@@ -5,10 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5a88b75e-a340-4aab-ba6f-5de17d4e4b2e" name="Changes" comment="Sonar + Jacoco Setup">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/dto/CardDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/dto/PlayerDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/Card.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/Player.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/enums/GameStatus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/controller/GameWebSocketController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/controller/GameWebSocketController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/dto/request/GameRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/dto/request/GameRequest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/dto/response/GameResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/dto/response/GameResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/integration/GameWebSocketIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/integration/GameWebSocketIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/Game.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/service/impl/GameServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/service/impl/GameServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/service/interfaces/GameService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/service/interfaces/GameService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/controller/GameWebSocketControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/controller/unit/GameWebSocketControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/integration/GameWebSocketIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/controller/integration/GameWebSocketIntegrationTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,6 +30,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Interface" />
+        <option value="Enum" />
         <option value="Class" />
       </list>
     </option>
@@ -26,22 +38,22 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "history": [
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;history&quot;: [
     {
-      "state": "OPEN"
+      &quot;state&quot;: &quot;OPEN&quot;
     }
   ],
-  "lastFilter": {
-    "state": "OPEN"
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/SE2-Projekt-Wizard2025/Server_WizardSE2.git",
-    "accountId": "2d713f3f-662e-4fae-9652-032ac33158b5"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/SE2-Projekt-Wizard2025/Server_WizardSE2.git&quot;,
+    &quot;accountId&quot;: &quot;2d713f3f-662e-4fae-9652-032ac33158b5&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
 }</component>
@@ -62,7 +74,7 @@
     "JUnit.WebSocketIntegrationTest.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "feature/11-setup-basic-server-structure",
+    "git-widget-placeholder": "feature/11-setup-basic-structure",
     "kotlin-language-version-configured": "true",
     "project.structure.last.edited": "SDKs",
     "project.structure.proportion": "0.0",
@@ -82,7 +94,7 @@
       <module name="Server_WizardSE2" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="controller.*" />
+          <option name="PATTERN" value="controller.unit.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -105,16 +117,16 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="GameWebSocketControllerTest (1)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="GameWebSocketControllerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="Server_WizardSE2" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="controller.*" />
+          <option name="PATTERN" value="controller.unit.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="controller" />
-      <option name="MAIN_CLASS_NAME" value="controller.GameWebSocketControllerTest" />
+      <option name="PACKAGE_NAME" value="controller.unit" />
+      <option name="MAIN_CLASS_NAME" value="controller.unit.GameWebSocketControllerTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -139,12 +151,12 @@
       <module name="Server_WizardSE2" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="integration.*" />
+          <option name="PATTERN" value="controller.integration.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="integration" />
-      <option name="MAIN_CLASS_NAME" value="integration.GameWebSocketIntegrationTest" />
+      <option name="PACKAGE_NAME" value="controller.integration" />
+      <option name="MAIN_CLASS_NAME" value="controller.integration.GameWebSocketIntegrationTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -169,10 +181,20 @@
       <option name="presentableId" value="Default" />
       <updated>1742843779021</updated>
     </task>
+    <task id="LOCAL-00001" summary="Merge branch 'main' into feature/11-setup-basic-structure">
+      <option name="closed" value="true" />
+      <created>1744724487273</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1744724487273</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Sonar + Jacoco Setup" />
-    <option name="LAST_COMMIT_MESSAGE" value="Sonar + Jacoco Setup" />
+    <MESSAGE value="Merge branch 'main' into feature/11-setup-basic-structure" />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'main' into feature/11-setup-basic-structure" />
   </component>
 </project>

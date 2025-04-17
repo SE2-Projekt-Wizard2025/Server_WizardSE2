@@ -1,4 +1,4 @@
-package integration;
+package controller.integration;
 
 import com.aau.wizard.WizardApplication;
 import com.aau.wizard.dto.request.GameRequest;
@@ -19,7 +19,6 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.lang.reflect.Type;
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
@@ -40,9 +39,9 @@ public class GameWebSocketIntegrationTest {
     private final BlockingQueue<GameResponse> blockingQueue = new LinkedBlockingDeque<>();
     private static final WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
 
-    // TODO: Add further test attributes later on
     private static final String TEST_GAME_ID = "12345";
-    private static final String TEST_PAYLOAD = "Game started successfully";
+    private static final String TEST_PLAYER_ID = "Player1";
+    private static final String TEST_PLAYER_NAME = "TestPlayer";
 
     @BeforeEach
     void setup() {
@@ -51,7 +50,7 @@ public class GameWebSocketIntegrationTest {
 
         GameResponse mockedResponse = new GameResponse(TEST_GAME_ID, TEST_PAYLOAD);
 
-        Mockito.when(gameService.startGame(Mockito.any(GameRequest.class)))
+        Mockito.when(gameService.joinGame(Mockito.any(GameRequest.class)))
                 .thenReturn(mockedResponse);
     }
 

@@ -4,5 +4,5 @@ import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.response.GameResponse;
 
 public interface GameService {
-    GameResponse startGame(GameRequest request);
+    GameResponse joinGame(GameRequest request);
 }
