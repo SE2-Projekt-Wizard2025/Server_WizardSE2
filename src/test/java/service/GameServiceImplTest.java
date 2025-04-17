@@ -2,34 +2,47 @@ package service;
 
 import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.response.GameResponse;
+import com.aau.wizard.model.enums.GameStatus;
 import com.aau.wizard.service.impl.GameServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class GameServiceImplTest {
+
     @InjectMocks
     private GameServiceImpl gameService;
 
-    // TODO: Add further test attributes later on
     private static final String TEST_GAME_ID = "12345";
+    private static final String TEST_PLAYER_ID = "player1";
+    private static final String TEST_PLAYER_NAME = "TestPlayer";
 
     @Test
-    public void testStartGameSuccess() {
+    void testJoinGameCreatesGameAndAddsPlayer() {
         GameRequest request = createDefaultGameRequest();
 
-        GameResponse response = gameService.startGame(request);
+        GameResponse response = gameService.joinGame(request);
 
         assertNotNull(response);
-        assertNotNull(response.getGameId(), "Game ID should not be null");
+        assertEquals(TEST_GAME_ID, response.getGameId());
+        assertEquals(GameStatus.LOBBY, response.getStatus());
+        assertEquals(1, response.getPlayers().size());
+
+        var playerDto = response.getPlayers().get(0);
+        assertEquals(TEST_PLAYER_ID, playerDto.getPlayerId());
+        assertEquals(TEST_PLAYER_NAME, playerDto.getPlayerName());
+        assertFalse(playerDto.isReady());
     }
 
     private GameRequest createDefaultGameRequest() {
-        // TODO: Add further attributes later on
-        return new GameRequest(TEST_GAME_ID);
+        GameRequest request = new GameRequest();
+        request.setGameId(TEST_GAME_ID);
+        request.setPlayerId(TEST_PLAYER_ID);
+        request.setPlayerName(TEST_PLAYER_NAME);
+        return request;
     }
 }
