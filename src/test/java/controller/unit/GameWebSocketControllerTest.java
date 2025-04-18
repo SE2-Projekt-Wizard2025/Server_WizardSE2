@@ -1,6 +1,7 @@
 package controller.unit;
 
 import com.aau.wizard.controller.GameWebSocketController;
+import com.aau.wizard.dto.CardDto;
 import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.response.GameResponse;
 import com.aau.wizard.dto.PlayerDto;
@@ -40,15 +41,10 @@ class GameWebSocketControllerTest {
         GameResponse expectedResponse = createDefaultExpectedGameResponse();
 
         when(gameService.joinGame(any(GameRequest.class))).thenReturn(expectedResponse);
-
         GameResponse response = gameWebSocketController.joinGame(request);
 
-        assertNotNull(response);
-        assertEquals(TEST_GAME_ID, response.getGameId());
-        assertEquals(GameStatus.LOBBY, response.getStatus());
-        assertEquals(TEST_PLAYER_ID, response.getPlayers().get(0).getPlayerId());
-
-        verify(gameService, times(1)).joinGame(any(GameRequest.class));
+        assertBasicJoinResponse(response);
+        verifyJoinCalledOnce();
     }
 
     /**
@@ -59,11 +55,30 @@ class GameWebSocketControllerTest {
         GameRequest request = createDefaultGameRequest();
 
         when(gameService.joinGame(any(GameRequest.class))).thenReturn(null);
-
         GameResponse response = gameWebSocketController.joinGame(request);
 
         assertNull(response);
+        verifyJoinCalledOnce();
+    }
 
+    /**
+     * Asserts that the given {@link GameResponse} contains the expected game ID,
+     * status, and player ID for a successful join operation.
+     *
+     * @param response the {@link GameResponse} returned by the controller
+     */
+    private void assertBasicJoinResponse(GameResponse response) {
+        assertNotNull(response);
+        assertEquals(TEST_GAME_ID, response.getGameId());
+        assertEquals(GameStatus.LOBBY, response.getStatus());
+        assertEquals(TEST_PLAYER_ID, response.getPlayers().get(0).getPlayerId());
+    }
+
+    /**
+     * Verifies that the {@code joinGame} method of the {@link GameService}
+     * was called exactly once during the test.
+     */
+    private void verifyJoinCalledOnce() {
         verify(gameService, times(1)).joinGame(any(GameRequest.class));
     }
 
@@ -76,14 +91,26 @@ class GameWebSocketControllerTest {
     }
 
     private GameResponse createDefaultExpectedGameResponse() {
-        PlayerDto playerDto = new PlayerDto(TEST_PLAYER_ID, TEST_PLAYER_NAME, 0, false);
+        PlayerDto playerDto = createDefaultPlayerDto();
+        List<CardDto> cardDtos = createDefaultListOfCardDto();
         return new GameResponse(
                 TEST_GAME_ID,
                 GameStatus.LOBBY,
                 TEST_PLAYER_ID,
                 List.of(playerDto),
-                List.of(), // handCards empty (dummy)
+                cardDtos,
                 null       // lastPlayedCard
+        );
+    }
+
+    private PlayerDto createDefaultPlayerDto() {
+        return new PlayerDto(TEST_PLAYER_ID, TEST_PLAYER_NAME, 0, false);
+    }
+
+    private List<CardDto> createDefaultListOfCardDto() {
+        return List.of(
+                new CardDto("RED", "ONE", "NORMAL"),
+                new CardDto("BLUE", "TWO", "FOOL")
         );
     }
 }

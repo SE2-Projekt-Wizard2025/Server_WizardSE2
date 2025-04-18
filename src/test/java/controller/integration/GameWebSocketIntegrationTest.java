@@ -1,6 +1,7 @@
 package controller.integration;
 
 import com.aau.wizard.WizardApplication;
+import com.aau.wizard.dto.CardDto;
 import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.response.GameResponse;
@@ -21,6 +22,7 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -78,18 +80,12 @@ public class GameWebSocketIntegrationTest {
     @Timeout(10)
     void testJoinGameWebSocketEndpoint() throws Exception {
         StompSession session = connectToWebSocket();
-
         subscribeToGameTopic(session);
 
-        GameRequest request = createDefaultGameRequest();
-        session.send(JOIN_ENDPOINT, request);
+        sendJoinRequest(session);
 
         GameResponse response = blockingQueue.poll(5, TimeUnit.SECONDS);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getGameId()).isEqualTo(TEST_GAME_ID);
-        assertThat(response.getPlayers()).hasSize(1);
-        assertThat(response.getPlayers().get(0).getPlayerId()).isEqualTo(TEST_PLAYER_ID);
+        assertJoinResponse(response);
     }
 
     /**
@@ -122,17 +118,49 @@ public class GameWebSocketIntegrationTest {
         });
     }
 
+    /**
+     * Sends a join game request over the given WebSocket STOMP session.
+     * <p>
+     * Uses the predefined {@code JOIN_ENDPOINT} and a default test {@link GameRequest}.
+     *
+     * @param session the active {@link StompSession} used to send the message
+     */
+    private void sendJoinRequest(StompSession session) {
+        session.send(JOIN_ENDPOINT, createDefaultGameRequest());
+    }
+
+    /**
+     * Asserts that the received {@link GameResponse} contains the expected game ID
+     * and exactly one player with the correct player ID.
+     *
+     * @param response the {@link GameResponse} to validate
+     */
+    private void assertJoinResponse(GameResponse response) {
+        assertThat(response).isNotNull();
+        assertThat(response.getGameId()).isEqualTo(TEST_GAME_ID);
+        assertThat(response.getPlayers()).hasSize(1);
+        assertThat(response.getPlayers().get(0).getPlayerId()).isEqualTo(TEST_PLAYER_ID);
+    }
+
     private PlayerDto createDefaultPlayerDto() {
         return new PlayerDto(TEST_PLAYER_ID, TEST_PLAYER_NAME, 0, false);
     }
 
+    private List<CardDto> createDefaultListOfCardDto() {
+        return List.of(
+                new CardDto("RED", "ONE", "NORMAL"),
+                new CardDto("BLUE", "TWO", "FOOL")
+        );
+    }
+
     private GameResponse createDefaultGameResponse(PlayerDto testPlayer) {
+        List<CardDto> testCards = createDefaultListOfCardDto();
         return new GameResponse(
                 TEST_GAME_ID,
                 GameStatus.LOBBY,
                 TEST_PLAYER_ID,
                 List.of(testPlayer),
-                List.of(), // handCards empty (dummy)
+                testCards,
                 null       // lastPlayedCard
         );
     }

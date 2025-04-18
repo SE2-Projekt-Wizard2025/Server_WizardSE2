@@ -12,6 +12,16 @@ public class GameRequestTest {
     private static final String CARD = "RED-7";
     private static final String ACTION = "JOIN";
 
+    private static final String VALID_GAME_REQUEST_JSON = """
+        {
+          "gameId": "game-1",
+          "playerId": "player-1",
+          "playerName": "TestPlayer",
+          "card": "RED-7",
+          "action": "JOIN"
+        }
+        """;
+
     /**
      * Verifies that all fields can be set and retrieved correctly
      * when using the no-args constructor and setter methods.
@@ -20,11 +30,7 @@ public class GameRequestTest {
     void testNoArgsConstructorAndSetters() {
         GameRequest request = createPopulatedGameRequest();
 
-        assertEquals(GAME_ID, request.getGameId());
-        assertEquals(PLAYER_ID, request.getPlayerId());
-        assertEquals(PLAYER_NAME, request.getPlayerName());
-        assertEquals(CARD, request.getCard());
-        assertEquals(ACTION, request.getAction());
+        assertPopulatedGameRequest(request);
     }
 
     /**
@@ -64,22 +70,27 @@ public class GameRequestTest {
     @Test
     void testJsonDeserialization() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        String json = createGameRequestJson();
 
-        GameRequest request = mapper.readValue(json, GameRequest.class);
+        GameRequest request = mapper.readValue(VALID_GAME_REQUEST_JSON, GameRequest.class);
 
-        assertEquals("game-json", request.getGameId());
-        assertEquals("player-json", request.getPlayerId());
-        assertEquals("JSONTest", request.getPlayerName());
-        assertEquals("BLUE-5", request.getCard());
-        assertEquals("PLAY", request.getAction());
+        assertPopulatedGameRequest(request);
     }
 
     /**
-     * Helper method to create a fully populated GameRequest instance using constants.
+     * Asserts that the given {@link GameRequest} contains all expected standard test values.
+     * <p>
+     * Used to validate that a GameRequest was correctly populated via setters or deserialization.
      *
-     * @return a populated GameRequest
+     * @param request the {@link GameRequest} instance to verify
      */
+    private void assertPopulatedGameRequest(GameRequest request) {
+        assertEquals(GAME_ID, request.getGameId());
+        assertEquals(PLAYER_ID, request.getPlayerId());
+        assertEquals(PLAYER_NAME, request.getPlayerName());
+        assertEquals(CARD, request.getCard());
+        assertEquals(ACTION, request.getAction());
+    }
+
     private GameRequest createPopulatedGameRequest() {
         GameRequest request = new GameRequest();
         request.setGameId(GAME_ID);
@@ -88,22 +99,5 @@ public class GameRequestTest {
         request.setCard(CARD);
         request.setAction(ACTION);
         return request;
-    }
-
-    /**
-     * Helper method to generate a sample JSON string for deserialization testing.
-     *
-     * @return a valid GameRequest JSON string
-     */
-    private String createGameRequestJson() {
-        return """
-                {
-                  "gameId": "game-json",
-                  "playerId": "player-json",
-                  "playerName": "JSONTest",
-                  "card": "BLUE-5",
-                  "action": "PLAY"
-                }
-                """;
     }
 }

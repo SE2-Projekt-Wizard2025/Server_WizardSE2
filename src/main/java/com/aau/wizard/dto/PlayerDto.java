@@ -23,6 +23,15 @@ public class PlayerDto {
         this.ready = ready;
     }
 
+    /**
+     * Converts a {@link Player} domain object to a {@link PlayerDto} for data transfer.
+     * <p>
+     * Extracts basic player information such as ID, name, score, and ready state.
+     *
+     * @param p the {@link Player} instance to convert (must not be {@code null})
+     * @return the corresponding {@link PlayerDto}
+     * @throws NullPointerException if the player or any of its required fields is {@code null}
+     */
     public static PlayerDto from(Player p) {
         return new PlayerDto(p.getPlayerId(), p.getName(), p.getScore(), p.isReady());
     }

@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.aau.wizard.util.CollectionUtils.mapOrEmpty;
+
 /**
  * Default implementation of the GameService interface.
  * Manages active games in memory and handles game-related logic like joining and tracking player state.
@@ -37,7 +39,6 @@ public class GameServiceImpl implements GameService {
     public GameResponse joinGame(GameRequest request) {
         // check if there is a game, if not create one with the given id
         Game game = games.computeIfAbsent(request.getGameId(), Game::new);
-
         addPlayerIfAbsent(game, request);
 
         return createGameResponse(game, request.getPlayerId());
@@ -52,17 +53,9 @@ public class GameServiceImpl implements GameService {
      * @return a fully populated GameResponse
      */
     private GameResponse createGameResponse(Game game, String requestingPlayerId) {
-        List<PlayerDto> playerDtos = game.getPlayers().stream()
-                .map(PlayerDto::from)
-                .toList();
-
+        List<PlayerDto> playerDtos = mapOrEmpty(game.getPlayers(), PlayerDto::from);
         Player requestingPlayer = game.getPlayerById(requestingPlayerId);
-
-        List<CardDto> handCards = requestingPlayer != null
-                ? requestingPlayer.getHandCards().stream()
-                .map(CardDto::from)
-                .toList()
-                : List.of();
+        List<CardDto> handCards = CardDto.safeFromPlayer(requestingPlayer);
 
         return new GameResponse(
                 game.getGameId(),

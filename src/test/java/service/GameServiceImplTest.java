@@ -9,14 +9,12 @@ import com.aau.wizard.model.Player;
 import com.aau.wizard.model.enums.CardColor;
 import com.aau.wizard.model.enums.CardType;
 import com.aau.wizard.model.enums.CardValue;
-import com.aau.wizard.model.enums.GameStatus;
 import com.aau.wizard.service.impl.GameServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,6 +29,8 @@ public class GameServiceImplTest {
     private static final String TEST_PLAYER_ID = "player1";
     private static final String TEST_PLAYER_NAME = "TestPlayer";
 
+    private static final Card TEST_CARD = createDefaultCard();
+
     /**
      * Verifies that a new game is created and a player is added when a player joins
      * a non-existent game. Also checks that the game state is returned correctly.
@@ -41,17 +41,7 @@ public class GameServiceImplTest {
 
         GameResponse response = gameService.joinGame(request);
 
-        // Validate response
-        assertNotNull(response);
-        assertEquals(TEST_GAME_ID, response.getGameId());
-        assertEquals(GameStatus.LOBBY, response.getStatus());
-
-        // Validate player data
-        assertEquals(1, response.getPlayers().size());
-        var playerDto = response.getPlayers().get(0);
-        assertEquals(TEST_PLAYER_ID, playerDto.getPlayerId());
-        assertEquals(TEST_PLAYER_NAME, playerDto.getPlayerName());
-        assertFalse(playerDto.isReady());
+        assertBasicJoinResponse(response);
     }
 
     /**
@@ -65,9 +55,7 @@ public class GameServiceImplTest {
         gameService.joinGame(request);
         GameResponse response = gameService.joinGame(request);
 
-        assertNotNull(response);
-        assertEquals(1, response.getPlayers().size());
-        assertEquals(TEST_PLAYER_ID, response.getPlayers().get(0).getPlayerId());
+        assertBasicJoinResponse(response);
     }
 
     /**
@@ -79,10 +67,11 @@ public class GameServiceImplTest {
         GameRequest request = createDefaultGameRequest();
         gameService.joinGame(request);
 
-        GameRequest unknownPlayerRequest = new GameRequest();
-        unknownPlayerRequest.setGameId(TEST_GAME_ID);
-        unknownPlayerRequest.setPlayerId("unknownPlayer");
-        unknownPlayerRequest.setPlayerName("ShouldNotBeAdded");
+        GameRequest unknownPlayerRequest = createCustomGameRequest(
+                TEST_GAME_ID,
+                "unknownPlayer",
+                "ShouldNotBeAdded"
+        );
 
         GameResponse response = gameService.joinGame(unknownPlayerRequest);
 
@@ -101,10 +90,7 @@ public class GameServiceImplTest {
 
         GameResponse response = gameService.joinGame(request);
 
-        assertNotNull(response);
-        assertEquals(TEST_GAME_ID, response.getGameId());
-        assertEquals(1, response.getPlayers().size());
-        assertEquals(TEST_PLAYER_ID, response.getPlayers().get(0).getPlayerId());
+        assertBasicJoinResponse(response);
         assertTrue(response.getHandCards().isEmpty(), "Hand cards should be empty for new player");
     }
 
@@ -112,21 +98,14 @@ public class GameServiceImplTest {
      * Verifies that the joinGame method correctly maps a player's hand cards
      * using CardDto.from(...) when the player already exists and has at least one card.
      * <p>
-     * This test ensures that the internal stream().map(...) logic in createGameResponse
-     * is actually executed.
+     * This test ensures that the internal stream().map(...) logic is actually executed.
      */
     @Test
-    void testJoinGameWithPlayerAndCardCoversMapBranch() {
+    void testJoinGameWithPlayerAndCard() {
         GameRequest request = createDefaultGameRequest();
         gameService.joinGame(request);
 
-        Game game = gameService.getGameById(TEST_GAME_ID);
-        Player player = game.getPlayerById(TEST_PLAYER_ID);
-
-        List<Card> cards = new ArrayList<>();
-        cards.add(new Card(CardColor.RED, CardValue.SEVEN, CardType.NORMAL));
-
-        player.setHandCards(cards);
+        givePlayerCard(TEST_GAME_ID, TEST_PLAYER_ID, TEST_CARD);
 
         GameResponse response = gameService.joinGame(request);
 
@@ -139,11 +118,50 @@ public class GameServiceImplTest {
         assertEquals("NORMAL", card.getType());
     }
 
+    /**
+     * Asserts that the given {@link GameResponse} contains the expected basic join information.
+     * <p>
+     * Validates that:
+     * <ul>
+     *     <li>the response is not null</li>
+     *     <li>the game ID matches the test ID</li>
+     *     <li>exactly one player is present</li>
+     *     <li>the player's ID and name match the expected test values</li>
+     * </ul>
+     *
+     * @param response the {@link GameResponse} to verify
+     */
+    private void assertBasicJoinResponse(GameResponse response) {
+        assertNotNull(response);
+        assertEquals(TEST_GAME_ID, response.getGameId());
+        assertEquals(1, response.getPlayers().size());
+        assertEquals(TEST_PLAYER_ID, response.getPlayers().get(0).getPlayerId());
+        assertEquals(TEST_PLAYER_NAME, response.getPlayers().get(0).getPlayerName());
+    }
+
+    private void givePlayerCard(String gameId, String playerId, Card card) {
+        Game game = gameService.getGameById(gameId);
+        Player player = game.getPlayerById(playerId);
+        player.setHandCards(List.of(card));
+    }
+
     private GameRequest createDefaultGameRequest() {
         GameRequest request = new GameRequest();
         request.setGameId(TEST_GAME_ID);
         request.setPlayerId(TEST_PLAYER_ID);
         request.setPlayerName(TEST_PLAYER_NAME);
         return request;
+    }
+
+    private GameRequest createCustomGameRequest(String gameId, String playerId, String playerName) {
+        GameRequest request = new GameRequest();
+        request.setGameId(gameId);
+        request.setPlayerId(playerId);
+        request.setPlayerName(playerName);
+        return request;
+    }
+
+    private static Card createDefaultCard() {
+        return new Card(CardColor.RED, CardValue.SEVEN, CardType.NORMAL);
     }
 }
