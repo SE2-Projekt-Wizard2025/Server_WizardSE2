@@ -1,13 +1,23 @@
 package service;
 
+import com.aau.wizard.dto.CardDto;
 import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.response.GameResponse;
+import com.aau.wizard.model.Card;
+import com.aau.wizard.model.Game;
+import com.aau.wizard.model.Player;
+import com.aau.wizard.model.enums.CardColor;
+import com.aau.wizard.model.enums.CardType;
+import com.aau.wizard.model.enums.CardValue;
 import com.aau.wizard.model.enums.GameStatus;
 import com.aau.wizard.service.impl.GameServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -96,6 +106,37 @@ public class GameServiceImplTest {
         assertEquals(1, response.getPlayers().size());
         assertEquals(TEST_PLAYER_ID, response.getPlayers().get(0).getPlayerId());
         assertTrue(response.getHandCards().isEmpty(), "Hand cards should be empty for new player");
+    }
+
+    /**
+     * Verifies that the joinGame method correctly maps a player's hand cards
+     * using CardDto.from(...) when the player already exists and has at least one card.
+     * <p>
+     * This test ensures that the internal stream().map(...) logic in createGameResponse
+     * is actually executed.
+     */
+    @Test
+    void testJoinGameWithPlayerAndCardCoversMapBranch() {
+        GameRequest request = createDefaultGameRequest();
+        gameService.joinGame(request);
+
+        Game game = gameService.getGameById(TEST_GAME_ID);
+        Player player = game.getPlayerById(TEST_PLAYER_ID);
+
+        List<Card> cards = new ArrayList<>();
+        cards.add(new Card(CardColor.RED, CardValue.SEVEN, CardType.NORMAL));
+
+        player.setHandCards(cards);
+
+        GameResponse response = gameService.joinGame(request);
+
+        assertNotNull(response);
+        assertEquals(1, response.getHandCards().size());
+
+        CardDto card = response.getHandCards().get(0);
+        assertEquals("RED", card.getColor());
+        assertEquals("SEVEN", card.getValue());
+        assertEquals("NORMAL", card.getType());
     }
 
     private GameRequest createDefaultGameRequest() {

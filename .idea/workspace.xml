@@ -5,11 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5a88b75e-a340-4aab-ba6f-5de17d4e4b2e" name="Changes" comment="Sonar + Jacoco Setup">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/enums/CardColor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/enums/CardType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/enums/CardValue.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/Card.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/Card.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/service/impl/GameServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/service/impl/GameServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/service/GameServiceImplTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/service/GameServiceImplTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -182,7 +181,7 @@
     <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'main' into feature/11-setup-basic-structure" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Server_WizardSE2$java_in_Server_WizardSE2.ic" NAME="java in Server_WizardSE2 Coverage Results" MODIFIED="1744901740118" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
+    <SUITE FILE_PATH="coverage/Server_WizardSE2$java_in_Server_WizardSE2.ic" NAME="java in Server_WizardSE2 Coverage Results" MODIFIED="1744985917848" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
     <SUITE FILE_PATH="coverage/Server_WizardSE2$controller_in_Server_WizardSE2.ic" NAME="controller in Server_WizardSE2 Coverage Results" MODIFIED="1744899555261" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
     <SUITE FILE_PATH="coverage/Server_WizardSE2$GameServiceImplTest.ic" NAME="GameServiceImplTest Coverage Results" MODIFIED="1744900486640" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
       <FILTER>service.*</FILTER>

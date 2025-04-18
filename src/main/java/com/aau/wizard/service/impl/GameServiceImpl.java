@@ -7,6 +7,7 @@ import com.aau.wizard.dto.response.GameResponse;
 import com.aau.wizard.model.Game;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.service.interfaces.GameService;
+import com.google.common.annotations.VisibleForTesting;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -92,5 +93,19 @@ public class GameServiceImpl implements GameService {
      */
     private boolean playerNotInGame(Game game, GameRequest request) {
         return game.getPlayerById(request.getPlayerId()) == null;
+    }
+
+    /**
+     * Returns the game instance associated with the given game ID.
+     * <p>
+     * <strong>Visible for testing only.</strong> This method should not be used in production logic,
+     * but exists to allow test code to access internal game state (e.g. to inspect or manipulate players).
+     *
+     * @param gameId the unique identifier of the game
+     * @return the Game instance if present; otherwise {@code null}
+     */
+    @VisibleForTesting
+    public Game getGameById(String gameId) {
+        return games.get(gameId);
     }
 }
