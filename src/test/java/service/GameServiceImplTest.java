@@ -2,7 +2,6 @@ package service;
 
 import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.response.GameResponse;
-import com.aau.wizard.model.Game;
 import com.aau.wizard.model.enums.GameStatus;
 import com.aau.wizard.service.impl.GameServiceImpl;
 import org.junit.jupiter.api.Test;
