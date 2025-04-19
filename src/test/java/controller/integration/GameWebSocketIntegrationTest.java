@@ -1,12 +1,12 @@
 package controller.integration;
 
 import com.aau.wizard.WizardApplication;
-import com.aau.wizard.dto.CardDto;
 import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.response.GameResponse;
-import com.aau.wizard.model.enums.GameStatus;
 import com.aau.wizard.service.interfaces.GameService;
+import static com.aau.wizard.testutil.TestConstants.*;
+import static com.aau.wizard.testutil.TestDataFactory.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -22,8 +22,6 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
@@ -50,10 +48,6 @@ public class GameWebSocketIntegrationTest {
 
     private static final String GAME_TOPIC = "/topic/game";
     private static final String JOIN_ENDPOINT = "/app/game/join";
-
-    private static final String TEST_GAME_ID = "12345";
-    private static final String TEST_PLAYER_ID = "Player1";
-    private static final String TEST_PLAYER_NAME = "TestPlayer";
 
     /**
      * Prepares the mocked GameService and sets up a stubbed GameResponse
@@ -138,38 +132,7 @@ public class GameWebSocketIntegrationTest {
     private void assertJoinResponse(GameResponse response) {
         assertThat(response).isNotNull();
         assertThat(response.getGameId()).isEqualTo(TEST_GAME_ID);
-        assertThat(response.getPlayers()).hasSize(1);
+        assertThat(response.getPlayers()).hasSize(2);
         assertThat(response.getPlayers().get(0).getPlayerId()).isEqualTo(TEST_PLAYER_ID);
-    }
-
-    private PlayerDto createDefaultPlayerDto() {
-        return new PlayerDto(TEST_PLAYER_ID, TEST_PLAYER_NAME, 0, false);
-    }
-
-    private List<CardDto> createDefaultListOfCardDto() {
-        return List.of(
-                new CardDto("RED", "ONE", "NORMAL"),
-                new CardDto("BLUE", "TWO", "FOOL")
-        );
-    }
-
-    private GameResponse createDefaultGameResponse(PlayerDto testPlayer) {
-        List<CardDto> testCards = createDefaultListOfCardDto();
-        return new GameResponse(
-                TEST_GAME_ID,
-                GameStatus.LOBBY,
-                TEST_PLAYER_ID,
-                List.of(testPlayer),
-                testCards,
-                null       // lastPlayedCard
-        );
-    }
-
-    private GameRequest createDefaultGameRequest() {
-        GameRequest request = new GameRequest();
-        request.setGameId(TEST_GAME_ID);
-        request.setPlayerId(TEST_PLAYER_ID);
-        request.setPlayerName(TEST_PLAYER_NAME);
-        return request;
     }
 }

@@ -3,9 +3,8 @@ package dto;
 import com.aau.wizard.dto.CardDto;
 import com.aau.wizard.model.Card;
 import com.aau.wizard.model.Player;
-import com.aau.wizard.model.enums.CardColor;
-import com.aau.wizard.model.enums.CardType;
-import com.aau.wizard.model.enums.CardValue;
+import static com.aau.wizard.testutil.TestConstants.*;
+import static com.aau.wizard.testutil.TestDataFactory.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -13,11 +12,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CardDtoTest {
-
-    private static final String COLOR = "RED";
-    private static final String VALUE = "SEVEN";
-    private static final String TYPE = "NORMAL";
-
     /**
      * Verifies that the constructor and getters/setters of CardDto work as expected.
      */
@@ -33,7 +27,7 @@ class CardDtoTest {
      */
     @Test
     void testAllArgsConstructor() {
-        CardDto dto = createDefaultCardDtoAllArgsConstructor();
+        CardDto dto = createDefaultCardDto();
 
         assertCardDtoFields(dto);
     }
@@ -91,9 +85,9 @@ class CardDtoTest {
     }
 
     private void assertCardDtoFields(CardDto cardDto) {
-        assertEquals(COLOR, cardDto.getColor());
-        assertEquals(VALUE, cardDto.getValue());
-        assertEquals(TYPE, cardDto.getType());
+        assertEquals(TEST_CARD_COLOR, cardDto.getColor());
+        assertEquals(TEST_CARD_VALUE, cardDto.getValue());
+        assertEquals(TEST_CARD_TYPE, cardDto.getType());
     }
 
     private void assertEmptyCardList(List<CardDto> cards) {
@@ -101,23 +95,11 @@ class CardDtoTest {
         assertTrue(cards.isEmpty());
     }
 
-    private Player createDefaultPlayer() {
-        return new Player("id", "name");
-    }
-
-    private Card createDefaultCard() {
-        return new Card(CardColor.RED, CardValue.SEVEN, CardType.NORMAL);
-    }
-
     private CardDto createDefaultCardDtoNoArgsConstructor() {
         CardDto dto = new CardDto();
-        dto.setColor(COLOR);
-        dto.setValue(VALUE);
-        dto.setType(TYPE);
+        dto.setColor(TEST_CARD_COLOR);
+        dto.setValue(TEST_CARD_VALUE);
+        dto.setType(TEST_CARD_TYPE);
         return dto;
-    }
-
-    private CardDto createDefaultCardDtoAllArgsConstructor() {
-        return new CardDto(COLOR, VALUE, TYPE);
     }
 }

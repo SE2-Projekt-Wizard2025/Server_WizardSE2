@@ -6,10 +6,9 @@ import com.aau.wizard.dto.response.GameResponse;
 import com.aau.wizard.model.Card;
 import com.aau.wizard.model.Game;
 import com.aau.wizard.model.Player;
-import com.aau.wizard.model.enums.CardColor;
-import com.aau.wizard.model.enums.CardType;
-import com.aau.wizard.model.enums.CardValue;
 import com.aau.wizard.service.impl.GameServiceImpl;
+import static com.aau.wizard.testutil.TestConstants.*;
+import static com.aau.wizard.testutil.TestDataFactory.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,10 +23,6 @@ public class GameServiceImplTest {
 
     @InjectMocks
     private GameServiceImpl gameService;
-
-    private static final String TEST_GAME_ID = "12345";
-    private static final String TEST_PLAYER_ID = "player1";
-    private static final String TEST_PLAYER_NAME = "TestPlayer";
 
     private static final Card TEST_CARD = createDefaultCard();
 
@@ -113,9 +108,9 @@ public class GameServiceImplTest {
         assertEquals(1, response.getHandCards().size());
 
         CardDto card = response.getHandCards().get(0);
-        assertEquals("RED", card.getColor());
-        assertEquals("SEVEN", card.getValue());
-        assertEquals("NORMAL", card.getType());
+        assertEquals(TEST_CARD_COLOR, card.getColor());
+        assertEquals(TEST_CARD_VALUE, card.getValue());
+        assertEquals(TEST_CARD_TYPE, card.getType());
     }
 
     /**
@@ -143,25 +138,5 @@ public class GameServiceImplTest {
         Game game = gameService.getGameById(gameId);
         Player player = game.getPlayerById(playerId);
         player.setHandCards(List.of(card));
-    }
-
-    private GameRequest createDefaultGameRequest() {
-        GameRequest request = new GameRequest();
-        request.setGameId(TEST_GAME_ID);
-        request.setPlayerId(TEST_PLAYER_ID);
-        request.setPlayerName(TEST_PLAYER_NAME);
-        return request;
-    }
-
-    private GameRequest createCustomGameRequest(String gameId, String playerId, String playerName) {
-        GameRequest request = new GameRequest();
-        request.setGameId(gameId);
-        request.setPlayerId(playerId);
-        request.setPlayerName(playerName);
-        return request;
-    }
-
-    private static Card createDefaultCard() {
-        return new Card(CardColor.RED, CardValue.SEVEN, CardType.NORMAL);
     }
 }

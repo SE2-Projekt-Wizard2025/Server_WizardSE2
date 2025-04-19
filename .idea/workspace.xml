@@ -5,12 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5a88b75e-a340-4aab-ba6f-5de17d4e4b2e" name="Changes" comment="Sonar + Jacoco Setup">
-      <change afterPath="$PROJECT_DIR$/src/test/java/dto/CardDtoTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/dto/PlayerDtoTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/model/CardTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/model/PlayerTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/util/CollectionUtilsTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/testutil/TestConstants.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/testutil/TestDataFactory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/WizardApplicationTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/controller/integration/GameWebSocketIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/controller/integration/GameWebSocketIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/controller/unit/GameWebSocketControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/controller/unit/GameWebSocketControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/dto/CardDtoTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/dto/CardDtoTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/dto/PlayerDtoTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/dto/PlayerDtoTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/dto/request/GameRequestTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/dto/request/GameRequestTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/dto/response/GameResponseTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/dto/response/GameResponseTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/model/CardTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/model/CardTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/model/GameTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/model/GameTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/model/PlayerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/model/PlayerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/service/GameServiceImplTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/service/GameServiceImplTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/util/CollectionUtilsTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/util/CollectionUtilsTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,14 +71,17 @@
   "keyToString": {
     "Application.WizardApplication.executor": "Run",
     "JUnit.CardDtoTest.executor": "Run",
+    "JUnit.CardTest.executor": "Run",
     "JUnit.GameRequestTest.executor": "Run",
     "JUnit.GameResponseTest.executor": "Run",
     "JUnit.GameServiceImplTest.executor": "Run",
+    "JUnit.GameTest.executor": "Run",
     "JUnit.GameWebSocketControllerTest (1).executor": "Run",
     "JUnit.GameWebSocketControllerTest.executor": "Run",
     "JUnit.GameWebSocketIntegrationTest (1).executor": "Run",
     "JUnit.GameWebSocketIntegrationTest.executor": "Run",
     "JUnit.GameWebSocketIntegrationTest.testJoinGameWebSocketEndpoint.executor": "Run",
+    "JUnit.PlayerTest.executor": "Run",
     "JUnit.WebSocketIntegrationTest.executor": "Run",
     "JUnit.controller in Server_WizardSE2.executor": "Coverage",
     "JUnit.java in Server_WizardSE2.executor": "Coverage",
@@ -89,31 +102,16 @@
     </key>
   </component>
   <component name="RunManager" selected="JUnit.java in Server_WizardSE2">
-    <configuration name="CardDtoTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="CardTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="Server_WizardSE2" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="dto.*" />
+          <option name="PATTERN" value="model.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="dto" />
-      <option name="MAIN_CLASS_NAME" value="dto.CardDtoTest" />
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="GameRequestTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="Server_WizardSE2" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="dto.request.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="dto.request" />
-      <option name="MAIN_CLASS_NAME" value="dto.request.GameRequestTest" />
+      <option name="PACKAGE_NAME" value="model" />
+      <option name="MAIN_CLASS_NAME" value="model.CardTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -134,16 +132,31 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="GameServiceImplTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="GameTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="Server_WizardSE2" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="service.*" />
+          <option name="PATTERN" value="model.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="service" />
-      <option name="MAIN_CLASS_NAME" value="service.GameServiceImplTest" />
+      <option name="PACKAGE_NAME" value="model" />
+      <option name="MAIN_CLASS_NAME" value="model.GameTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PlayerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Server_WizardSE2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="model.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="model" />
+      <option name="MAIN_CLASS_NAME" value="model.PlayerTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -160,10 +173,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="JUnit.java in Server_WizardSE2" />
-        <item itemvalue="JUnit.CardDtoTest" />
-        <item itemvalue="JUnit.GameServiceImplTest" />
+        <item itemvalue="JUnit.GameTest" />
         <item itemvalue="JUnit.GameResponseTest" />
-        <item itemvalue="JUnit.GameRequestTest" />
+        <item itemvalue="JUnit.CardTest" />
+        <item itemvalue="JUnit.PlayerTest" />
       </list>
     </recent_temporary>
   </component>
@@ -193,7 +206,7 @@
     <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'main' into feature/11-setup-basic-structure" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Server_WizardSE2$java_in_Server_WizardSE2.ic" NAME="java in Server_WizardSE2 Coverage Results" MODIFIED="1744997210442" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
+    <SUITE FILE_PATH="coverage/Server_WizardSE2$java_in_Server_WizardSE2.ic" NAME="java in Server_WizardSE2 Coverage Results" MODIFIED="1745057624178" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
     <SUITE FILE_PATH="coverage/Server_WizardSE2$controller_in_Server_WizardSE2.ic" NAME="controller in Server_WizardSE2 Coverage Results" MODIFIED="1744899555261" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
     <SUITE FILE_PATH="coverage/Server_WizardSE2$GameServiceImplTest.ic" NAME="GameServiceImplTest Coverage Results" MODIFIED="1744900486640" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
       <FILTER>service.*</FILTER>
