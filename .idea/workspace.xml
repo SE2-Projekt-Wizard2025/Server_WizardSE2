@@ -4,25 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5a88b75e-a340-4aab-ba6f-5de17d4e4b2e" name="Changes" comment="Sonar + Jacoco Setup">
-      <change afterPath="$PROJECT_DIR$/src/main/java/Websocket/Broker/WebsocketBrokerConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/Websocket/Broker/WebsocketBrokerController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/Websocket/Handler/WebsocketHandlerConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/Websocket/Handler/WebsocketHandlerImp.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/Websocket/WebsocketServerApplication.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/Websocket/dtos/OutputMessage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/Websocket/dtos/StompMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="5a88b75e-a340-4aab-ba6f-5de17d4e4b2e" name="Changes" comment="Sonar + Jacoco Setup" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="CoverageOptionsProvider">
+    <option name="myAddOrReplace" value="0" />
+  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Interface" />
+        <option value="Enum" />
         <option value="Class" />
       </list>
     </option>
@@ -36,15 +31,19 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
+  &quot;history&quot;: [
+    {
+      &quot;state&quot;: &quot;OPEN&quot;
+    }
+  ],
   &quot;lastFilter&quot;: {
-    &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;AngiWis&quot;
+    &quot;state&quot;: &quot;OPEN&quot;
   }
 }</component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/SE2-Projekt-Wizard2025/Server_WizardSE2.git&quot;,
-    &quot;accountId&quot;: &quot;171543a1-6ecf-49d7-93c7-e76624b03b8e&quot;
+    &quot;accountId&quot;: &quot;2d713f3f-662e-4fae-9652-032ac33158b5&quot;
   }
 }</component>
   <component name="ProjectColorInfo">{
@@ -56,19 +55,34 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.WebsocketServerApplication.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "Websockets",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/HP/OneDrive/Desktop/AAU/SE2/Wizard/Server_WizardSE2/src/main/java/Websocket",
-    "project.structure.last.edited": "SDKs",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.2"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.WizardApplication.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.CardDtoTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.CardTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameRequestTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameResponseTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameServiceImplTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameWebSocketControllerTest (1).executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameWebSocketControllerTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameWebSocketIntegrationTest (1).executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameWebSocketIntegrationTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameWebSocketIntegrationTest.testJoinGameWebSocketEndpoint.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.PlayerTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.WebSocketIntegrationTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.controller in Server_WizardSE2.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.java in Server_WizardSE2.executor&quot;: &quot;Coverage&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/11-setup-basic-structure&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;SDKs&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.project.maven.repository.indices&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\HP\OneDrive\Desktop\AAU\SE2\Wizard\Server_WizardSE2\src\main\java\Websocket" />
@@ -79,6 +93,85 @@
       <recent name="$PROJECT_DIR$/.idea" />
     </key>
   </component>
+  <component name="RunManager" selected="JUnit.java in Server_WizardSE2">
+    <configuration name="CardTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Server_WizardSE2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="model.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="model" />
+      <option name="MAIN_CLASS_NAME" value="model.CardTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="GameResponseTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Server_WizardSE2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="dto.response.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="dto.response" />
+      <option name="MAIN_CLASS_NAME" value="dto.response.GameResponseTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="GameTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Server_WizardSE2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="model.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="model" />
+      <option name="MAIN_CLASS_NAME" value="model.GameTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PlayerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Server_WizardSE2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="model.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="model" />
+      <option name="MAIN_CLASS_NAME" value="model.PlayerTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="java in Server_WizardSE2" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Server_WizardSE2" />
+      <option name="TEST_OBJECT" value="directory" />
+      <dir value="$PROJECT_DIR$/src/test/java" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.java in Server_WizardSE2" />
+        <item itemvalue="JUnit.GameTest" />
+        <item itemvalue="JUnit.GameResponseTest" />
+        <item itemvalue="JUnit.CardTest" />
+        <item itemvalue="JUnit.PlayerTest" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -88,6 +181,15 @@
       <option name="presentableId" value="Default" />
       <updated>1742843779021</updated>
     </task>
+    <task id="LOCAL-00001" summary="Merge branch 'main' into feature/11-setup-basic-structure">
+      <option name="closed" value="true" />
+      <created>1744724487273</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1744724487273</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -115,6 +217,17 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Sonar + Jacoco Setup" />
-    <option name="LAST_COMMIT_MESSAGE" value="Sonar + Jacoco Setup" />
+    <MESSAGE value="Merge branch 'main' into feature/11-setup-basic-structure" />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'main' into feature/11-setup-basic-structure" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/Server_WizardSE2$java_in_Server_WizardSE2.ic" NAME="java in Server_WizardSE2 Coverage Results" MODIFIED="1745057729713" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
+    <SUITE FILE_PATH="coverage/Server_WizardSE2$controller_in_Server_WizardSE2.ic" NAME="controller in Server_WizardSE2 Coverage Results" MODIFIED="1744899555261" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
+    <SUITE FILE_PATH="coverage/Server_WizardSE2$GameServiceImplTest.ic" NAME="GameServiceImplTest Coverage Results" MODIFIED="1744900486640" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>service.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/Server_WizardSE2$GameResponseTest.ic" NAME="GameResponseTest Coverage Results" MODIFIED="1744988526230" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>dto.response.*</FILTER>
+    </SUITE>
   </component>
 </project>
