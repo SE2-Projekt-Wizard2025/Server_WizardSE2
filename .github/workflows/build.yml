@@ -33,4 +33,4 @@ jobs:
       - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=SE2-Projekt-Wizard2025_Server_WizardSE2
+        run: mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=SE2-Projekt-Wizard2025_Server_WizardSE2 -Dsonar.organization=se2-projekt-wizard2025
