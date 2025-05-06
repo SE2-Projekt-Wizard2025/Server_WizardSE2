@@ -88,6 +88,29 @@ public class GameServiceImpl implements GameService {
         return game.getPlayerById(request.getPlayerId()) == null;
     }
 
+    @Override
+    public GameResponse startGame(String gameId) {
+        Game game = games.get(gameId);
+        if (game == null) {
+            throw new IllegalArgumentException("Spiel nicht gefunden: " + gameId);
+        }
+
+        boolean started = game.startGame(); // ruft neue Methode aus Game.java auf
+        if (!started) {
+            throw new IllegalStateException("Spiel konnte nicht gestartet werden – evtl. zu wenig Spieler?");
+        }
+
+        // antwort für Host
+        return createGameResponse(game, game.getCurrentPlayerId());
+    }
+
+    @Override
+    public boolean canStartGame(String gameId) {
+        Game game = games.get(gameId);
+        return game != null && game.canStartGame();
+    }
+
+
     /**
      * Returns the game instance associated with the given game ID.
      * <p>
@@ -101,4 +124,6 @@ public class GameServiceImpl implements GameService {
     public Game getGameById(String gameId) {
         return games.get(gameId);
     }
+
+
 }

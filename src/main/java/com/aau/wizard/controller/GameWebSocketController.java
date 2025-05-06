@@ -4,6 +4,7 @@ import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.response.GameResponse;
 import com.aau.wizard.service.interfaces.GameService;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
@@ -38,5 +39,11 @@ public class GameWebSocketController {
     @SendTo("/topic/game")
     public GameResponse joinGame(GameRequest gameRequest) {
         return gameService.joinGame(gameRequest);
+    }
+
+    @MessageMapping("/game/start")
+    @SendTo("/topic/game")
+    public GameResponse startGame(@Payload String gameId) {
+        return gameService.startGame(gameId);
     }
 }

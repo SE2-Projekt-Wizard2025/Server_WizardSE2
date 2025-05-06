@@ -3,6 +3,7 @@ package com.aau.wizard.model;
 import com.aau.wizard.model.enums.GameStatus;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Game {
@@ -62,4 +63,24 @@ public class Game {
         }
         return null;
     }
+    public boolean addPlayer(Player player) {
+        if (status != GameStatus.LOBBY || players.size() >= 6) return false;
+        players.add(player);
+        return true;
+    }
+    //prüfen ob Spiel schon gestartet werden kann (mind. 3 Spieler)
+    public boolean canStartGame() {
+        return status == GameStatus.LOBBY && players.size() >= 3;
+    }
+
+    public boolean startGame() {
+        if (!canStartGame()) return false;
+
+        Collections.shuffle(players);
+        status = GameStatus.PLAYING;
+        currentPlayerId = players.get(0).getPlayerId();
+        return true;
+    }
+
+
 }

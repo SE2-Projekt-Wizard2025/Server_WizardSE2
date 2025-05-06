@@ -5,4 +5,6 @@ import com.aau.wizard.dto.response.GameResponse;
 
 public interface GameService {
     GameResponse joinGame(GameRequest request);
+    GameResponse startGame(String gameId);
+    boolean canStartGame(String gameId);
 }
