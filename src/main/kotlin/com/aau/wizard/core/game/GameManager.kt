@@ -1,21 +1,21 @@
-package com.aau.wizard.core.logic
+package com.aau.wizard.core.game
+//der pfad com.aau.wizard.core.logic müsste eigentlich com.aau.wizard.core.game lauten - funktioniert aus irgendeinem grund aber nicht...
 
 import com.aau.wizard.core.cards.Card
 import com.aau.wizard.core.cards.CardType
 import com.aau.wizard.core.cards.Deck
 import com.aau.wizard.core.cards.Suit
 import com.aau.wizard.core.model.PlayerState
-import com.aau.wizard.core.rules.BiddingRules
 import com.aau.wizard.core.rules.TrickRules
 import kotlin.math.abs
 
-class GameManager(private val players: List<PlayerState>) {
+class GameManager(internal val players: List<PlayerState>) {
 
-    private val deck = Deck()
-    private var trumpCard: Card? = null
+    internal val deck = Deck()
+    internal var trumpCard: Card? = null
     var trumpSuit: Suit? = null // Made public for debugging
-    private val playedCards = mutableListOf<Pair<PlayerState, Card>>()
-    private var currentTrickNumber = 0
+    internal val playedCards = mutableListOf<Pair<PlayerState, Card>>()
+    internal var currentTrickNumber = 0
 
     fun startRound(roundNumber: Int) {
         deck.shuffle()
@@ -24,8 +24,16 @@ class GameManager(private val players: List<PlayerState>) {
             player.tricksWon = 0
             player.bid = 0 // Reset bids
         }
-        trumpCard = deck.draw(1).firstOrNull()
-        trumpSuit = trumpCard?.suit
+
+        if (deck.size() < 1){
+            trumpCard = null
+            trumpSuit = null
+        }
+        else{
+            trumpCard = deck.draw(1).firstOrNull()
+            trumpSuit = trumpCard?.suit
+        }
+
         currentTrickNumber = 0
         playedCards.clear()
 
