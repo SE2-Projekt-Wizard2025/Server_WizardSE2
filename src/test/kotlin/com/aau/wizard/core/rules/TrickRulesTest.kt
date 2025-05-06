@@ -12,6 +12,7 @@ class TrickRulesTest {
     private val bob = PlayerState("p2", "Bob")
     private val charlie = PlayerState("p3", "Charlie")
 
+
     @Nested
     inner class BasicTrickTests {
         @Test
@@ -35,9 +36,9 @@ class TrickRulesTest {
         @Test
         fun `trump card beats lead suit`() {
             val playedCards = listOf(
-                alice to Card(Suit.RED, 10), // Highest lead suit
-                bob to Card(Suit.GREEN, 5),  // Off-suit
-                charlie to Card(Suit.BLUE, 7) // Trump (assuming BLUE is trump)
+                alice to Card(Suit.RED, 10),
+                bob to Card(Suit.GREEN, 5),
+                charlie to Card(Suit.BLUE, 7)
             )
 
             assertEquals(charlie, TrickRules.determineTrickWinner(playedCards, trumpSuit = Suit.BLUE))
@@ -49,8 +50,8 @@ class TrickRulesTest {
         @Test
         fun `wizard always wins`() {
             val playedCards = listOf(
-                alice to Card(Suit.RED, 13), // Highest normal card
-                bob to Card(Suit.SPECIAL, 14), // Wizard
+                alice to Card(Suit.RED, 13),
+                bob to Card(Suit.SPECIAL, 14),
                 charlie to Card(Suit.GREEN, 1)
             )
 
@@ -60,9 +61,9 @@ class TrickRulesTest {
         @Test
         fun `jester always loses unless all jesters`() {
             val playedCards = listOf(
-                alice to Card(Suit.SPECIAL, 0), // Jester
-                bob to Card(Suit.RED, 2),       // Low but beats jester
-                charlie to Card(Suit.GREEN, 1)  // Lowest non-jester
+                alice to Card(Suit.SPECIAL, 0),
+                bob to Card(Suit.RED, 2),
+                charlie to Card(Suit.GREEN, 1)
             )
 
             assertEquals(bob, TrickRules.determineTrickWinner(playedCards, trumpSuit = null))
@@ -85,8 +86,8 @@ class TrickRulesTest {
         @Test
         fun `first non-jester determines lead suit`() {
             val playedCards = listOf(
-                alice to Card(Suit.SPECIAL, 0), // Jester
-                bob to Card(Suit.YELLOW, 5),    // First non-jester
+                alice to Card(Suit.SPECIAL, 0),
+                bob to Card(Suit.YELLOW, 5),
                 charlie to Card(Suit.YELLOW, 7)
             )
 
@@ -96,8 +97,8 @@ class TrickRulesTest {
         @Test
         fun `wizard as first card means no lead suit`() {
             val playedCards = listOf(
-                alice to Card(Suit.SPECIAL, 14), // Wizard
-                bob to Card(Suit.RED, 10),       // Would be lead suit if not for wizard
+                alice to Card(Suit.SPECIAL, 14),
+                bob to Card(Suit.RED, 10),
                 charlie to Card(Suit.GREEN, 7)
             )
 
@@ -110,9 +111,9 @@ class TrickRulesTest {
         @Test
         fun `higher trump beats lower trump`() {
             val playedCards = listOf(
-                alice to Card(Suit.BLUE, 5),  // Trump
-                bob to Card(Suit.BLUE, 10),   // Higher trump
-                charlie to Card(Suit.RED, 13) // High non-trump
+                alice to Card(Suit.BLUE, 5),
+                bob to Card(Suit.BLUE, 10),
+                charlie to Card(Suit.RED, 13)
             )
 
             assertEquals(bob, TrickRules.determineTrickWinner(playedCards, trumpSuit = Suit.BLUE))
@@ -121,8 +122,8 @@ class TrickRulesTest {
         @Test
         fun `trump beats lead suit even when lower value`() {
             val playedCards = listOf(
-                alice to Card(Suit.RED, 13), // Highest lead suit
-                bob to Card(Suit.BLUE, 1),   // Lowest trump
+                alice to Card(Suit.RED, 13),
+                bob to Card(Suit.BLUE, 1),
                 charlie to Card(Suit.RED, 10)
             )
 

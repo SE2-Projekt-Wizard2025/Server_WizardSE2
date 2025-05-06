@@ -8,7 +8,7 @@ class Deck {
     }
 
     private fun initializeDeck() {
-        // Standardkarten (1-13 in jeder Farbe)
+        // Standard Karten (1-13 in jeder Farbe)
         Suit.values().filter { it != Suit.SPECIAL }.forEach { suit ->
             (1..13).forEach { value ->
                 cards.add(Card(suit, value))
@@ -21,6 +21,7 @@ class Deck {
             cards.add(Card(Suit.SPECIAL, 0))  // Jester
         }
     }
+
 
     fun shuffle() {
         cards.shuffle()

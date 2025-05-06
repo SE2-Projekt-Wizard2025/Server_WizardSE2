@@ -20,9 +20,9 @@ object TrickRules {
                 CardType.WIZARD -> Int.MAX_VALUE // Wizard gewinnt immer
                 CardType.JESTER -> Int.MIN_VALUE // Jester verliert immer
                 else -> when {
-                    card.suit == trumpSuit -> 1000 + card.value // Trumpf hat höchste Priorität
-                    card.suit == leadSuit -> 100 + card.value // Lead-Farbe kommt danach
-                    else -> 0 // Andere Farben zählen nicht
+                    card.suit == trumpSuit -> 1000 + card.value
+                    card.suit == leadSuit -> 100 + card.value
+                    else -> 0
                 }
             }
             player to score

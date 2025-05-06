@@ -10,7 +10,7 @@ enum class CardType {
 
 data class Card(
     val suit: Suit,
-    val value: Int, //1- 13 für Zahlenkarten, 0 für Jester, 14 für Wizard
+    val value: Int, // 1- 13 für Zahlenkarten, 0 für den Jester, 14 fürn Wizard
     val type: CardType = when {
         value == 0 -> CardType.JESTER
         value == 14 -> CardType.WIZARD

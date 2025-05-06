@@ -19,7 +19,7 @@ class BiddingRulesTest {
 
             BiddingRules.calculateScores(listOf(player))
 
-            assertEquals(50 + 20 + (10 * 3), player.score) // 50 + 50 = 100
+            assertEquals(50 + 20 + (10 * 3), player.score)
         }
 
         @Test
@@ -32,7 +32,7 @@ class BiddingRulesTest {
 
             BiddingRules.calculateScores(listOf(player))
 
-            assertEquals(30 - (10 * 2), player.score) // 30 - 20 = 10
+            assertEquals(30 - (10 * 2), player.score)
         }
 
         @Test
@@ -58,7 +58,7 @@ class BiddingRulesTest {
 
             BiddingRules.calculateScores(listOf(player))
 
-            assertEquals(15 - 10, player.score) // 15 - 10 = 5
+            assertEquals(15 - 10, player.score)
         }
 
         @Test
@@ -71,9 +71,9 @@ class BiddingRulesTest {
 
             BiddingRules.calculateScores(players)
 
-            assertEquals(40, players[0].score)   // 20 + 20
-            assertEquals(10 - 20, players[1].score) // -10
-            assertEquals(5 + 20, players[2].score)  // 25
+            assertEquals(40, players[0].score)
+            assertEquals(10 - 20, players[1].score)
+            assertEquals(5 + 20, players[2].score)
         }
 
         @Test
@@ -87,15 +87,15 @@ class BiddingRulesTest {
             BiddingRules.calculateScores(listOf(player))
             BiddingRules.calculateScores(listOf(player))
 
-            assertEquals(100 + 30 + 30, player.score) // 100 + 30 + 30 = 160
+            assertEquals(100 + 30 + 30, player.score)
         }
 
         @Test
         fun `exact negative difference calculation`() {
             val testCases = listOf(
-                Triple(5, 2, -30),  // bid 5, won 2 → diff 3 → -30
-                Triple(1, 4, -30),   // bid 1, won 4 → diff 3 → -30
-                Triple(3, 3, 50)    // bid 3, won 3 → 20 + 30 = 50
+                Triple(5, 2, -30),  // dif(5 und 2) -> -30
+                Triple(1, 4, -30),
+                Triple(3, 3, 50)
             )
 
             testCases.forEach { (bid, won, expected) ->

@@ -4,10 +4,16 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5a88b75e-a340-4aab-ba6f-5de17d4e4b2e" name="Changes" comment="test: Unit Tests für das Deck hinzugefügt">
-      <change afterPath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/cards/CardTest.kt" afterDir="false" />
+    <list default="true" id="5a88b75e-a340-4aab-ba6f-5de17d4e4b2e" name="Changes" comment="test: Unit Tests für die Karte hinzugefügt">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/cards/Card.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/cards/Card.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/cards/Deck.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/cards/Deck.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/game/GameManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/game/GameManager.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/rules/TrickRules.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/rules/TrickRules.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/cards/DeckTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/cards/DeckTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/game/GameManagerTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/game/GameManagerTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/rules/BiddingRulesTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/rules/BiddingRulesTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/rules/TrickRulesTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/rules/TrickRulesTest.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -257,7 +263,7 @@
       <workItem from="1746354716784" duration="433000" />
       <workItem from="1746355173443" duration="523000" />
       <workItem from="1746384385198" duration="7830000" />
-      <workItem from="1746543098835" duration="1441000" />
+      <workItem from="1746543098835" duration="2536000" />
     </task>
     <task id="LOCAL-00001" summary="Merge branch 'main' into feature/11-setup-basic-structure">
       <option name="closed" value="true" />
@@ -323,7 +329,23 @@
       <option name="project" value="LOCAL" />
       <updated>1746544546799</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="fix: pom.xml updated">
+      <option name="closed" value="true" />
+      <created>1746544592060</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1746544592060</updated>
+    </task>
+    <task id="LOCAL-00010" summary="test: Unit Tests für die Karte hinzugefügt">
+      <option name="closed" value="true" />
+      <created>1746544794352</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1746544794352</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -340,7 +362,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="main" />
+                        <option value="feat/server-kotlin-deck-classes" />
                       </list>
                     </value>
                   </entry>
@@ -365,7 +387,9 @@
     <MESSAGE value="fix: Test ausgebessert für Spezialfall" />
     <MESSAGE value="test: Unit Tests für den GameManager hinzugefügt" />
     <MESSAGE value="test: Unit Tests für das Deck hinzugefügt" />
-    <option name="LAST_COMMIT_MESSAGE" value="test: Unit Tests für das Deck hinzugefügt" />
+    <MESSAGE value="fix: pom.xml updated" />
+    <MESSAGE value="test: Unit Tests für die Karte hinzugefügt" />
+    <option name="LAST_COMMIT_MESSAGE" value="test: Unit Tests für die Karte hinzugefügt" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

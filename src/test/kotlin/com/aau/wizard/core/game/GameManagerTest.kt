@@ -1,5 +1,4 @@
 package com.aau.wizard.core.game
-//der pfad com.aau.wizard.core.logic müsste eigentlich com.aau.wizard.core.game lauten - funktioniert aus irgendeinem grund aber nicht...
 
 import com.aau.wizard.core.cards.*
 import com.aau.wizard.core.model.PlayerState
@@ -27,7 +26,7 @@ class GameManagerTest {
 
     @Test
     fun `player must follow suit if able`() {
-        // Setup: Alice spielt RED, Bob hat RED und GREEN
+
         alice.hand = mutableListOf(Card(Suit.RED, 5))
         bob.hand = mutableListOf(Card(Suit.RED, 10), Card(Suit.GREEN, 9))
 
@@ -96,7 +95,7 @@ class GameManagerTest {
 
         @Test
         fun `startRound sets trump card when available`() {
-            // Save original deck state
+
             val originalDeckSize = manager.deck.size()
 
             manager.startRound(1)
@@ -108,7 +107,7 @@ class GameManagerTest {
 
         @Test
         fun `startRound sets no trump in last round when deck empties during dealing`() {
-            // Calculate cards needed for last round
+
             val cardsInDeck = manager.deck.size()
             val playersCount = manager.players.size
             val lastRoundNumber = cardsInDeck / playersCount
@@ -122,7 +121,6 @@ class GameManagerTest {
 
         @Test
         fun `startRound resets game state`() {
-            // Simulate existing game state
             manager.currentTrickNumber = 5
             manager.playedCards.add(alice to Card(Suit.RED, 1)) // Use player-card pair
 

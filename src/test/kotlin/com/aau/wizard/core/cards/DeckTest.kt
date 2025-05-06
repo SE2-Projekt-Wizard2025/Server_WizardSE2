@@ -72,7 +72,6 @@ class DeckTest {
             val firstCard = deck.draw(1).first()
             val secondCard = deck.draw(1).first()
 
-            // Verify they're different cards (unless deck has duplicates, which it shouldn't)
             assertNotEquals(firstCard, secondCard)
         }
 
