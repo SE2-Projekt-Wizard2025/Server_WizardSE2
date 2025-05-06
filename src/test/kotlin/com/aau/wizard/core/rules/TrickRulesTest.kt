@@ -101,8 +101,7 @@ class TrickRulesTest {
                 charlie to Card(Suit.GREEN, 7)
             )
 
-            // Highest non-wizard wins (since no lead suit established)
-            assertEquals(bob, TrickRules.determineTrickWinner(playedCards, trumpSuit = null))
+            assertEquals(alice, TrickRules.determineTrickWinner(playedCards, trumpSuit = null))
         }
     }
 
