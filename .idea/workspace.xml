@@ -1,14 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="AutoImportSettings">
-    <option name="autoReloadType" value="SELECTIVE" />
+    <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5a88b75e-a340-4aab-ba6f-5de17d4e4b2e" name="Changes" comment="Sonar + Jacoco Setup" />
+    <list default="true" id="5a88b75e-a340-4aab-ba6f-5de17d4e4b2e" name="Changes" comment="test: Unit Tests für die Karte hinzugefügt">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/cards/Card.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/cards/Card.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/cards/Deck.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/cards/Deck.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/game/GameManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/game/GameManager.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/rules/TrickRules.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/rules/TrickRules.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/cards/DeckTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/cards/DeckTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/game/GameManagerTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/game/GameManagerTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/rules/BiddingRulesTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/rules/BiddingRulesTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/rules/TrickRulesTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/rules/TrickRulesTest.kt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
   </component>
   <component name="CoverageOptionsProvider">
     <option name="myAddOrReplace" value="0" />
@@ -19,13 +32,14 @@
         <option value="Interface" />
         <option value="Enum" />
         <option value="Class" />
+        <option value="Kotlin Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="feature/11-setup-basic-structure" />
+        <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -43,14 +57,16 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/SE2-Projekt-Wizard2025/Server_WizardSE2.git&quot;,
-    &quot;accountId&quot;: &quot;2d713f3f-662e-4fae-9652-032ac33158b5&quot;
+    &quot;accountId&quot;: &quot;869532ff-2234-41a8-b9c1-c6981078bba6&quot;
   }
 }</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
 }</component>
   <component name="ProjectId" id="2umBGgLxpumjbCwhiIIaAhUhBD7" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -58,8 +74,16 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Application.WizardApplication.executor": "Run",
+    "JUnit.BiddingRulesTest$CalculateScoresTests.exact negative difference calculation.executor": "Run",
+    "JUnit.BiddingRulesTest.executor": "Run",
     "JUnit.CardDtoTest.executor": "Run",
     "JUnit.CardTest.executor": "Run",
+    "JUnit.DeckTest.executor": "Run",
+    "JUnit.GameManagerTest (1).executor": "Run",
+    "JUnit.GameManagerTest$StartRoundTests.startRound handles no trump card when deck is empty.executor": "Debug",
+    "JUnit.GameManagerTest$StartRoundTests.startRound sets no trump in last round when deck empties during dealing.executor": "Run",
+    "JUnit.GameManagerTest.executor": "Run",
+    "JUnit.GameManagerTest.player must follow suit if able.executor": "Run",
     "JUnit.GameRequestTest.executor": "Run",
     "JUnit.GameResponseTest.executor": "Run",
     "JUnit.GameServiceImplTest.executor": "Run",
@@ -70,17 +94,35 @@
     "JUnit.GameWebSocketIntegrationTest.executor": "Run",
     "JUnit.GameWebSocketIntegrationTest.testJoinGameWebSocketEndpoint.executor": "Run",
     "JUnit.PlayerTest.executor": "Run",
+    "JUnit.TrickRulesTest$LeadSuitTests.wizard as first card means no lead suit.executor": "Run",
+    "JUnit.TrickRulesTest.executor": "Debug",
     "JUnit.WebSocketIntegrationTest.executor": "Run",
     "JUnit.controller in Server_WizardSE2.executor": "Coverage",
     "JUnit.java in Server_WizardSE2.executor": "Coverage",
+    "Kotlin.GameSimulationKt.executor": "Run",
+    "Kotlin.QuicktestKt.executor": "Run",
+    "Maven.Server_WizardSE2 [test].executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "feat/server-kotlin-deck-classes",
+    "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/Anwender/Documents/GitHub/Server_WizardSE2",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
     "project.structure.last.edited": "SDKs",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "reference.settings.project.maven.repository.indices"
+    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
+    "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -93,82 +135,116 @@
       <recent name="$PROJECT_DIR$/.idea" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.WizardApplication">
-    <configuration name="WizardApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.aau.wizard.WizardApplication" />
+  <component name="RunManager" selected="JUnit.TrickRulesTest$LeadSuitTests.wizard as first card means no lead suit">
+    <configuration name="BiddingRulesTest$CalculateScoresTests.exact negative difference calculation" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="Server_WizardSE2" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.aau.wizard.*" />
+          <option name="PATTERN" value="com.aau.wizard.core.rules.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
+      <option name="PACKAGE_NAME" value="com.aau.wizard.core.rules.BiddingRulesTest" />
+      <option name="MAIN_CLASS_NAME" value="com.aau.wizard.core.rules.BiddingRulesTest$CalculateScoresTests" />
+      <option name="METHOD_NAME" value="exact negative difference calculation" />
+      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="CardTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="BiddingRulesTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="Server_WizardSE2" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="model.*" />
+          <option name="PATTERN" value="com.aau.wizard.core.rules.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="model" />
-      <option name="MAIN_CLASS_NAME" value="model.CardTest" />
+      <option name="PACKAGE_NAME" value="com.aau.wizard.core.rules" />
+      <option name="MAIN_CLASS_NAME" value="com.aau.wizard.core.rules.BiddingRulesTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="GameResponseTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="GameManagerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="Server_WizardSE2" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="dto.response.*" />
+          <option name="PATTERN" value="com.aau.wizard.core.game.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="dto.response" />
-      <option name="MAIN_CLASS_NAME" value="dto.response.GameResponseTest" />
+      <option name="PACKAGE_NAME" value="com.aau.wizard.core.game" />
+      <option name="MAIN_CLASS_NAME" value="com.aau.wizard.core.game.GameManagerTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="GameTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="TrickRulesTest$LeadSuitTests.wizard as first card means no lead suit" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="Server_WizardSE2" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="model.*" />
+          <option name="PATTERN" value="com.aau.wizard.core.rules.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="model" />
-      <option name="MAIN_CLASS_NAME" value="model.GameTest" />
+      <option name="PACKAGE_NAME" value="com.aau.wizard.core.rules.TrickRulesTest" />
+      <option name="MAIN_CLASS_NAME" value="com.aau.wizard.core.rules.TrickRulesTest$LeadSuitTests" />
+      <option name="METHOD_NAME" value="wizard as first card means no lead suit" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TrickRulesTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Server_WizardSE2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.aau.wizard.core.rules.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.aau.wizard.core.rules" />
+      <option name="MAIN_CLASS_NAME" value="com.aau.wizard.core.rules.TrickRulesTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="java in Server_WizardSE2" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="WizardApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="Server_WizardSE2" />
-      <option name="TEST_OBJECT" value="directory" />
-      <dir value="$PROJECT_DIR$/src/test/java" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.aau.wizard.WizardApplication" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <list>
+      <item itemvalue="JUnit.GameManagerTest" />
+      <item itemvalue="JUnit.BiddingRulesTest" />
+      <item itemvalue="JUnit.BiddingRulesTest$CalculateScoresTests.exact negative difference calculation" />
+      <item itemvalue="JUnit.TrickRulesTest" />
+      <item itemvalue="JUnit.TrickRulesTest$LeadSuitTests.wizard as first card means no lead suit" />
+      <item itemvalue="Spring Boot.WizardApplication" />
+    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.WizardApplication" />
-        <item itemvalue="JUnit.java in Server_WizardSE2" />
-        <item itemvalue="JUnit.GameTest" />
-        <item itemvalue="JUnit.GameResponseTest" />
-        <item itemvalue="JUnit.CardTest" />
+        <item itemvalue="JUnit.TrickRulesTest$LeadSuitTests.wizard as first card means no lead suit" />
+        <item itemvalue="JUnit.TrickRulesTest" />
+        <item itemvalue="JUnit.GameManagerTest" />
+        <item itemvalue="JUnit.BiddingRulesTest$CalculateScoresTests.exact negative difference calculation" />
+        <item itemvalue="JUnit.BiddingRulesTest" />
       </list>
     </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.23774.435" />
+        <option value="bundled-js-predefined-d6986cc7102b-f27c65a3e318-JavaScript-IU-251.23774.435" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -178,6 +254,16 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1742843779021</updated>
+      <workItem from="1746215574161" duration="2308000" />
+      <workItem from="1746217891986" duration="37000" />
+      <workItem from="1746217935600" duration="1696000" />
+      <workItem from="1746219655279" duration="1417000" />
+      <workItem from="1746289305097" duration="7554000" />
+      <workItem from="1746349365981" duration="5288000" />
+      <workItem from="1746354716784" duration="433000" />
+      <workItem from="1746355173443" duration="523000" />
+      <workItem from="1746384385198" duration="7830000" />
+      <workItem from="1746543098835" duration="2536000" />
     </task>
     <task id="LOCAL-00001" summary="Merge branch 'main' into feature/11-setup-basic-structure">
       <option name="closed" value="true" />
@@ -187,8 +273,83 @@
       <option name="project" value="LOCAL" />
       <updated>1744724487273</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="feat/fix: Grundlegende Probleme bzgl verwendung von Kotlin behoben (pom.xml ...)">
+      <option name="closed" value="true" />
+      <created>1746220711966</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1746220711966</updated>
+    </task>
+    <task id="LOCAL-00003" summary="feat: Klassen für die Karten / Deck hinzugefügt">
+      <option name="closed" value="true" />
+      <created>1746220809412</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1746220809412</updated>
+    </task>
+    <task id="LOCAL-00004" summary="test: Unit Tests für die Regel-Klassen hinzugefügt">
+      <option name="closed" value="true" />
+      <created>1746543206923</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1746543206923</updated>
+    </task>
+    <task id="LOCAL-00005" summary="fix: Spezialfall für Gamemanager ausgebessert">
+      <option name="closed" value="true" />
+      <created>1746543266987</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1746543266987</updated>
+    </task>
+    <task id="LOCAL-00006" summary="fix: Test ausgebessert für Spezialfall">
+      <option name="closed" value="true" />
+      <created>1746544506865</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1746544506865</updated>
+    </task>
+    <task id="LOCAL-00007" summary="test: Unit Tests für den GameManager hinzugefügt">
+      <option name="closed" value="true" />
+      <created>1746544534075</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1746544534075</updated>
+    </task>
+    <task id="LOCAL-00008" summary="test: Unit Tests für das Deck hinzugefügt">
+      <option name="closed" value="true" />
+      <created>1746544546799</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1746544546799</updated>
+    </task>
+    <task id="LOCAL-00009" summary="fix: pom.xml updated">
+      <option name="closed" value="true" />
+      <created>1746544592060</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1746544592060</updated>
+    </task>
+    <task id="LOCAL-00010" summary="test: Unit Tests für die Karte hinzugefügt">
+      <option name="closed" value="true" />
+      <created>1746544794352</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1746544794352</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -201,7 +362,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="main" />
+                        <option value="feat/server-kotlin-deck-classes" />
                       </list>
                     </value>
                   </entry>
@@ -214,16 +375,41 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/.." />
+    </ignored-roots>
     <MESSAGE value="Sonar + Jacoco Setup" />
     <MESSAGE value="Merge branch 'main' into feature/11-setup-basic-structure" />
-    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'main' into feature/11-setup-basic-structure" />
+    <MESSAGE value="feat/fix: Grundlegende Probleme bzgl verwendung von Kotlin behoben (pom.xml ...)" />
+    <MESSAGE value="feat: Klassen für die Karten / Deck hinzugefügt" />
+    <MESSAGE value="test: Unit Tests für die Regel-Klassen hinzugefügt" />
+    <MESSAGE value="fix: Spezialfall für Gamemanager ausgebessert" />
+    <MESSAGE value="fix: Test ausgebessert für Spezialfall" />
+    <MESSAGE value="test: Unit Tests für den GameManager hinzugefügt" />
+    <MESSAGE value="test: Unit Tests für das Deck hinzugefügt" />
+    <MESSAGE value="fix: pom.xml updated" />
+    <MESSAGE value="test: Unit Tests für die Karte hinzugefügt" />
+    <option name="LAST_COMMIT_MESSAGE" value="test: Unit Tests für die Karte hinzugefügt" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.lang.IllegalStateException" package="java.lang" />
+          <option name="timeStamp" value="4" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Server_WizardSE2$java_in_Server_WizardSE2.ic" NAME="java in Server_WizardSE2 Coverage Results" MODIFIED="1745059256329" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
-    <SUITE FILE_PATH="coverage/Server_WizardSE2$controller_in_Server_WizardSE2.ic" NAME="controller in Server_WizardSE2 Coverage Results" MODIFIED="1744899555261" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
+    <SUITE FILE_PATH="coverage/Server_WizardSE2$GameManagerTest.ic" NAME="GameManagerTest Coverage Results" MODIFIED="1746353141274" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.aau.wizard.core.logic.*</FILTER>
+    </SUITE>
     <SUITE FILE_PATH="coverage/Server_WizardSE2$GameServiceImplTest.ic" NAME="GameServiceImplTest Coverage Results" MODIFIED="1744900486640" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
       <FILTER>service.*</FILTER>
     </SUITE>
+    <SUITE FILE_PATH="coverage/Server_WizardSE2$controller_in_Server_WizardSE2.ic" NAME="controller in Server_WizardSE2 Coverage Results" MODIFIED="1744899555261" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
     <SUITE FILE_PATH="coverage/Server_WizardSE2$GameResponseTest.ic" NAME="GameResponseTest Coverage Results" MODIFIED="1744988526230" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
       <FILTER>dto.response.*</FILTER>
     </SUITE>
