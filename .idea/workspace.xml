@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5a88b75e-a340-4aab-ba6f-5de17d4e4b2e" name="Changes" comment="Sonar + Jacoco Setup" />
+    <list default="true" id="5a88b75e-a340-4aab-ba6f-5de17d4e4b2e" name="Changes" comment="Game, GameService, GameServiceImpl, GameWebSocketController erweitert um Methoden um Spiel starten zu können bzw. Abfrage ob Spiel gestartet werden kann, Spieler &gt;= 3">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/config/WebSocketConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/config/WebSocketConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/controller/GameWebSocketController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/controller/GameWebSocketController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/Game.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/controller/unit/GameWebSocketControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/controller/unit/GameWebSocketControllerTest.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -46,6 +53,9 @@
     &quot;accountId&quot;: &quot;2d713f3f-662e-4fae-9652-032ac33158b5&quot;
   }
 }</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
 }</component>
@@ -66,6 +76,8 @@
     "JUnit.GameTest.executor": "Run",
     "JUnit.GameWebSocketControllerTest (1).executor": "Run",
     "JUnit.GameWebSocketControllerTest.executor": "Run",
+    "JUnit.GameWebSocketControllerTest.testJoinGame.executor": "Run",
+    "JUnit.GameWebSocketControllerTest.testJoinGameWithNullResponse.executor": "Run",
     "JUnit.GameWebSocketIntegrationTest (1).executor": "Run",
     "JUnit.GameWebSocketIntegrationTest.executor": "Run",
     "JUnit.GameWebSocketIntegrationTest.testJoinGameWebSocketEndpoint.executor": "Run",
@@ -75,7 +87,8 @@
     "JUnit.java in Server_WizardSE2.executor": "Coverage",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
+    "SONARLINT_PRECOMMIT_ANALYSIS": "true",
+    "git-widget-placeholder": "feature-12-spieler-setup",
     "kotlin-language-version-configured": "true",
     "project.structure.last.edited": "SDKs",
     "project.structure.proportion": "0.0",
@@ -107,47 +120,49 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="CardTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="GameWebSocketControllerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="Server_WizardSE2" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="model.*" />
+          <option name="PATTERN" value="controller.unit.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="model" />
-      <option name="MAIN_CLASS_NAME" value="model.CardTest" />
+      <option name="PACKAGE_NAME" value="controller.unit" />
+      <option name="MAIN_CLASS_NAME" value="controller.unit.GameWebSocketControllerTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="GameResponseTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="GameWebSocketControllerTest.testJoinGame" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="Server_WizardSE2" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="dto.response.*" />
+          <option name="PATTERN" value="controller.unit.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="dto.response" />
-      <option name="MAIN_CLASS_NAME" value="dto.response.GameResponseTest" />
-      <option name="TEST_OBJECT" value="class" />
+      <option name="PACKAGE_NAME" value="controller.unit" />
+      <option name="MAIN_CLASS_NAME" value="controller.unit.GameWebSocketControllerTest" />
+      <option name="METHOD_NAME" value="testJoinGame" />
+      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="GameTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="GameWebSocketControllerTest.testJoinGameWithNullResponse" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="Server_WizardSE2" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="model.*" />
+          <option name="PATTERN" value="controller.unit.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="model" />
-      <option name="MAIN_CLASS_NAME" value="model.GameTest" />
-      <option name="TEST_OBJECT" value="class" />
+      <option name="PACKAGE_NAME" value="controller.unit" />
+      <option name="MAIN_CLASS_NAME" value="controller.unit.GameWebSocketControllerTest" />
+      <option name="METHOD_NAME" value="testJoinGameWithNullResponse" />
+      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -163,10 +178,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Application.WizardApplication" />
+        <item itemvalue="JUnit.GameWebSocketControllerTest.testJoinGameWithNullResponse" />
+        <item itemvalue="JUnit.GameWebSocketControllerTest" />
+        <item itemvalue="JUnit.GameWebSocketControllerTest.testJoinGame" />
         <item itemvalue="JUnit.java in Server_WizardSE2" />
-        <item itemvalue="JUnit.GameTest" />
-        <item itemvalue="JUnit.GameResponseTest" />
-        <item itemvalue="JUnit.CardTest" />
       </list>
     </recent_temporary>
   </component>
@@ -187,10 +202,56 @@
       <option name="project" value="LOCAL" />
       <updated>1744724487273</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Player Klasse erweitert, dass Stichansage und gewinn gespeichert werden beim Spieler">
+      <option name="closed" value="true" />
+      <created>1746515810409</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1746515810409</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Game, GameService, GameServiceImpl, GameWebSocketController erweitert um Methoden um Spiel starten zu können bzw. Abfrage ob Spiel gestartet werden kann, Spieler &gt;= 3">
+      <option name="closed" value="true" />
+      <created>1746522602432</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1746522602432</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="origin/12-spieler-setup" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="feature-12-spieler-setup" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="origin/main" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="main" />
+                </option>
+              </RecentGroup>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
     <option name="TAB_STATES">
       <map>
         <entry key="MAIN">
@@ -201,7 +262,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="main" />
+                        <option value="origin/12-spieler-setup" />
                       </list>
                     </value>
                   </entry>
@@ -216,7 +277,9 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Sonar + Jacoco Setup" />
     <MESSAGE value="Merge branch 'main' into feature/11-setup-basic-structure" />
-    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'main' into feature/11-setup-basic-structure" />
+    <MESSAGE value="Player Klasse erweitert, dass Stichansage und gewinn gespeichert werden beim Spieler" />
+    <MESSAGE value="Game, GameService, GameServiceImpl, GameWebSocketController erweitert um Methoden um Spiel starten zu können bzw. Abfrage ob Spiel gestartet werden kann, Spieler &gt;= 3" />
+    <option name="LAST_COMMIT_MESSAGE" value="Game, GameService, GameServiceImpl, GameWebSocketController erweitert um Methoden um Spiel starten zu können bzw. Abfrage ob Spiel gestartet werden kann, Spieler &gt;= 3" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Server_WizardSE2$java_in_Server_WizardSE2.ic" NAME="java in Server_WizardSE2 Coverage Results" MODIFIED="1745059256329" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />

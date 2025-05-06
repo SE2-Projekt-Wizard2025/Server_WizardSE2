@@ -6,6 +6,7 @@ import com.aau.wizard.service.interfaces.GameService;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 /**
@@ -16,14 +17,15 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class GameWebSocketController {
     private final GameService gameService;
-
+    private final SimpMessagingTemplate messagingTemplate;
     /**
      * Injects the game service to delegate game logic operations.
      *
      * @param gameService the service handling core game logic
      */
-    public GameWebSocketController(GameService gameService) {
+    public GameWebSocketController(GameService gameService, SimpMessagingTemplate messagingTemplate) {
         this.gameService = gameService;
+        this.messagingTemplate = messagingTemplate;
     }
 
     /**
@@ -36,9 +38,12 @@ public class GameWebSocketController {
      * @return the updated game state as a response
      */
     @MessageMapping("/game/join")
-    @SendTo("/topic/game")
-    public GameResponse joinGame(GameRequest gameRequest) {
-        return gameService.joinGame(gameRequest);
+    public void joinGame(GameRequest gameRequest) {
+        System.out.println("Received join request from: " + gameRequest.getPlayerName() +
+                " (ID: " + gameRequest.getPlayerId() + ") for Game: " + gameRequest.getGameId());
+
+        GameResponse response = gameService.joinGame(gameRequest);
+        messagingTemplate.convertAndSend("/topic/game", response);
     }
 
     @MessageMapping("/game/start")

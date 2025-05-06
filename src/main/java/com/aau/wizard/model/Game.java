@@ -70,7 +70,7 @@ public class Game {
     }
     //prüfen ob Spiel schon gestartet werden kann (mind. 3 Spieler)
     public boolean canStartGame() {
-        return status == GameStatus.LOBBY && players.size() >= 3;
+        return status == GameStatus.LOBBY && players.size() >= 1;
     }
 
     public boolean startGame() {

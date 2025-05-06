@@ -7,11 +7,17 @@ import com.aau.wizard.model.enums.GameStatus;
 import com.aau.wizard.service.interfaces.GameService;
 import static com.aau.wizard.testutil.TestConstants.*;
 import static com.aau.wizard.testutil.TestDataFactory.*;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -22,6 +28,8 @@ class GameWebSocketControllerTest {
 
     @Mock
     private GameService gameService;
+    @Mock
+    private SimpMessagingTemplate messagingTemplate;
 
     @InjectMocks
     private GameWebSocketController gameWebSocketController;
@@ -35,10 +43,11 @@ class GameWebSocketControllerTest {
         GameResponse expectedResponse = createDefaultGameResponse(createDefaultPlayerDto());
 
         when(gameService.joinGame(any(GameRequest.class))).thenReturn(expectedResponse);
-        GameResponse response = gameWebSocketController.joinGame(request);
 
-        assertBasicJoinResponse(response);
-        verifyJoinCalledOnce();
+        gameWebSocketController.joinGame(request);
+
+        verify(gameService, times(1)).joinGame(any(GameRequest.class));
+        verify(messagingTemplate, times(1)).convertAndSend(eq("/topic/game"), eq(expectedResponse));
     }
 
     /**
@@ -49,10 +58,14 @@ class GameWebSocketControllerTest {
         GameRequest request = createDefaultGameRequest();
 
         when(gameService.joinGame(any(GameRequest.class))).thenReturn(null);
-        GameResponse response = gameWebSocketController.joinGame(request);
 
-        assertNull(response);
-        verifyJoinCalledOnce();
+        gameWebSocketController.joinGame(request);
+
+        verify(gameService, times(1)).joinGame(any(GameRequest.class));
+        ArgumentCaptor<Object> messageCaptor = ArgumentCaptor.forClass(Object.class);
+        verify(messagingTemplate).convertAndSend(eq("/topic/game"), messageCaptor.capture());
+
+        assertNull(messageCaptor.getValue());
     }
 
     /**
