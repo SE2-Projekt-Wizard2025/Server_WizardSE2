@@ -104,6 +104,32 @@ class TrickRulesTest {
 
             assertEquals(alice, TrickRules.determineTrickWinner(playedCards, trumpSuit = null))
         }
+
+        @Test
+        fun `player must follow lead suit if possible`() {
+            val player = PlayerState(
+                playerId = "player1",
+                name = "Alice",
+                hand = mutableListOf(
+                    Card(Suit.RED, 10),
+                    Card(Suit.GREEN, 7)
+                )
+            )
+
+            val currentTrick = listOf(
+                Pair(PlayerState("player2", "Bob", mutableListOf()), Card(Suit.RED, 5))
+            )
+
+            assertFalse(
+                TrickRules.isValidPlay(player, Card(Suit.GREEN, 7), currentTrick),
+                "Player should not be allowed to play GREEN when holding RED"
+            )
+
+            assertTrue(
+                TrickRules.isValidPlay(player, Card(Suit.RED, 10), currentTrick),
+                "Player should be allowed to play RED (lead suit)"
+            )
+        }
     }
 
     @Nested
