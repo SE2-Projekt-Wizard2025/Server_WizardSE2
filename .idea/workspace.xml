@@ -4,15 +4,10 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5a88b75e-a340-4aab-ba6f-5de17d4e4b2e" name="Changes" comment="test: Unit Tests für die Karte hinzugefügt">
+    <list default="true" id="5a88b75e-a340-4aab-ba6f-5de17d4e4b2e" name="Changes" comment="push">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/cards/Card.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/cards/Card.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/cards/Deck.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/cards/Deck.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/game/GameManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/game/GameManager.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/rules/TrickRules.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/rules/TrickRules.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/cards/DeckTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/cards/DeckTest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/game/GameManagerTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/game/GameManagerTest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/rules/BiddingRulesTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/rules/BiddingRulesTest.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/rules/TrickRulesTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/rules/TrickRulesTest.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -94,6 +89,7 @@
     "JUnit.GameWebSocketIntegrationTest.executor": "Run",
     "JUnit.GameWebSocketIntegrationTest.testJoinGameWebSocketEndpoint.executor": "Run",
     "JUnit.PlayerTest.executor": "Run",
+    "JUnit.TrickRulesTest$LeadSuitTests.player must follow lead suit if possible.executor": "Debug",
     "JUnit.TrickRulesTest$LeadSuitTests.wizard as first card means no lead suit.executor": "Run",
     "JUnit.TrickRulesTest.executor": "Debug",
     "JUnit.WebSocketIntegrationTest.executor": "Run",
@@ -135,7 +131,7 @@
       <recent name="$PROJECT_DIR$/.idea" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.TrickRulesTest$LeadSuitTests.wizard as first card means no lead suit">
+  <component name="RunManager" selected="JUnit.TrickRulesTest$LeadSuitTests.player must follow lead suit if possible">
     <configuration name="BiddingRulesTest$CalculateScoresTests.exact negative difference calculation" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="Server_WizardSE2" />
       <extension name="coverage">
@@ -152,21 +148,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="BiddingRulesTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="Server_WizardSE2" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.aau.wizard.core.rules.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.aau.wizard.core.rules" />
-      <option name="MAIN_CLASS_NAME" value="com.aau.wizard.core.rules.BiddingRulesTest" />
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="GameManagerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="Server_WizardSE2" />
       <extension name="coverage">
@@ -178,6 +159,22 @@
       <option name="PACKAGE_NAME" value="com.aau.wizard.core.game" />
       <option name="MAIN_CLASS_NAME" value="com.aau.wizard.core.game.GameManagerTest" />
       <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TrickRulesTest$LeadSuitTests.player must follow lead suit if possible" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Server_WizardSE2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.aau.wizard.core.rules.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.aau.wizard.core.rules.TrickRulesTest" />
+      <option name="MAIN_CLASS_NAME" value="com.aau.wizard.core.rules.TrickRulesTest$LeadSuitTests" />
+      <option name="METHOD_NAME" value="player must follow lead suit if possible" />
+      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -221,8 +218,8 @@
       </method>
     </configuration>
     <list>
+      <item itemvalue="JUnit.TrickRulesTest$LeadSuitTests.player must follow lead suit if possible" />
       <item itemvalue="JUnit.GameManagerTest" />
-      <item itemvalue="JUnit.BiddingRulesTest" />
       <item itemvalue="JUnit.BiddingRulesTest$CalculateScoresTests.exact negative difference calculation" />
       <item itemvalue="JUnit.TrickRulesTest" />
       <item itemvalue="JUnit.TrickRulesTest$LeadSuitTests.wizard as first card means no lead suit" />
@@ -230,11 +227,11 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.TrickRulesTest$LeadSuitTests.player must follow lead suit if possible" />
         <item itemvalue="JUnit.TrickRulesTest$LeadSuitTests.wizard as first card means no lead suit" />
         <item itemvalue="JUnit.TrickRulesTest" />
         <item itemvalue="JUnit.GameManagerTest" />
         <item itemvalue="JUnit.BiddingRulesTest$CalculateScoresTests.exact negative difference calculation" />
-        <item itemvalue="JUnit.BiddingRulesTest" />
       </list>
     </recent_temporary>
   </component>
@@ -263,7 +260,9 @@
       <workItem from="1746354716784" duration="433000" />
       <workItem from="1746355173443" duration="523000" />
       <workItem from="1746384385198" duration="7830000" />
-      <workItem from="1746543098835" duration="2536000" />
+      <workItem from="1746543098835" duration="2918000" />
+      <workItem from="1746547104138" duration="264000" />
+      <workItem from="1746638548435" duration="2163000" />
     </task>
     <task id="LOCAL-00001" summary="Merge branch 'main' into feature/11-setup-basic-structure">
       <option name="closed" value="true" />
@@ -345,7 +344,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746544794352</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="docs: struktur verschönert + kommentare">
+      <option name="closed" value="true" />
+      <created>1746545702009</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1746545702009</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -389,7 +396,9 @@
     <MESSAGE value="test: Unit Tests für das Deck hinzugefügt" />
     <MESSAGE value="fix: pom.xml updated" />
     <MESSAGE value="test: Unit Tests für die Karte hinzugefügt" />
-    <option name="LAST_COMMIT_MESSAGE" value="test: Unit Tests für die Karte hinzugefügt" />
+    <MESSAGE value="docs: struktur verschönert + kommentare" />
+    <MESSAGE value="push" />
+    <option name="LAST_COMMIT_MESSAGE" value="push" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

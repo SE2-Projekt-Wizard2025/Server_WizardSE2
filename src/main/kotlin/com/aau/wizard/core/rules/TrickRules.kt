@@ -30,4 +30,13 @@ object TrickRules {
 
         return ranked.maxByOrNull { it.second }?.first ?: error("No winner determined")
     }
+
+    fun isValidPlay(player: PlayerState, card: Card, currentTrick: List<Pair<PlayerState, Card>>): Boolean {
+        if (card.type == CardType.WIZARD || card.type == CardType.JESTER) return true //die kann man immer spielen
+        if (currentTrick.isEmpty()) return true //wenn man Erster ist
+
+        val leadSuit = currentTrick.first().second.suit
+        val hasLeadSuit = player.hand.any { it.suit == leadSuit }
+        return !hasLeadSuit || card.suit == leadSuit //hat die Karte nicht, oder hat passende Farbe gewählt
+    }
 }

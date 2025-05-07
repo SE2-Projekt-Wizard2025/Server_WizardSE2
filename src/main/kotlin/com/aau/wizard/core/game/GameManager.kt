@@ -46,7 +46,7 @@ class GameManager(internal val players: List<PlayerState>) {
     fun playCard(player: PlayerState, card: Card) {
         require(player.hand.contains(card)) { "Player doesn't have that card" }
 
-        if (playedCards.isNotEmpty() && !isValidCardPlay(player, card)) {
+        if (playedCards.isNotEmpty() && !TrickRules.isValidPlay(player, card, playedCards)) {
             throw IllegalStateException("Invalid card play: $card by ${player.name}")
         }
 
@@ -54,20 +54,6 @@ class GameManager(internal val players: List<PlayerState>) {
         playedCards.add(player to card)
     }
 
-    private fun isValidCardPlay(player: PlayerState, card: Card): Boolean {
-        val leadSuit = playedCards
-            .map { it.second }
-            .firstOrNull { it.type == CardType.NUMBER }
-            ?.suit
-
-        if (card.type in listOf(CardType.WIZARD, CardType.JESTER)) return true
-
-        if (leadSuit != null && player.hand.any { it.suit == leadSuit && it.type == CardType.NUMBER }) {
-            return card.suit == leadSuit
-        }
-
-        return true
-    }
 
     fun endTrick(): PlayerState {
         require(playedCards.isNotEmpty()) { "No cards played in this trick" }
