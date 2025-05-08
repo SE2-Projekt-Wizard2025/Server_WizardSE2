@@ -1,4 +1,8 @@
-package com.aau.wizard.model;
+
+
+//Des is dei alter Code Elias ************************************************************************************************************
+
+/*package com.aau.wizard.model;
 
 import com.aau.wizard.model.enums.CardColor;
 import com.aau.wizard.model.enums.CardType;
@@ -37,5 +41,50 @@ public class Card {
 
     public void setType(CardType type) {
         this.type = type;
+    }
+}
+*/
+
+package com.aau.wizard.model;
+
+public class Card {
+    private final Suit suit;
+    private final int value;
+    private final CardType type;
+
+    public Card(Suit suit, int value) {
+        this.suit = suit;
+        this.value = value;
+        if (value == 0) {
+            this.type = CardType.JESTER;
+        } else if (value == 14) {
+            this.type = CardType.WIZARD;
+        } else {
+            this.type = CardType.NUMBER;
+        }
+    }
+
+    public Suit getSuit() {
+        return suit;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public CardType getType() {
+        return type;
+    }
+
+    @Override
+    public String toString() {
+        switch (type) {
+            case WIZARD:
+                return "Wizard (" + suit.name().toLowerCase() + ")";
+            case JESTER:
+                return "Jester (" + suit.name().toLowerCase() + ")";
+            default:
+                return value + " of " + suit.name().toLowerCase();
+        }
     }
 }

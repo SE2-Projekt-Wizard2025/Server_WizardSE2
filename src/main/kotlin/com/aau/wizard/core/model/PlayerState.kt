@@ -1,4 +1,4 @@
-package com.aau.wizard.core.model
+/*package com.aau.wizard.core.model
 
 import com.aau.wizard.core.cards.Card
 
@@ -10,3 +10,4 @@ data class PlayerState(
     var tricksWon: Int = 0,
     var score: Int = 0
 )
+*/

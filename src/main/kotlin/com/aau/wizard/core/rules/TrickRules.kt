@@ -1,4 +1,4 @@
-package com.aau.wizard.core.rules
+/*package com.aau.wizard.core.rules
 
 import com.aau.wizard.core.cards.*
 import com.aau.wizard.core.model.PlayerState
@@ -40,3 +40,4 @@ object TrickRules {
         return !hasLeadSuit || card.suit == leadSuit //hat die Karte nicht, oder hat passende Farbe gewählt
     }
 }
+*/

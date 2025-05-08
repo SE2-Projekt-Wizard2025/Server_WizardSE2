@@ -1,4 +1,4 @@
-package com.aau.wizard.core.game
+/*package com.aau.wizard.core.game
 
 import com.aau.wizard.core.cards.Card
 import com.aau.wizard.core.cards.CardType
@@ -82,4 +82,4 @@ class GameManager(internal val players: List<PlayerState>) {
             println("${it.name}: ${it.bid} geboten, ${it.tricksWon} gewonnen → Punkte: ${it.score}")
         }
     }
-}
+}*/

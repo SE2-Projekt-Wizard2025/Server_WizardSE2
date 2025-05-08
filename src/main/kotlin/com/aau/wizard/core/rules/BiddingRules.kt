@@ -1,4 +1,4 @@
-package com.aau.wizard.core.rules
+/*package com.aau.wizard.core.rules
 
 import com.aau.wizard.core.model.PlayerState
 
@@ -13,3 +13,4 @@ object BiddingRules {
         }
     }
 }
+*/

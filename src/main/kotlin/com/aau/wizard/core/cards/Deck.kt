@@ -1,4 +1,4 @@
-package com.aau.wizard.core.cards
+/*package com.aau.wizard.core.cards
 
 class Deck {
     private val cards: MutableList<Card> = mutableListOf()
@@ -33,4 +33,4 @@ class Deck {
     }
 
     fun size(): Int = cards.size
-}
+}*/

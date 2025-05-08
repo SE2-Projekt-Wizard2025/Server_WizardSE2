@@ -1,4 +1,4 @@
-package com.aau.wizard.core.cards
+/*package com.aau.wizard.core.cards
 
 enum class Suit {
     RED, YELLOW, BLUE, GREEN, SPECIAL
@@ -22,4 +22,4 @@ data class Card(
         CardType.JESTER -> "Jester (${suit.name.lowercase()})"
         else -> "$value of ${suit.name.lowercase()}"
     }
-}
+}*/
