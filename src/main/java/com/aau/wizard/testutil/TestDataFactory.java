@@ -48,7 +48,7 @@ public class TestDataFactory {
     }
 
     public static Card createDefaultCard() {
-        return new Card(CardSuit.RED, 0);
+        return new Card(CardSuit.RED, 1); //sollte 1 sein?
     }
 
     public static Card createCustomCard(CardSuit cardSuit, int cardValue) {
