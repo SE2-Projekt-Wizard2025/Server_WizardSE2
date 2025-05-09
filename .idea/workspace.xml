@@ -6,9 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="5a88b75e-a340-4aab-ba6f-5de17d4e4b2e" name="Changes" comment="push">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/game/GameManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/game/GameManager.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/rules/TrickRules.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/rules/TrickRules.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/rules/TrickRulesTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/com/aau/wizard/core/rules/TrickRulesTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/controller/GameWebSocketController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/controller/GameWebSocketController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/dto/PlayerDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/dto/PlayerDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/Game.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/Player.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/service/impl/GameServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/service/impl/GameServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/service/interfaces/GameService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/service/interfaces/GameService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/service/GameServiceImplTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/service/GameServiceImplTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,15 +30,15 @@
       <list>
         <option value="Interface" />
         <option value="Enum" />
-        <option value="Class" />
         <option value="Kotlin Class" />
+        <option value="Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="feature/stichlogik" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -66,61 +70,61 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.WizardApplication.executor": "Run",
-    "JUnit.BiddingRulesTest$CalculateScoresTests.exact negative difference calculation.executor": "Run",
-    "JUnit.BiddingRulesTest.executor": "Run",
-    "JUnit.CardDtoTest.executor": "Run",
-    "JUnit.CardTest.executor": "Run",
-    "JUnit.DeckTest.executor": "Run",
-    "JUnit.GameManagerTest (1).executor": "Run",
-    "JUnit.GameManagerTest$StartRoundTests.startRound handles no trump card when deck is empty.executor": "Debug",
-    "JUnit.GameManagerTest$StartRoundTests.startRound sets no trump in last round when deck empties during dealing.executor": "Run",
-    "JUnit.GameManagerTest.executor": "Run",
-    "JUnit.GameManagerTest.player must follow suit if able.executor": "Run",
-    "JUnit.GameRequestTest.executor": "Run",
-    "JUnit.GameResponseTest.executor": "Run",
-    "JUnit.GameServiceImplTest.executor": "Run",
-    "JUnit.GameTest.executor": "Run",
-    "JUnit.GameWebSocketControllerTest (1).executor": "Run",
-    "JUnit.GameWebSocketControllerTest.executor": "Run",
-    "JUnit.GameWebSocketIntegrationTest (1).executor": "Run",
-    "JUnit.GameWebSocketIntegrationTest.executor": "Run",
-    "JUnit.GameWebSocketIntegrationTest.testJoinGameWebSocketEndpoint.executor": "Run",
-    "JUnit.PlayerTest.executor": "Run",
-    "JUnit.TrickRulesTest$LeadSuitTests.player must follow lead suit if possible.executor": "Debug",
-    "JUnit.TrickRulesTest$LeadSuitTests.wizard as first card means no lead suit.executor": "Run",
-    "JUnit.TrickRulesTest.executor": "Debug",
-    "JUnit.WebSocketIntegrationTest.executor": "Run",
-    "JUnit.controller in Server_WizardSE2.executor": "Coverage",
-    "JUnit.java in Server_WizardSE2.executor": "Coverage",
-    "Kotlin.GameSimulationKt.executor": "Run",
-    "Kotlin.QuicktestKt.executor": "Run",
-    "Maven.Server_WizardSE2 [test].executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "feat/server-kotlin-deck-classes",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Anwender/Documents/GitHub/Server_WizardSE2",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "SDKs",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.WizardApplication.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.BiddingRulesTest$CalculateScoresTests.exact negative difference calculation.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.BiddingRulesTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.CardDtoTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.CardTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.DeckTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameManagerTest (1).executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameManagerTest$StartRoundTests.startRound handles no trump card when deck is empty.executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.GameManagerTest$StartRoundTests.startRound sets no trump in last round when deck empties during dealing.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameManagerTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameManagerTest.player must follow suit if able.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameRequestTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameResponseTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameServiceImplTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameWebSocketControllerTest (1).executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameWebSocketControllerTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameWebSocketIntegrationTest (1).executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameWebSocketIntegrationTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameWebSocketIntegrationTest.testJoinGameWebSocketEndpoint.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.PlayerTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.TrickRulesTest$LeadSuitTests.player must follow lead suit if possible.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.TrickRulesTest$LeadSuitTests.wizard as first card means no lead suit.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.TrickRulesTest.executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.WebSocketIntegrationTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.controller in Server_WizardSE2.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.java in Server_WizardSE2.executor&quot;: &quot;Coverage&quot;,
+    &quot;Kotlin.GameSimulationKt.executor&quot;: &quot;Run&quot;,
+    &quot;Kotlin.QuicktestKt.executor&quot;: &quot;Run&quot;,
+    &quot;Maven.Server_WizardSE2 [test].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/stichlogik&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/HP/OneDrive/Desktop/AAU/SE2/Wizard2025/Stand 0805/Server_WizardSE2&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;SDKs&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\HP\OneDrive\Desktop\AAU\SE2\Wizard\Server_WizardSE2\src\main\java\Websocket" />
@@ -131,7 +135,7 @@
       <recent name="$PROJECT_DIR$/.idea" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.TrickRulesTest$LeadSuitTests.player must follow lead suit if possible">
+  <component name="RunManager">
     <configuration name="BiddingRulesTest$CalculateScoresTests.exact negative difference calculation" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="Server_WizardSE2" />
       <extension name="coverage">
@@ -218,12 +222,11 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="JUnit.TrickRulesTest$LeadSuitTests.player must follow lead suit if possible" />
-      <item itemvalue="JUnit.GameManagerTest" />
       <item itemvalue="JUnit.BiddingRulesTest$CalculateScoresTests.exact negative difference calculation" />
-      <item itemvalue="JUnit.TrickRulesTest" />
+      <item itemvalue="JUnit.GameManagerTest" />
+      <item itemvalue="JUnit.TrickRulesTest$LeadSuitTests.player must follow lead suit if possible" />
       <item itemvalue="JUnit.TrickRulesTest$LeadSuitTests.wizard as first card means no lead suit" />
-      <item itemvalue="Spring Boot.WizardApplication" />
+      <item itemvalue="JUnit.TrickRulesTest" />
     </list>
     <recent_temporary>
       <list>
@@ -234,14 +237,6 @@
         <item itemvalue="JUnit.BiddingRulesTest$CalculateScoresTests.exact negative difference calculation" />
       </list>
     </recent_temporary>
-  </component>
-  <component name="SharedIndexes">
-    <attachedChunks>
-      <set>
-        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.23774.435" />
-        <option value="bundled-js-predefined-d6986cc7102b-f27c65a3e318-JavaScript-IU-251.23774.435" />
-      </set>
-    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -369,7 +364,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="feat/server-kotlin-deck-classes" />
+                        <option value="main" />
                       </list>
                     </value>
                   </entry>

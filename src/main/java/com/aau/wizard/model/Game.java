@@ -1,6 +1,7 @@
 package com.aau.wizard.model;
 
 import com.aau.wizard.model.enums.GameStatus;
+import com.aau.wizard.core.game.GameManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,8 @@ public class Game {
     private List<Player> players = new ArrayList<>();
     private String currentPlayerId;
     private GameStatus status;
+    private GameManager gameManager;
+    private Card trumpCard;
 
     public Game(String gameId) {
         this.gameId = gameId;
@@ -61,5 +64,21 @@ public class Game {
             }
         }
         return null;
+    }
+
+    public GameManager getGameManager(){
+        return gameManager;
+    }
+
+    public void setGameManager(GameManager gameManager){
+        this.gameManager=gameManager;
+    }
+
+    public void setTrumpCard(Card trumpCard){
+        this.trumpCard=trumpCard;
+    }
+
+    public Card getTrumpCard() {
+        return trumpCard;
     }
 }

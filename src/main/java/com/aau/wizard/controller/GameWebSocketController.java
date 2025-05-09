@@ -6,6 +6,8 @@ import com.aau.wizard.service.interfaces.GameService;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import com.aau.wizard.dto.request.PredictionRequest;
+
 
 /**
  * WebSocket controller that handles game-related messages from clients.
@@ -39,4 +41,11 @@ public class GameWebSocketController {
     public GameResponse joinGame(GameRequest gameRequest) {
         return gameService.joinGame(gameRequest);
     }
+
+    @MessageMapping("/game/predict")
+    @SendTo("/topic/game")
+    public GameResponse handlePrediction(PredictionRequest request) {
+        return gameService.makePrediction(request);
+    }
+
 }

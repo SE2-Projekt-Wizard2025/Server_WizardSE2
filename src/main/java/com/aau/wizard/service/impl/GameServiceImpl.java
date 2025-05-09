@@ -1,8 +1,11 @@
 package com.aau.wizard.service.impl;
 
+import com.aau.wizard.core.cards.Card;
+import com.aau.wizard.core.cards.Deck;
 import com.aau.wizard.dto.CardDto;
 import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.request.GameRequest;
+import com.aau.wizard.dto.request.PredictionRequest;
 import com.aau.wizard.dto.response.GameResponse;
 import com.aau.wizard.model.Game;
 import com.aau.wizard.model.Player;
@@ -101,4 +104,72 @@ public class GameServiceImpl implements GameService {
     public Game getGameById(String gameId) {
         return games.get(gameId);
     }
+
+    @Override
+    public GameResponse makePrediction(PredictionRequest request) {
+        Game game = games.get(request.getGameId());
+        if (game == null) {
+            throw new IllegalArgumentException("Spiel nicht gefunden");
+        }
+
+        Player player = game.getPlayerById(request.getPlayerId());
+        if (player == null) {
+            throw new IllegalArgumentException("Spieler nicht gefunden");
+        }
+
+        int prediction = request.getPrediction();
+
+        // Sonderregel: Letzter Spieler darf keine perfekte Summe vorhersagen
+        List<Player> allPlayers = game.getPlayers();
+        boolean isLastPlayer = allPlayers.indexOf(player) == allPlayers.size() - 1;
+
+        if (isLastPlayer) {
+            int sumOfOtherPredictions = allPlayers.stream()
+                    .filter(p -> !p.getPlayerId().equals(player.getPlayerId()))
+                    .map(p -> p.getPrediction() != null ? p.getPrediction() : 0)
+                    .reduce(0, Integer::sum);
+
+            int totalTricks = player.getHandCards().size();
+
+            if (sumOfOtherPredictions + prediction == totalTricks) {
+                throw new IllegalArgumentException(
+                        "Diese Vorhersage ergibt exakt die Anzahl der Stiche und ist damit verboten."
+                );
+            }
+        }
+
+        player.setPrediction(prediction);
+        return createGameResponse(game, player.getPlayerId());
+    }
+
+
+    // wird später anders geregelt
+/*
+public void startRound(String gameId, int cardsPerPlayer) {
+    Game game = games.get(gameId);
+    if (game == null) {
+        throw new IllegalArgumentException("Spiel nicht gefunden");
+    }
+
+    prepareNewRound(game, cardsPerPlayer);
+}
+
+public void prepareNewRound(Game game, int cardsPerPlayer) {
+    Deck deck = new Deck();
+    deck.shuffle();
+
+    for (Player player : game.getPlayers()) {
+        player.setHandCards(deck.draw(cardsPerPlayer));
+        player.setPrediction(null);
+        player.setTricksWon(0);
+    }
+
+    Card trumpCard = deck.draw(1).get(0);
+    game.setTrumpCard(trumpCard);
+
+    System.out.println("Trumpf ist: " + trumpCard.getSuit());
+}
+*/
+
+
 }
