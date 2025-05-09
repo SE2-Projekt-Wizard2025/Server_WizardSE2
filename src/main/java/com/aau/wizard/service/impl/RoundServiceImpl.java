@@ -13,11 +13,11 @@ import java.util.List;
 public class RoundServiceImpl {
 
     final List<Player> players;
-    final Deck deck = new Deck();
-    Card trumpCard = null;
-    CardSuit trumpCardSuit = null;
-    final List<Pair<Player, Card>> playedCards = new ArrayList<>();
-    int currentTrickNumber = 0;
+    public final Deck deck = new Deck();
+    public Card trumpCard = null;
+    public CardSuit trumpCardSuit = null;
+    public final List<Pair<Player, Card>> playedCards = new ArrayList<>();
+    public int currentTrickNumber = 0;
 
     public RoundServiceImpl(List<Player> players) {
         this.players = players;
