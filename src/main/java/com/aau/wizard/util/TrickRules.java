@@ -1,25 +1,24 @@
 package com.aau.wizard.util;
 
 import com.aau.wizard.model.Card;
-import com.aau.wizard.model.CardType;
-import com.aau.wizard.model.Suit;
-import com.aau.wizard.model.PlayerState;
-import com.aau.wizard.util.Pair;
+import com.aau.wizard.model.Player;
+import com.aau.wizard.model.enums.CardSuit;
+import com.aau.wizard.model.enums.CardType;
+
 import java.util.List;
-import java.util.stream.Collectors;
 
 public final class TrickRules {
     private TrickRules() {
         // Private constructor to prevent instantiation
     }
 
-    public static PlayerState determineTrickWinner(List<Pair<PlayerState, Card>> playedCards, Suit trumpSuit) {
+    public static Player determineTrickWinner(List<Pair<Player, Card>> playedCards, CardSuit trumpCardSuit) {
         if (playedCards.isEmpty()) {
             throw new IllegalArgumentException("No cards played");
         }
 
-        Suit leadSuit = null;
-        Pair<PlayerState, Card> firstNonJester = playedCards.stream()
+        CardSuit leadCardSuit = null;
+        Pair<Player, Card> firstNonJester = playedCards.stream()
                 .filter(pair -> pair.second.getType() != CardType.JESTER)
                 .findFirst()
                 .orElse(null);
@@ -27,14 +26,14 @@ public final class TrickRules {
         Card firstCard = playedCards.get(0).second;
         if (firstCard.getType() == CardType.JESTER) {
             if (firstNonJester != null) {
-                leadSuit = firstNonJester.second.getSuit();
+                leadCardSuit = firstNonJester.second.getSuit();
             }
         } else if (firstCard.getType() != CardType.WIZARD) {
-            leadSuit = firstCard.getSuit();
+            leadCardSuit = firstCard.getSuit();
         }
 
-        final Suit finalLeadSuit = leadSuit;
-        Pair<PlayerState, Integer> winner = playedCards.stream()
+        final CardSuit finalLeadCardSuit = leadCardSuit;
+        Pair<Player, Integer> winner = playedCards.stream()
                 .map(pair -> {
                     Card card = pair.second;
                     int score;
@@ -43,9 +42,9 @@ public final class TrickRules {
                     } else if (card.getType() == CardType.JESTER) {
                         score = Integer.MIN_VALUE; // Jester always loses
                     } else {
-                        if (card.getSuit() == trumpSuit) {
+                        if (card.getSuit() == trumpCardSuit) {
                             score = 1000 + card.getValue();
-                        } else if (card.getSuit() == finalLeadSuit) {
+                        } else if (card.getSuit() == finalLeadCardSuit) {
                             score = 100 + card.getValue();
                         } else {
                             score = 0;
@@ -59,7 +58,7 @@ public final class TrickRules {
         return winner.first;
     }
 
-    public static boolean isValidPlay(PlayerState player, Card card, List<Pair<PlayerState, Card>> currentTrick) {
+    public static boolean isValidPlay(Player player, Card card, List<Pair<Player, Card>> currentTrick) {
         if (card.getType() == CardType.WIZARD || card.getType() == CardType.JESTER) {
             return true; // these can always be played
         }
@@ -67,8 +66,8 @@ public final class TrickRules {
             return true; // when playing first
         }
 
-        Suit leadSuit = currentTrick.get(0).second.getSuit();
-        boolean hasLeadSuit = player.getHand().stream().anyMatch(c -> c.getSuit() == leadSuit);
-        return !hasLeadSuit || card.getSuit() == leadSuit; // doesn't have the card, or has chosen matching color
+        CardSuit leadCardSuit = currentTrick.get(0).second.getSuit();
+        boolean hasLeadSuit = player.getHandCards().stream().anyMatch(c -> c.getSuit() == leadCardSuit);
+        return !hasLeadSuit || card.getSuit() == leadCardSuit; // doesn't have the card, or has chosen matching color
     }
 }

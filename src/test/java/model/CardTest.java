@@ -1,9 +1,8 @@
 package model;
 
 import com.aau.wizard.model.Card;
-import com.aau.wizard.model.enums.CardColor;
 import com.aau.wizard.model.enums.CardType;
-import com.aau.wizard.model.enums.CardValue;
+
 import static com.aau.wizard.testutil.TestDataFactory.*;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +48,6 @@ class CardTest {
     private void assertCardValues(Card card) {
         assertEquals(CardColor.RED, card.getColor());
         assertEquals(CardValue.ONE, card.getValue());
-        assertEquals(CardType.NORMAL, card.getType());
+        assertEquals(CardType.NUMBER, card.getType());
     }
 }

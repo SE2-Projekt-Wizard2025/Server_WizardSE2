@@ -47,13 +47,16 @@ public class Card {
 
 package com.aau.wizard.model;
 
+import com.aau.wizard.model.enums.CardType;
+import com.aau.wizard.model.enums.CardSuit;
+
 public class Card {
-    private final Suit suit;
+    private final CardSuit cardSuit;
     private final int value;
     private final CardType type;
 
-    public Card(Suit suit, int value) {
-        this.suit = suit;
+    public Card(CardSuit cardSuit, int value) {
+        this.cardSuit = cardSuit;
         this.value = value;
         if (value == 0) {
             this.type = CardType.JESTER;
@@ -64,8 +67,8 @@ public class Card {
         }
     }
 
-    public Suit getSuit() {
-        return suit;
+    public CardSuit getSuit() {
+        return cardSuit;
     }
 
     public int getValue() {
@@ -80,11 +83,11 @@ public class Card {
     public String toString() {
         switch (type) {
             case WIZARD:
-                return "Wizard (" + suit.name().toLowerCase() + ")";
+                return "Wizard (" + cardSuit.name().toLowerCase() + ")";
             case JESTER:
-                return "Jester (" + suit.name().toLowerCase() + ")";
+                return "Jester (" + cardSuit.name().toLowerCase() + ")";
             default:
-                return value + " of " + suit.name().toLowerCase();
+                return value + " of " + cardSuit.name().toLowerCase();
         }
     }
 }

@@ -1,5 +1,8 @@
 package com.aau.wizard.model;
 
+import com.aau.wizard.model.enums.CardType;
+import com.aau.wizard.model.enums.CardSuit;
+
 import java.util.List;
 
 public final class DeckUtils {
@@ -7,7 +10,7 @@ public final class DeckUtils {
     private DeckUtils() {
     }
 
-    public static Suit getTrumpSuit(List<Card> cards) {
+    public static CardSuit getTrumpSuit(List<Card> cards) {
         for (Card card : cards) {
             if (card.getType() == CardType.WIZARD) {
                 return card.getSuit();

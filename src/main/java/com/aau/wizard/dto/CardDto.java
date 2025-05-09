@@ -36,8 +36,8 @@ public class CardDto {
      */
     public static CardDto from(Card card) {
         return new CardDto(
-                card.getColor().name(), //color -> suit
-                card.getValue().name(), //value is jetz a int
+                card.getSuit().name(),
+                Integer.toString(card.getValue()),
                 card.getType().name()
         );
     }

@@ -5,25 +5,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5a88b75e-a340-4aab-ba6f-5de17d4e4b2e" name="Changes" comment="push">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/CardType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/Deck.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/DeckUtils.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/PlayerState.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/Suit.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/service/impl/GameManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/util/BiddingRules.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/util/Pair.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/util/TrickRules.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/dto/CardDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/dto/CardDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/dto/PlayerDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/dto/PlayerDto.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/Card.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/Card.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/cards/Card.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/cards/Card.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/cards/Deck.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/cards/Deck.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/cards/DeckUtils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/cards/DeckUtils.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/game/GameManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/game/GameManager.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/model/PlayerState.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/model/PlayerState.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/rules/BiddingRules.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/rules/BiddingRules.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/rules/TrickRules.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/aau/wizard/core/rules/TrickRules.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/CardType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/Deck.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/Deck.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/DeckUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/DeckUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/Player.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/PlayerState.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/Suit.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/enums/CardSuit.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/enums/CardColor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/enums/CardType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/enums/CardType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/model/enums/CardValue.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/service/impl/GameManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/service/impl/RoundServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/testutil/TestConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/testutil/TestConstants.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/testutil/TestDataFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/testutil/TestDataFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/util/BiddingRules.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/util/BiddingRules.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/util/TrickRules.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/util/TrickRules.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/model/CardTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/model/CardTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,6 +78,7 @@
   &quot;associatedIndex&quot;: 2
 }</component>
   <component name="ProjectId" id="2umBGgLxpumjbCwhiIIaAhUhBD7" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -238,7 +240,6 @@
       <item itemvalue="JUnit.BiddingRulesTest$CalculateScoresTests.exact negative difference calculation" />
       <item itemvalue="JUnit.TrickRulesTest" />
       <item itemvalue="JUnit.TrickRulesTest$LeadSuitTests.wizard as first card means no lead suit" />
-      <item itemvalue="Spring Boot.WizardApplication" />
     </list>
     <recent_temporary>
       <list>

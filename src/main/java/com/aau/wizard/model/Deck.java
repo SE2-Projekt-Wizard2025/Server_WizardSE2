@@ -1,5 +1,7 @@
 package com.aau.wizard.model;
 
+import com.aau.wizard.model.enums.CardSuit;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,18 +15,18 @@ public class Deck {
 
     private void initializeDeck() {
         // Standardkarten (1–13 in jeder Farbe außer SPECIAL)
-        for (Suit suit : Suit.values()) {
-            if (suit != Suit.SPECIAL) {
+        for (CardSuit cardSuit : CardSuit.values()) {
+            if (cardSuit != CardSuit.SPECIAL) {
                 for (int value = 1; value <= 13; value++) {
-                    cards.add(new Card(suit, value));
+                    cards.add(new Card(cardSuit, value));
                 }
             }
         }
 
         // Spezialkarten (4 Wizard + 4 Jester)
         for (int i = 0; i < 4; i++) {
-            cards.add(new Card(Suit.SPECIAL, 14)); // Wizard
-            cards.add(new Card(Suit.SPECIAL, 0));  // Jester
+            cards.add(new Card(CardSuit.SPECIAL, 14)); // Wizard
+            cards.add(new Card(CardSuit.SPECIAL, 0));  // Jester
         }
     }
 
