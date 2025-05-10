@@ -2,68 +2,147 @@ package model;
 
 import com.aau.wizard.model.Card;
 import com.aau.wizard.model.Player;
-import static com.aau.wizard.testutil.TestConstants.*;
-import static com.aau.wizard.testutil.TestDataFactory.*;
-
+import com.aau.wizard.model.enums.CardSuit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class PlayerTest {
-    private Player testPlayer;
+    private Player player;
+    private static final String TEST_ID = "player123";
+    private static final String TEST_NAME = "Test Player";
 
     @BeforeEach
-    void setup() {
-        testPlayer = createDefaultPlayer();
+    void setUp() {
+        player = new Player(TEST_ID, TEST_NAME);
     }
 
     @Test
-    void testConstructorAndGetters() {
-        assertPlayerValues(testPlayer);
-    }
-
-    @Test
-    void testSetPlayerIdAndName() {
-        testPlayer.setPlayerId("id456");
-        testPlayer.setName("Bob");
-
-        assertEquals("id456", testPlayer.getPlayerId());
-        assertEquals("Bob", testPlayer.getName());
-    }
-
-    @Test
-    void testSetAndGetScore() {
-        testPlayer.setScore(42);
-        assertEquals(42, testPlayer.getScore());
-    }
-
-    @Test
-    void testSetAndGetReady() {
-        testPlayer.setReady(true);
-        assertTrue(testPlayer.isReady());
-
-        testPlayer.setReady(false);
-        assertFalse(testPlayer.isReady());
-    }
-
-    @Test
-    void testSetAndGetHandCards() {
-        List<Card> cards = createDefaultListOfCard();
-        testPlayer.setHandCards(cards);
-
-        assertEquals(2, testPlayer.getHandCards().size());
-        assertEquals(cards.get(0), testPlayer.getHandCards().get(0));
-    }
-
-    private void assertPlayerValues(Player player) {
-        assertEquals(TEST_PLAYER_ID, player.getPlayerId());
-        assertEquals(TEST_PLAYER_NAME, player.getName());
+    void constructor_initializesCorrectly() {
+        assertEquals(TEST_ID, player.getPlayerId());
+        assertEquals(TEST_NAME, player.getName());
         assertEquals(0, player.getScore());
+        assertEquals(0, player.getBid());
+        assertEquals(0, player.getTricksWon());
         assertFalse(player.isReady());
         assertNotNull(player.getHandCards());
         assertTrue(player.getHandCards().isEmpty());
+    }
+
+    @Test
+    void settersAndGetters_workCorrectly() {
+        // Test all setters and getters
+        player.setPlayerId("newId");
+        assertEquals("newId", player.getPlayerId());
+
+        player.setName("New Name");
+        assertEquals("New Name", player.getName());
+
+        player.setScore(42);
+        assertEquals(42, player.getScore());
+
+        player.setBid(3);
+        assertEquals(3, player.getBid());
+
+        player.setTricksWon(2);
+        assertEquals(2, player.getTricksWon());
+
+        player.setReady(true);
+        assertTrue(player.isReady());
+
+        List<Card> cards = List.of(new Card(CardSuit.RED, 5));
+        player.setHandCards(cards);
+        assertEquals(cards, player.getHandCards());
+    }
+
+    @Test
+    void equals_returnsTrueForSameValues() {
+        Player samePlayer = new Player(TEST_ID, TEST_NAME);
+        assertEquals(player, samePlayer);
+    }
+
+    @Test
+    void equals_returnsFalseForDifferentValues() {
+        Player differentId = new Player("differentId", TEST_NAME);
+        assertNotEquals(player, differentId);
+
+        Player differentName = new Player(TEST_ID, "Different Name");
+        assertNotEquals(player, differentName);
+
+        Player differentPlayer = new Player(TEST_ID, TEST_NAME);
+        differentPlayer.setScore(10);
+        assertNotEquals(player, differentPlayer);
+    }
+
+    @Test
+    void equals_handlesNullAndWrongType() {
+        assertNotEquals(null, player);
+        assertNotEquals("Not a player", player);
+    }
+
+    @Test
+    void hashCode_consistentForSameObject() {
+        int initialHash = player.hashCode();
+        assertEquals(initialHash, player.hashCode());
+    }
+
+    @Test
+    void hashCode_changesWhenFieldsChange() {
+        int initialHash = player.hashCode();
+        player.setScore(10);
+        assertNotEquals(initialHash, player.hashCode());
+    }
+
+    @Test
+    void hashCode_equalForEqualObjects() {
+        Player samePlayer = new Player(TEST_ID, TEST_NAME);
+        assertEquals(player.hashCode(), samePlayer.hashCode());
+    }
+
+    @Test
+    void toString_containsAllFields() {
+        player.setHandCards(List.of(new Card(CardSuit.BLUE, 7)));
+        player.setBid(2);
+        player.setTricksWon(1);
+        player.setScore(10);
+        player.setReady(true);
+
+        String result = player.toString();
+        assertTrue(result.contains(TEST_ID));
+        assertTrue(result.contains(TEST_NAME));
+        assertTrue(result.contains("7 of blue"));
+        assertTrue(result.contains("bid=2"));
+        assertTrue(result.contains("tricksWon=1"));
+        assertTrue(result.contains("score=10"));
+    }
+
+    @Test
+    void handCards_modification() {
+        List<Card> cards = new ArrayList<>();
+        cards.add(new Card(CardSuit.RED, 5));
+        player.setHandCards(cards);
+
+        // Verify we can modify the list through getter
+        player.getHandCards().add(new Card(CardSuit.BLUE, 7));
+        assertEquals(2, player.getHandCards().size());
+    }
+
+    @Test
+    void equals_withHandCards() {
+        Player playerWithCards = new Player(TEST_ID, TEST_NAME);
+        playerWithCards.setHandCards(List.of(new Card(CardSuit.RED, 5)));
+
+        Player sameCards = new Player(TEST_ID, TEST_NAME);
+        sameCards.setHandCards(List.of(new Card(CardSuit.RED, 5)));
+
+        Player differentCards = new Player(TEST_ID, TEST_NAME);
+        differentCards.setHandCards(List.of(new Card(CardSuit.BLUE, 7)));
+
+        assertEquals(playerWithCards, sameCards);
+        assertNotEquals(playerWithCards, differentCards);
     }
 }

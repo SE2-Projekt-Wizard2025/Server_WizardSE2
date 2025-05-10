@@ -1,7 +1,4 @@
 package com.aau.wizard.service.impl;
-
-import com.aau.wizard.core.cards.Card;
-import com.aau.wizard.core.cards.Deck;
 import com.aau.wizard.dto.CardDto;
 import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.request.GameRequest;

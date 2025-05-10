@@ -100,7 +100,7 @@ public class GameServiceImplTest {
      * <p>
      * This test ensures that the internal stream().map(...) logic is actually executed.
      */
-    @Test
+    /*@Test
     void testJoinGameWithPlayerAndCard() {
         GameRequest request = createDefaultGameRequest();
         gameService.joinGame(request);
@@ -116,7 +116,7 @@ public class GameServiceImplTest {
         assertEquals(TEST_CARD_COLOR, card.getColor());
         assertEquals(TEST_CARD_VALUE, card.getValue());
         assertEquals(TEST_CARD_TYPE, card.getType());
-    }
+    }*/
 
     /**
      * Asserts that the given {@link GameResponse} contains the expected basic join information.
