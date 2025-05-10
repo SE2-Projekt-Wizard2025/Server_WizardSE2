@@ -7,9 +7,7 @@ import com.aau.wizard.dto.response.GameResponse;
 import com.aau.wizard.model.Card;
 import com.aau.wizard.model.Game;
 import com.aau.wizard.model.Player;
-import com.aau.wizard.model.enums.CardColor;
-import com.aau.wizard.model.enums.CardType;
-import com.aau.wizard.model.enums.CardValue;
+import com.aau.wizard.model.enums.CardSuit;
 
 import java.util.List;
 
@@ -50,11 +48,11 @@ public class TestDataFactory {
     }
 
     public static Card createDefaultCard() {
-        return new Card(CardColor.RED, CardValue.ONE, CardType.NORMAL);
+        return new Card(CardSuit.RED, 1); //sollte 1 sein?
     }
 
-    public static Card createCustomCard(CardColor cardColor, CardValue cardValue, CardType cardType) {
-        return new Card(cardColor, cardValue, cardType);
+    public static Card createCustomCard(CardSuit cardSuit, int cardValue) {
+        return new Card(cardSuit, cardValue);
     }
 
     public static List<PlayerDto> createDefaultListOfPlayerDto() {
@@ -81,7 +79,7 @@ public class TestDataFactory {
     public static List<Card> createDefaultListOfCard() {
         return List.of(
                 createDefaultCard(),
-                createCustomCard(CardColor.BLUE, CardValue.TWO, CardType.FOOL)
+                createCustomCard(CardSuit.BLUE, 2)
         );
     }
 

@@ -52,12 +52,12 @@ public class TestConstants {
                                                                 {
                                                                   "color": "RED",
                                                                   "value": "ONE",
-                                                                  "type": "NORMAL"
+                                                                  "type": "NUMBER"
                                                                 },
                                                                 {
                                                                   "color": "BLUE",
                                                                   "value": "TWO",
-                                                                  "type": "FOOL"
+                                                                  "type": "JESTER"
                                                                 }
                                                               ],
                                                               "lastPlayedCard": "RED-5"

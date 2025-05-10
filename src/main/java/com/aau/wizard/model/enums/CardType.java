@@ -1,7 +1,7 @@
 package com.aau.wizard.model.enums;
 
 public enum CardType {
-    NORMAL,
+    NUMBER,
     WIZARD,
-    FOOL
+    JESTER
 }

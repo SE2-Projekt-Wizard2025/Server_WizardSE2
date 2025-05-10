@@ -28,12 +28,17 @@ public class PlayerDto {
      * <p>
      * Extracts basic player information such as ID, name, score, and ready state.
      *
-     * @param p the {@link Player} instance to convert (must not be {@code null})
+     * @param player the {@link Player} instance to convert (must not be {@code null})
      * @return the corresponding {@link PlayerDto}
      * @throws NullPointerException if the player or any of its required fields is {@code null}
      */
-    public static PlayerDto from(Player p) {
-        return new PlayerDto(p.getPlayerId(), p.getName(), p.getScore(), p.isReady());
+    public static PlayerDto from(Player player) {
+        return new PlayerDto(
+                // TODO: Expand if needed
+                player.getPlayerId(),
+                player.getName(),
+                player.getScore(),
+                player.isReady());
     }
 
     public String getPlayerId() {
