@@ -2,23 +2,25 @@ package com.aau.wizard.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Player {
     private String playerId;
     private String name;
     private int score;
-    private boolean ready;
-    private List<Card> handCards = new ArrayList<>();
+    private int bid;
     private int tricksWon;
-    private int prediction;
-
+    private boolean ready;
+    private List<Card> handCards;
 
     public Player(String playerId, String name) {
         this.playerId = playerId;
         this.name = name;
         this.ready = false;
+        this.handCards = new ArrayList<>();
+        this.bid = 0;
         this.tricksWon = 0;
-        this.prediction = -1;
+        this.score = 0;
     }
 
     public String getPlayerId() {
@@ -61,13 +63,49 @@ public class Player {
         this.score = score;
     }
 
-    public int getTricksWon() {return tricksWon;}
+    public int getBid() {
+        return bid;
+    }
 
-    public int getPrediction() {return prediction;}
+    public void setBid(int bid) {
+        this.bid = bid;
+    }
 
-    public void setTricksWon(int tricksWon) {this.tricksWon = tricksWon;}
+    public int getTricksWon() {
+        return tricksWon;
+    }
 
-    public void setPrediction(int prediction) {this.prediction = prediction;}
+    public void setTricksWon(int tricksWon) {
+        this.tricksWon = tricksWon;
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Player)) return false;
+        Player that = (Player) o;
+        return bid == that.bid &&
+                tricksWon == that.tricksWon &&
+                score == that.score &&
+                Objects.equals(playerId, that.playerId) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(handCards, that.handCards);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(playerId, name, handCards, bid, tricksWon, score);
+    }
+
+    @Override
+    public String toString() {
+        return "PlayerStateK{" +
+                "playerId='" + playerId + '\'' +
+                ", name='" + name + '\'' +
+                ", hand=" + handCards +
+                ", bid=" + bid +
+                ", tricksWon=" + tricksWon +
+                ", score=" + score +
+                '}';
+    }
 }
