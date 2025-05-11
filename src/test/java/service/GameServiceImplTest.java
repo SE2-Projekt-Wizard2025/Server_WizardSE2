@@ -139,4 +139,75 @@ public class GameServiceImplTest {
         Player player = game.getPlayerById(playerId);
         player.setHandCards(List.of(card));
     }
+
+    @Test
+    void testStartGameSuccess() {
+        gameService.joinGame(createDefaultGameRequest());
+        gameService.joinGame(createCustomGameRequest(TEST_GAME_ID, "p2", "Player2"));
+        gameService.joinGame(createCustomGameRequest(TEST_GAME_ID, "p3", "Player3"));
+
+        GameResponse response = gameService.startGame(TEST_GAME_ID);
+
+        assertNotNull(response);
+        assertEquals("PLAYING", response.getStatus().name());
+        assertEquals(3, response.getPlayers().size());
+
+        //Stellt sicher, dass der currentPlayer überhaupt unter den Spielern ist
+        List<String> playerIds = response.getPlayers().stream()
+                .map(p -> p.getPlayerId())
+                .toList();
+
+        assertTrue(playerIds.contains(response.getCurrentPlayerId()), "Current player must be in the list");
+    }
+
+    @Test
+    void testStartGameThrowsIfGameNotFound() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            gameService.startGame("nonexistent-id");
+        });
+
+        assertTrue(exception.getMessage().contains("Spiel nicht gefunden"));
+    }
+    @Test
+    void testStartGameFailsIfCannotStart() {
+        gameService.joinGame(createDefaultGameRequest());
+
+        //startGame sollte trotzdem erfolgreich sein
+        GameResponse response = gameService.startGame(TEST_GAME_ID);
+
+        // Assert: Spiel wurde gestartet
+        assertNotNull(response);
+        assertEquals("PLAYING", response.getStatus().name());
+        assertEquals(1, response.getPlayers().size());
+        assertEquals(TEST_GAME_ID, response.getGameId());
+
+        // Der eine Spieler ist auch der currentPlayer
+        assertEquals(TEST_PLAYER_ID, response.getCurrentPlayerId());
+    }
+
+    @Test
+    void testCanStartGameReturnsTrueIfAllowed() {
+        gameService.joinGame(createDefaultGameRequest());
+        gameService.joinGame(createCustomGameRequest(TEST_GAME_ID, "p2", "Player2"));
+        gameService.joinGame(createCustomGameRequest(TEST_GAME_ID, "p3", "Player3"));
+
+        assertTrue(gameService.canStartGame(TEST_GAME_ID));
+    }
+
+    @Test
+    void testCanStartGameReturnsFalseIfGameDoesNotExist() {
+        assertFalse(gameService.canStartGame("invalid-id"));
+    }
+
+    @Test
+    void testGetGameByIdReturnsCorrectGame() {
+        gameService.joinGame(createDefaultGameRequest());
+        Game game = gameService.getGameById(TEST_GAME_ID);
+
+        assertNotNull(game);
+        assertEquals(TEST_GAME_ID, game.getGameId());
+    }
+
+
+
 }
