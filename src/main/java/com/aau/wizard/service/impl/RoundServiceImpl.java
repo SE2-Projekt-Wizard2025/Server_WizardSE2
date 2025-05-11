@@ -30,7 +30,8 @@ public class RoundServiceImpl {
             player.setTricksWon(0);
             player.setBid(0);
         }
-
+        //trumpCard = new Card(CardSuit.SPECIAL, 0); // 14 = Wizard --> nur für test
+        //trumpCardSuit = trumpCard.getSuit();        // = SPECIAL --> nur für test
         if (deck.size() < 1) {
             trumpCard = null;
             trumpCardSuit = null;
