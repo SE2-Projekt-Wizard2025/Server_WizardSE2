@@ -103,7 +103,7 @@ public class GameServiceImpl implements GameService {
             throw new IllegalStateException("Spiel konnte nicht gestartet werden – evtl. zu wenig Spieler?");
         }
 
-        RoundServiceImpl roundService = new RoundServiceImpl(game.getPlayers());
+        RoundServiceImpl roundService = new RoundServiceImpl(game);
         roundService.startRound(1);//1 ist die Rundenanzahl — später noch dynamisch setzen
         Card trumpCard = roundService.trumpCard;
         CardDto trumpCardDto = trumpCard != null ? CardDto.from(trumpCard) : null;
@@ -174,7 +174,7 @@ public class GameServiceImpl implements GameService {
         }
 
         player.setPrediction(prediction);
-        return createGameResponse(game, player.getPlayerId());
+        return createGameResponse(game, player.getPlayerId(), null);
     }
 
 
