@@ -68,6 +68,21 @@ class GameWebSocketControllerTest {
         assertNull(messageCaptor.getValue());
     }
 
+    @Test
+    void testStartGameCleansQuotedGameId() {
+
+        String quotedGameId = "\"test-game-id\"";
+
+        GameResponse expectedResponse = createDefaultGameResponse(createDefaultPlayerDto());
+
+        when(gameService.startGame("test-game-id")).thenReturn(expectedResponse);
+
+        GameResponse response = gameWebSocketController.startGame(quotedGameId);
+
+        verify(gameService, times(1)).startGame("test-game-id");
+        assertEquals(expectedResponse, response);
+    }
+
     /**
      * Asserts that the given {@link GameResponse} contains the expected game ID,
      * status, and player ID for a successful join operation.
