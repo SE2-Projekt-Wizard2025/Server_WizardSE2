@@ -90,7 +90,9 @@ public class TestDataFactory {
                 TEST_PLAYER_ID,
                 createDefaultListOfPlayerDto(),
                 createDefaultListOfCardDto(),
-                TEST_LAST_PLAYED_CARD
+                TEST_LAST_PLAYED_CARD,
+                null //trumpCard ist in Tests derweil null
+
         );
     }
 

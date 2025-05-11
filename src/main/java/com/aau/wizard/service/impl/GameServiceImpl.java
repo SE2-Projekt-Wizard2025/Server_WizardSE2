@@ -4,6 +4,7 @@ import com.aau.wizard.dto.CardDto;
 import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.response.GameResponse;
+import com.aau.wizard.model.Card;
 import com.aau.wizard.model.Game;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.service.interfaces.GameService;
@@ -26,6 +27,7 @@ public class GameServiceImpl implements GameService {
      * In-memory storage of all active games, keyed by their gameId.
      */
     private final Map<String, Game> games = new HashMap<>();
+    private final Map<String, RoundServiceImpl> roundServices = new HashMap<>();
 
 
     /**
@@ -41,7 +43,7 @@ public class GameServiceImpl implements GameService {
         Game game = games.computeIfAbsent(request.getGameId(), Game::new);
         addPlayerIfAbsent(game, request);
 
-        return createGameResponse(game, request.getPlayerId());
+        return createGameResponse(game, request.getPlayerId(), null);
     }
 
     /**
@@ -52,7 +54,7 @@ public class GameServiceImpl implements GameService {
      * @param requestingPlayerId the player for whom the response is built
      * @return a fully populated GameResponse
      */
-    private GameResponse createGameResponse(Game game, String requestingPlayerId) {
+    private GameResponse createGameResponse(Game game, String requestingPlayerId, Card trumpCard) {
         List<PlayerDto> playerDtos = mapOrEmpty(game.getPlayers(), PlayerDto::from);
         Player requestingPlayer = game.getPlayerById(requestingPlayerId);
         List<CardDto> handCards = CardDto.safeFromPlayer(requestingPlayer);
@@ -63,7 +65,8 @@ public class GameServiceImpl implements GameService {
                 game.getCurrentPlayerId(),
                 playerDtos,
                 handCards,
-                null // lastPlayedCard can be set here later on
+                null,// lastPlayedCard can be set here later on
+                trumpCard != null ? CardDto.from(trumpCard) : null
         );
     }
 
@@ -100,8 +103,13 @@ public class GameServiceImpl implements GameService {
             throw new IllegalStateException("Spiel konnte nicht gestartet werden – evtl. zu wenig Spieler?");
         }
 
-        // antwort für Host
-        return createGameResponse(game, game.getCurrentPlayerId());
+        RoundServiceImpl roundService = new RoundServiceImpl(game.getPlayers());
+        roundService.startRound(1);//1 ist die Rundenanzahl — später noch dynamisch setzen
+        Card trumpCard = roundService.trumpCard;
+        CardDto trumpCardDto = trumpCard != null ? CardDto.from(trumpCard) : null;
+        roundServices.put(gameId, roundService);
+
+        return createGameResponse(game, game.getCurrentPlayerId(), trumpCard);
     }
 
     @Override
