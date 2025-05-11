@@ -1,8 +1,8 @@
 package com.aau.wizard.service.impl;
-
 import com.aau.wizard.dto.CardDto;
 import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.request.GameRequest;
+import com.aau.wizard.dto.request.PredictionRequest;
 import com.aau.wizard.dto.response.GameResponse;
 import com.aau.wizard.model.Card;
 import com.aau.wizard.model.Game;
@@ -131,6 +131,50 @@ public class GameServiceImpl implements GameService {
     @VisibleForTesting
     public Game getGameById(String gameId) {
         return games.get(gameId);
+    }
+
+    @Override
+    public GameResponse makePrediction(PredictionRequest request) {
+        Game game = games.get(request.getGameId());
+        if (game == null) {
+            throw new IllegalArgumentException("Spiel nicht gefunden");
+        }
+
+        Player player = game.getPlayerById(request.getPlayerId());
+        if (player == null) {
+            throw new IllegalArgumentException("Spieler nicht gefunden");
+        }
+
+        int prediction = request.getPrediction();
+
+        // Sonderregel: Letzter Spieler darf keine perfekte Summe vorhersagen
+        List<Player> allPlayers = game.getPlayers();
+        List<String> predictionOrder = game.getPredictionOrder();
+
+        long alreadyPredicted = allPlayers.stream().filter(p -> p.getPrediction() != null).count();
+        String expectedPlayerId = predictionOrder.get((int) alreadyPredicted);
+        if (!expectedPlayerId.equals(player.getPlayerId())) {
+            throw new IllegalStateException("Du bist noch nicht an der Reihe, bitte warte.");
+        }
+
+        boolean isLastPlayer=predictionOrder.indexOf(player.getPlayerId())==predictionOrder.size()-1;
+        if (isLastPlayer) {
+            int sumOfOtherPredictions = allPlayers.stream()
+                    .filter(p -> !p.getPlayerId().equals(player.getPlayerId()))
+                    .map(p -> p.getPrediction() != null ? p.getPrediction() : 0)
+                    .reduce(0, Integer::sum);
+
+            int totalTricks = player.getHandCards().size();
+
+            if (sumOfOtherPredictions + prediction == totalTricks) {
+                throw new IllegalArgumentException(
+                        "Diese Vorhersage ergibt exakt die Anzahl der Stiche und ist damit verboten."
+                );
+            }
+        }
+
+        player.setPrediction(prediction);
+        return createGameResponse(game, player.getPlayerId());
     }
 
 

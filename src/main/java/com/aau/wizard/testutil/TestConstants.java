@@ -62,5 +62,8 @@ public class TestConstants {
                                                               ],
                                                               "lastPlayedCard": "RED-5"
                                                             }
-                                                            """;
+     
+                                                           """;
+    public static final int TEST_PLAYER_PREDICTION = 3;
+
 }

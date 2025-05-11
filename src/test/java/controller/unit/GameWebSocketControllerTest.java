@@ -2,6 +2,7 @@ package controller.unit;
 
 import com.aau.wizard.controller.GameWebSocketController;
 import com.aau.wizard.dto.request.GameRequest;
+import com.aau.wizard.dto.request.PredictionRequest;
 import com.aau.wizard.dto.response.GameResponse;
 import com.aau.wizard.model.enums.GameStatus;
 import com.aau.wizard.service.interfaces.GameService;
@@ -103,4 +104,21 @@ class GameWebSocketControllerTest {
     private void verifyJoinCalledOnce() {
         verify(gameService, times(1)).joinGame(any(GameRequest.class));
     }
+
+    @Test
+    void testHandlePredictionCallsGameService() {
+        PredictionRequest request = new PredictionRequest(TEST_GAME_ID, TEST_PLAYER_ID, 2);
+        GameResponse expectedResponse = createDefaultGameResponse(createDefaultPlayerDto());
+
+        when(gameService.makePrediction(any(PredictionRequest.class))).thenReturn(expectedResponse);
+
+        GameResponse response = gameWebSocketController.handlePrediction(request);
+
+        assertNotNull(response);
+        assertEquals(TEST_GAME_ID, response.getGameId());
+        assertEquals(TEST_PLAYER_ID, response.getPlayers().get(0).getPlayerId());
+
+        verify(gameService, times(1)).makePrediction(any(PredictionRequest.class));
+    }
+
 }

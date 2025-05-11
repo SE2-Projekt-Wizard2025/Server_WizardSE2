@@ -2,6 +2,7 @@ package com.aau.wizard.model;
 
 import com.aau.wizard.model.enums.GameStatus;
 
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,6 +12,9 @@ public class Game {
     private List<Player> players = new ArrayList<>();
     private String currentPlayerId;
     private GameStatus status;
+    private Card trumpCard;
+    private List<String> predictionOrder = new ArrayList<>();
+    private String lastRoundWinnerId;
 
     public Game(String gameId) {
         this.gameId = gameId;
@@ -82,5 +86,30 @@ public class Game {
         return true;
     }
 
+
+
+    public void setTrumpCard(Card trumpCard){
+        this.trumpCard=trumpCard;
+    }
+
+    public Card getTrumpCard() {
+        return trumpCard;
+    }
+
+    public List<String> getPredictionOrder() {
+        return predictionOrder;
+    }
+
+    public void setPredictionOrder(List<String> predictionOrder) {
+        this.predictionOrder = predictionOrder;
+    }
+
+    public String getLastRoundWinnerId() {
+        return lastRoundWinnerId;
+    }
+
+    public void setLastRoundWinnerId(String lastRoundWinnerId) {
+        this.lastRoundWinnerId = lastRoundWinnerId;
+    }
 
 }

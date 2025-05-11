@@ -8,6 +8,8 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import com.aau.wizard.dto.request.PredictionRequest;
+
 
 /**
  * WebSocket controller that handles game-related messages from clients.
@@ -56,4 +58,11 @@ public class GameWebSocketController {
         System.out.println("Start game with ID: " + gameId);
         return gameService.startGame(gameId);
     }
+
+    @MessageMapping("/game/predict")
+    @SendTo("/topic/game")
+    public GameResponse handlePrediction(PredictionRequest request) {
+        return gameService.makePrediction(request);
+    }
+
 }

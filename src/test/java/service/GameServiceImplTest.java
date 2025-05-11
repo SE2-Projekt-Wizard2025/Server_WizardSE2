@@ -2,6 +2,7 @@ package service;
 
 import com.aau.wizard.dto.CardDto;
 import com.aau.wizard.dto.request.GameRequest;
+import com.aau.wizard.dto.request.PredictionRequest;
 import com.aau.wizard.dto.response.GameResponse;
 import com.aau.wizard.model.Card;
 import com.aau.wizard.model.Game;
@@ -14,7 +15,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -141,6 +146,7 @@ public class GameServiceImplTest {
     }
 
     @Test
+<<<<<<< HEAD
     void testStartGameSuccess() {
         gameService.joinGame(createDefaultGameRequest());
         gameService.joinGame(createCustomGameRequest(TEST_GAME_ID, "p2", "Player2"));
@@ -206,6 +212,99 @@ public class GameServiceImplTest {
 
         assertNotNull(game);
         assertEquals(TEST_GAME_ID, game.getGameId());
+=======
+    void testMakePredictionStoresPrediction() {
+
+        Game game = new Game(TEST_GAME_ID);
+
+        // zwei spieler damit es nicht nur einen letzten spieler gibt
+        Player player = new Player(TEST_PLAYER_ID, TEST_PLAYER_NAME);
+        player.setHandCards(List.of(createDefaultCard()));
+
+        Player other = new Player("p2", "Zweiter");
+        other.setHandCards(List.of(createDefaultCard()));
+
+        game.setPlayers(List.of(player, other));
+
+        game.setPredictionOrder(List.of(TEST_PLAYER_ID, "p2"));
+
+
+        try {
+            Field gamesField = GameServiceImpl.class.getDeclaredField("games");
+            gamesField.setAccessible(true);
+
+            @SuppressWarnings("unchecked")
+            Map<String, Game> gamesMap = (Map<String, Game>) gamesField.get(gameService);
+            gamesMap.put(TEST_GAME_ID, game);
+        } catch (Exception e) {
+            fail("Fehler beim Zugriff auf games-Feld: " + e.getMessage());
+        }
+
+
+        PredictionRequest request = new PredictionRequest(TEST_GAME_ID, TEST_PLAYER_ID, 1);
+        GameResponse response = gameService.makePrediction(request);
+
+
+        assertNotNull(response);
+        assertEquals(1, player.getPrediction());          // Vorhersage korrekt speichern
+        assertEquals(TEST_GAME_ID, response.getGameId());
+    }
+
+    @Test
+    void testMakePredictionThrowsExceptionWhenSumMatchesTotalTricks() { //wenn nur ein Spieler
+        Game game = new Game(TEST_GAME_ID);
+        Player player = new Player(TEST_PLAYER_ID, TEST_PLAYER_NAME);
+        player.setHandCards(List.of(createDefaultCard()));
+        game.setPlayers(List.of(player));
+
+        game.setPredictionOrder(List.of(TEST_PLAYER_ID));
+
+        try {
+            Field gamesField = GameServiceImpl.class.getDeclaredField("games");
+            gamesField.setAccessible(true);
+            @SuppressWarnings("unchecked")
+            Map<String, Game> gamesMap = (Map<String, Game>) gamesField.get(gameService);
+            gamesMap.put(TEST_GAME_ID, game);
+        } catch (Exception e) {
+            fail("Fehler beim Zugriff auf games-Feld: " + e.getMessage());
+        }
+
+        PredictionRequest request = new PredictionRequest(TEST_GAME_ID, TEST_PLAYER_ID, 1);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            gameService.makePrediction(request);
+        });
+    }
+
+    @Test
+    void testPlayerCannotPredictOutOfTurn() throws Exception {
+        Game game = new Game(TEST_GAME_ID);
+
+        Player player1 = new Player("p1", "Anna");
+        player1.setHandCards(List.of(createDefaultCard()));
+        Player player2 = new Player("p2", "Ben");
+        player2.setHandCards(List.of(createDefaultCard()));
+
+        game.setPlayers(List.of(player1, player2));
+        game.setPredictionOrder(List.of("p1", "p2")); // richtige Reihenfolge
+
+        // Spieler 2 zu früh vorhersagen
+        PredictionRequest invalidRequest = new PredictionRequest(TEST_GAME_ID, "p2", 1);
+
+
+        Field gamesField = GameServiceImpl.class.getDeclaredField("games");
+        gamesField.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        Map<String, Game> gamesMap = (Map<String, Game>) gamesField.get(gameService);
+        gamesMap.put(TEST_GAME_ID, game);
+
+
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            gameService.makePrediction(invalidRequest);
+        });
+
+        assertEquals("Du bist noch nicht an der Reihe, bitte warte.", exception.getMessage());
+>>>>>>> feature/stichlogik
     }
 
 
