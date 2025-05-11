@@ -10,6 +10,8 @@ public class Player {
     private boolean ready;
     private List<Card> handCards = new ArrayList<>();
     private Integer prediction; //kann null sein, noch keine Vorhersage
+    private int tricksWon;
+    private int bid;
 
     public Player(String playerId, String name) {
         this.playerId = playerId;
@@ -60,4 +62,20 @@ public class Player {
     public Integer getPrediction(){return prediction;}
 
     public void setPrediction(Integer prediction){this.prediction=prediction;}
+
+    public int getBid(){
+        return bid;
+    }
+
+    public void setBid(int bid){
+        this.bid=bid;
+    }
+
+    public int getTricksWon(){
+        return tricksWon;
+    }
+
+    public void setTricksWon(int tricksWon){
+        this.tricksWon=tricksWon;
+    }
 }

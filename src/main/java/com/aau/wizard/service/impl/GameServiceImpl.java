@@ -118,8 +118,15 @@ public class GameServiceImpl implements GameService {
 
         // Sonderregel: Letzter Spieler darf keine perfekte Summe vorhersagen
         List<Player> allPlayers = game.getPlayers();
-        boolean isLastPlayer = allPlayers.indexOf(player) == allPlayers.size() - 1;
+        List<String> predictionOrder = game.getPredictionOrder();
 
+        long alreadyPredicted = allPlayers.stream().filter(p -> p.getPrediction() != null).count();
+        String expectedPlayerId = predictionOrder.get((int) alreadyPredicted);
+        if (!expectedPlayerId.equals(player.getPlayerId())) {
+            throw new IllegalStateException("Du bist noch nicht an der Reihe, bitte warte.");
+        }
+
+        boolean isLastPlayer=predictionOrder.indexOf(player.getPlayerId())==predictionOrder.size()-1;
         if (isLastPlayer) {
             int sumOfOtherPredictions = allPlayers.stream()
                     .filter(p -> !p.getPlayerId().equals(player.getPlayerId()))
@@ -138,35 +145,5 @@ public class GameServiceImpl implements GameService {
         player.setPrediction(prediction);
         return createGameResponse(game, player.getPlayerId());
     }
-
-
-    // wird später anders geregelt
-/*
-public void startRound(String gameId, int cardsPerPlayer) {
-    Game game = games.get(gameId);
-    if (game == null) {
-        throw new IllegalArgumentException("Spiel nicht gefunden");
-    }
-
-    prepareNewRound(game, cardsPerPlayer);
-}
-
-public void prepareNewRound(Game game, int cardsPerPlayer) {
-    Deck deck = new Deck();
-    deck.shuffle();
-
-    for (Player player : game.getPlayers()) {
-        player.setHandCards(deck.draw(cardsPerPlayer));
-        player.setPrediction(null);
-        player.setTricksWon(0);
-    }
-
-    Card trumpCard = deck.draw(1).get(0);
-    game.setTrumpCard(trumpCard);
-
-    System.out.println("Trumpf ist: " + trumpCard.getSuit());
-}
-*/
-
 
 }
