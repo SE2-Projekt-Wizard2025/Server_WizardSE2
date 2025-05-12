@@ -2,6 +2,7 @@ package service;
 
 import com.aau.wizard.dto.CardDto;
 import com.aau.wizard.dto.request.GameRequest;
+import com.aau.wizard.dto.request.PredictionRequest;
 import com.aau.wizard.dto.response.GameResponse;
 import com.aau.wizard.model.Card;
 import com.aau.wizard.model.Game;
@@ -9,17 +10,28 @@ import com.aau.wizard.model.Player;
 import com.aau.wizard.service.impl.GameServiceImpl;
 import static com.aau.wizard.testutil.TestConstants.*;
 import static com.aau.wizard.testutil.TestDataFactory.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
+
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class GameServiceImplTest {
+
+    @Mock
+    private SimpMessagingTemplate messagingTemplate;
 
     @InjectMocks
     private GameServiceImpl gameService;
@@ -139,4 +151,171 @@ public class GameServiceImplTest {
         Player player = game.getPlayerById(playerId);
         player.setHandCards(List.of(card));
     }
+
+    @Test
+
+    void testStartGameSuccess() {
+        gameService.joinGame(createDefaultGameRequest());
+        gameService.joinGame(createCustomGameRequest(TEST_GAME_ID, "p2", "Player2"));
+        gameService.joinGame(createCustomGameRequest(TEST_GAME_ID, "p3", "Player3"));
+
+        GameResponse response = gameService.startGame(TEST_GAME_ID);
+
+        assertNotNull(response);
+        assertEquals("PLAYING", response.getStatus().name());
+        assertEquals(3, response.getPlayers().size());
+
+        //Stellt sicher, dass der currentPlayer überhaupt unter den Spielern ist
+        List<String> playerIds = response.getPlayers().stream()
+                .map(p -> p.getPlayerId())
+                .toList();
+
+        assertTrue(playerIds.contains(response.getCurrentPlayerId()), "Current player must be in the list");
+        verify(messagingTemplate, atLeast(1)).convertAndSend(eq("/topic/game"), any(GameResponse.class));    }
+
+    @Test
+    void testStartGameThrowsIfGameNotFound() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            gameService.startGame("nonexistent-id");
+        });
+
+        assertTrue(exception.getMessage().contains("Spiel nicht gefunden"));
+    }
+    @Test
+    void testStartGameFailsIfCannotStart() {
+        gameService.joinGame(createDefaultGameRequest());
+
+        //startGame sollte trotzdem erfolgreich sein
+        GameResponse response = gameService.startGame(TEST_GAME_ID);
+
+        // Assert: Spiel wurde gestartet
+        assertNotNull(response);
+        assertEquals("PLAYING", response.getStatus().name());
+        assertEquals(1, response.getPlayers().size());
+        assertEquals(TEST_GAME_ID, response.getGameId());
+
+        // Der eine Spieler ist auch der currentPlayer
+        assertEquals(TEST_PLAYER_ID, response.getCurrentPlayerId());
+    }
+
+    @Test
+    void testCanStartGameReturnsTrueIfAllowed() {
+        gameService.joinGame(createDefaultGameRequest());
+        gameService.joinGame(createCustomGameRequest(TEST_GAME_ID, "p2", "Player2"));
+        gameService.joinGame(createCustomGameRequest(TEST_GAME_ID, "p3", "Player3"));
+
+        assertTrue(gameService.canStartGame(TEST_GAME_ID));
+    }
+
+    @Test
+    void testCanStartGameReturnsFalseIfGameDoesNotExist() {
+        assertFalse(gameService.canStartGame("invalid-id"));
+    }
+
+    @Test
+    void testGetGameByIdReturnsCorrectGame() {
+        gameService.joinGame(createDefaultGameRequest());
+        Game game = gameService.getGameById(TEST_GAME_ID);
+
+        assertNotNull(game);
+        assertEquals(TEST_GAME_ID, game.getGameId());
+    }
+    @Test
+    void testMakePredictionStoresPrediction() {
+
+        Game game = new Game(TEST_GAME_ID);
+
+        // zwei spieler damit es nicht nur einen letzten spieler gibt
+        Player player = new Player(TEST_PLAYER_ID, TEST_PLAYER_NAME);
+        player.setHandCards(List.of(createDefaultCard()));
+
+        Player other = new Player("p2", "Zweiter");
+        other.setHandCards(List.of(createDefaultCard()));
+
+        game.setPlayers(List.of(player, other));
+
+        game.setPredictionOrder(List.of(TEST_PLAYER_ID, "p2"));
+
+
+        try {
+            Field gamesField = GameServiceImpl.class.getDeclaredField("games");
+            gamesField.setAccessible(true);
+
+            @SuppressWarnings("unchecked")
+            Map<String, Game> gamesMap = (Map<String, Game>) gamesField.get(gameService);
+            gamesMap.put(TEST_GAME_ID, game);
+        } catch (Exception e) {
+            fail("Fehler beim Zugriff auf games-Feld: " + e.getMessage());
+        }
+
+
+        PredictionRequest request = new PredictionRequest(TEST_GAME_ID, TEST_PLAYER_ID, 1);
+        GameResponse response = gameService.makePrediction(request);
+
+
+        assertNotNull(response);
+        assertEquals(1, player.getPrediction());          // Vorhersage korrekt speichern
+        assertEquals(TEST_GAME_ID, response.getGameId());
+    }
+
+    @Test
+    void testMakePredictionThrowsExceptionWhenSumMatchesTotalTricks() { //wenn nur ein Spieler
+        Game game = new Game(TEST_GAME_ID);
+        Player player = new Player(TEST_PLAYER_ID, TEST_PLAYER_NAME);
+        player.setHandCards(List.of(createDefaultCard()));
+        game.setPlayers(List.of(player));
+
+        game.setPredictionOrder(List.of(TEST_PLAYER_ID));
+
+        try {
+            Field gamesField = GameServiceImpl.class.getDeclaredField("games");
+            gamesField.setAccessible(true);
+            @SuppressWarnings("unchecked")
+            Map<String, Game> gamesMap = (Map<String, Game>) gamesField.get(gameService);
+            gamesMap.put(TEST_GAME_ID, game);
+        } catch (Exception e) {
+            fail("Fehler beim Zugriff auf games-Feld: " + e.getMessage());
+        }
+
+        PredictionRequest request = new PredictionRequest(TEST_GAME_ID, TEST_PLAYER_ID, 1);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            gameService.makePrediction(request);
+        });
+    }
+
+    @Test
+    void testPlayerCannotPredictOutOfTurn() throws Exception {
+        Game game = new Game(TEST_GAME_ID);
+
+        Player player1 = new Player("p1", "Anna");
+        player1.setHandCards(List.of(createDefaultCard()));
+        Player player2 = new Player("p2", "Ben");
+        player2.setHandCards(List.of(createDefaultCard()));
+
+        game.setPlayers(List.of(player1, player2));
+        game.setPredictionOrder(List.of("p1", "p2")); // richtige Reihenfolge
+
+        // Spieler 2 zu früh vorhersagen
+        PredictionRequest invalidRequest = new PredictionRequest(TEST_GAME_ID, "p2", 1);
+
+
+        Field gamesField = GameServiceImpl.class.getDeclaredField("games");
+        gamesField.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        Map<String, Game> gamesMap = (Map<String, Game>) gamesField.get(gameService);
+        gamesMap.put(TEST_GAME_ID, game);
+
+
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            gameService.makePrediction(invalidRequest);
+        });
+
+        assertEquals("Du bist noch nicht an der Reihe, bitte warte.", exception.getMessage());
+
+    }
+
+
+
 }
+

@@ -24,7 +24,9 @@ public class TestDataFactory {
     }
 
     public static PlayerDto createDefaultPlayerDto() {
-        return new PlayerDto(TEST_PLAYER_ID, TEST_PLAYER_NAME, TEST_PLAYER_SCORE, TEST_PLAYER_READY);
+        PlayerDto dto = new PlayerDto(TEST_PLAYER_ID, TEST_PLAYER_NAME, TEST_PLAYER_SCORE, TEST_PLAYER_READY);
+        dto.setPrediction(TEST_PLAYER_PREDICTION);
+        return dto;
     }
 
     public static PlayerDto createCustomPlayerDto(String playerId, String playerName, int score, boolean ready) {
@@ -32,7 +34,9 @@ public class TestDataFactory {
     }
 
     public static Player createDefaultPlayer() {
-        return new Player(TEST_PLAYER_ID, TEST_PLAYER_NAME);
+        Player player = new Player(TEST_PLAYER_ID, TEST_PLAYER_NAME);
+        player.setPrediction(TEST_PLAYER_PREDICTION);
+        return player;
     }
 
     public static Player createCustomPlayer(String playerId, String playerName) {
@@ -90,7 +94,9 @@ public class TestDataFactory {
                 TEST_PLAYER_ID,
                 createDefaultListOfPlayerDto(),
                 createDefaultListOfCardDto(),
-                TEST_LAST_PLAYED_CARD
+                TEST_LAST_PLAYED_CARD,
+                null //trumpCard ist in Tests derweil null
+
         );
     }
 

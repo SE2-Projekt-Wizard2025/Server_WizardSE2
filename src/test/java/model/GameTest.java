@@ -6,6 +6,7 @@ import com.aau.wizard.model.enums.GameStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import static com.aau.wizard.testutil.TestConstants.*;
 import static com.aau.wizard.testutil.TestDataFactory.*;
@@ -73,4 +74,59 @@ class GameTest {
         assertNotNull(game.getPlayers());
         assertTrue(game.getPlayers().isEmpty());
     }
+
+    @Test
+    void testAddPlayerSuccessful() {
+        Player player = new Player("p-new", "New Player");
+        assertTrue(game.addPlayer(player));
+        assertEquals(1, game.getPlayers().size());
+    }
+
+    @Test
+    void testAddPlayerFailsIfNotInLobby() {
+        game.setStatus(GameStatus.PLAYING);
+        Player player = new Player("p-x", "Blocked");
+        assertFalse(game.addPlayer(player));
+    }
+
+    @Test
+    void testAddPlayerFailsIfMoreThan6() {
+        for (int i = 0; i < 6; i++) {
+            assertTrue(game.addPlayer(new Player("p" + i, "Player" + i)));
+        }
+        assertFalse(game.addPlayer(new Player("p7", "TooMany")));
+    }
+
+    @Test
+    void testCanStartGameReturnsTrueIfLobbyAndEnoughPlayers() {
+        game.setPlayers(List.of(new Player("p1", "A"), new Player("p2", "B"), new Player("p3", "C")));
+        assertTrue(game.canStartGame());
+    }
+
+    @Test
+    void testCanStartGameReturnsFalseIfNotLobby() {
+        game.setStatus(GameStatus.PLAYING);
+        game.setPlayers(List.of(new Player("p1", "A"), new Player("p2", "B"), new Player("p3", "C")));
+        assertFalse(game.canStartGame());
+    }
+
+    @Test
+    void testStartGameSuccess() {
+        game.setPlayers(new ArrayList<>(List.of(
+                new Player("p1", "A"),
+                new Player("p2", "B"),
+                new Player("p3", "C")
+        )));
+        assertTrue(game.startGame());
+        assertEquals(GameStatus.PLAYING, game.getStatus());
+        assertNotNull(game.getCurrentPlayerId());
+    }
+
+    @Test
+    void testStartGameFails() {
+        // zu wenig Spieler
+        game.setPlayers(new ArrayList<>(List.of(new Player("p1", "A"))));
+        assertTrue(game.startGame());
+    }
+
 }

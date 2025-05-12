@@ -5,9 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5a88b75e-a340-4aab-ba6f-5de17d4e4b2e" name="Changes" comment="feat: Tests für RoundServiceImpl hinzugefügt">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/testutil/TestDataFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/testutil/TestDataFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/service/impl/GameServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/service/impl/GameServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,13 +65,14 @@
   &quot;associatedIndex&quot;: 2
 }</component>
   <component name="ProjectId" id="2umBGgLxpumjbCwhiIIaAhUhBD7" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Application.WizardApplication.executor": "Run",
+    "Application.WizardApplication.executor": "Debug",
     "JUnit.BiddingRulesTest$CalculateScoresTests.exact negative difference calculation.executor": "Run",
     "JUnit.BiddingRulesTest.executor": "Run",
     "JUnit.CardDtoTest.executor": "Run",
@@ -95,6 +95,7 @@
     "JUnit.GameWebSocketIntegrationTest (1).executor": "Run",
     "JUnit.GameWebSocketIntegrationTest.executor": "Run",
     "JUnit.GameWebSocketIntegrationTest.testJoinGameWebSocketEndpoint.executor": "Run",
+    "JUnit.PlayerDtoTest.executor": "Run",
     "JUnit.PlayerTest.equals_withHandCards.executor": "Run",
     "JUnit.PlayerTest.executor": "Run",
     "JUnit.RoundServiceImplTest.executor": "Run",
@@ -104,6 +105,7 @@
     "JUnit.TrickRulesTest$LeadSuitTests.wizard as first card means no lead suit.executor": "Run",
     "JUnit.TrickRulesTest.executor": "Run",
     "JUnit.WebSocketIntegrationTest.executor": "Run",
+    "JUnit.WizardApplicationTest.executor": "Run",
     "JUnit.controller in Server_WizardSE2.executor": "Coverage",
     "JUnit.java in Server_WizardSE2.executor": "Coverage",
     "Kotlin.GameSimulationKt.executor": "Run",
@@ -116,10 +118,10 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "feat/server-kotlin-deck-classes",
+    "git-widget-placeholder": "12-spieler-setup",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Anwender/Documents/GitHub/Server_WizardSE2",
+    "last_opened_file_path": "C:/UNI nicht onedrive/Wizard2025/Stand 0805/Server_WizardSE2",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -142,7 +144,20 @@
       <recent name="$PROJECT_DIR$/.idea" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.DeckUtilsTest">
+  <component name="RunManager" selected="Application.WizardApplication">
+    <configuration name="WizardApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.aau.wizard.WizardApplication" />
+      <module name="Server_WizardSE2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.aau.wizard.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="CardTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="Server_WizardSE2" />
       <extension name="coverage">
@@ -189,21 +204,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="PlayerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="Server_WizardSE2" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="model.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="model" />
-      <option name="MAIN_CLASS_NAME" value="model.PlayerTest" />
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="RoundServiceImplTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="Server_WizardSE2" />
       <extension name="coverage">
@@ -227,30 +227,21 @@
       </method>
     </configuration>
     <list>
+      <item itemvalue="Application.WizardApplication" />
       <item itemvalue="JUnit.CardTest" />
       <item itemvalue="JUnit.CardTest.hashCode_shouldBeEqualForSameCard" />
       <item itemvalue="JUnit.DeckUtilsTest" />
-      <item itemvalue="JUnit.PlayerTest" />
       <item itemvalue="JUnit.RoundServiceImplTest" />
-      <item itemvalue="Spring Boot.WizardApplication" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.DeckUtilsTest" />
+        <item itemvalue="Application.WizardApplication" />
         <item itemvalue="JUnit.CardTest" />
+        <item itemvalue="JUnit.DeckUtilsTest" />
         <item itemvalue="JUnit.CardTest.hashCode_shouldBeEqualForSameCard" />
         <item itemvalue="JUnit.RoundServiceImplTest" />
-        <item itemvalue="JUnit.PlayerTest" />
       </list>
     </recent_temporary>
-  </component>
-  <component name="SharedIndexes">
-    <attachedChunks>
-      <set>
-        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.23774.435" />
-        <option value="bundled-js-predefined-d6986cc7102b-f27c65a3e318-JavaScript-IU-251.23774.435" />
-      </set>
-    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">

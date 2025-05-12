@@ -11,6 +11,12 @@ target/
 *.iws
 *.iml
 *.ipr
+# IntelliJ IDEA
+.idea/
+!.idea/codeStyles/
+!.idea/inspectionProfiles/
+!.idea/runConfigurations/
+
 
 ### Eclipse ###
 .apt_generated
@@ -36,3 +42,4 @@ build/
 
 ### Mac OS ###
 .DS_Store
+/.idea/workspace.xml

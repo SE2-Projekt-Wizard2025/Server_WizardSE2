@@ -1,6 +1,7 @@
 package service;
 
 import com.aau.wizard.model.Card;
+import com.aau.wizard.model.Game;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.model.enums.CardSuit;
 import com.aau.wizard.model.enums.CardType;
@@ -16,6 +17,7 @@ class RoundServiceImplTest {
 
     private List<Player> players;
     private RoundServiceImpl roundService;
+    private Game game;
 
     @BeforeEach
     void setUp() {
@@ -23,9 +25,13 @@ class RoundServiceImplTest {
                 new Player("p1", "Alice"),
                 new Player("p2", "Bob"),
                 new Player("p3", "Charlie")
-        );
-        roundService = new RoundServiceImpl(players);
-    }
+            );
+
+            game = new Game("test-game");
+            game.setPlayers(players);
+
+            roundService = new RoundServiceImpl(game);
+        }
 
     @Test
     void startRound_initializesGameStateCorrectly() {
@@ -96,4 +102,31 @@ class RoundServiceImplTest {
         assertEquals(10, players.get(1).getScore());  // 3*10 - 2*10
         assertEquals(-10, players.get(2).getScore()); // 1*10 - 2*10
     }
+
+    @Test
+    void endRound_setsPredictionOrderStartingWithWinner() {
+        // Charlie gewinnt
+        players.get(0).setBid(1); players.get(0).setTricksWon(1);
+        players.get(1).setBid(2); players.get(1).setTricksWon(2);
+        players.get(2).setBid(3); players.get(2).setTricksWon(4);
+
+        roundService.endRound();
+
+        List<String> predictionOrder = game.getPredictionOrder();
+        assertNotNull(predictionOrder);
+        assertEquals(3, predictionOrder.size());
+        assertEquals("p3", predictionOrder.get(0)); // Charlie = Gewinner
+        assertTrue(predictionOrder.containsAll(List.of("p1", "p2", "p3")));
+    }
+
+    @Test
+    void startRound_resetsPredictions() {
+        players.forEach(p -> p.setPrediction(2));
+
+        roundService.startRound(3);
+
+        players.forEach(p -> assertNull(p.getPrediction(), "Prediction sollte zurückgesetzt sein"));
+    }
+
+
 }

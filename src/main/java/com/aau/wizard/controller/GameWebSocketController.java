@@ -4,8 +4,12 @@ import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.response.GameResponse;
 import com.aau.wizard.service.interfaces.GameService;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import com.aau.wizard.dto.request.PredictionRequest;
+
 
 /**
  * WebSocket controller that handles game-related messages from clients.
@@ -15,14 +19,15 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class GameWebSocketController {
     private final GameService gameService;
-
+    private final SimpMessagingTemplate messagingTemplate;
     /**
      * Injects the game service to delegate game logic operations.
      *
      * @param gameService the service handling core game logic
      */
-    public GameWebSocketController(GameService gameService) {
+    public GameWebSocketController(GameService gameService, SimpMessagingTemplate messagingTemplate) {
         this.gameService = gameService;
+        this.messagingTemplate = messagingTemplate;
     }
 
     /**
@@ -35,8 +40,29 @@ public class GameWebSocketController {
      * @return the updated game state as a response
      */
     @MessageMapping("/game/join")
-    @SendTo("/topic/game")
-    public GameResponse joinGame(GameRequest gameRequest) {
-        return gameService.joinGame(gameRequest);
+    public void joinGame(GameRequest gameRequest) {
+        System.out.println("Received join request from: " + gameRequest.getPlayerName() +
+                " (ID: " + gameRequest.getPlayerId() + ") for Game: " + gameRequest.getGameId());
+
+        GameResponse response = gameService.joinGame(gameRequest);
+        messagingTemplate.convertAndSend("/topic/game", response);
     }
+
+    @MessageMapping("/game/start")
+    @SendTo("/topic/game")
+    public GameResponse startGame(@Payload String gameId) {
+        if (gameId != null && gameId.startsWith("\"") && gameId.endsWith("\"")) {
+            gameId = gameId.substring(1, gameId.length() - 1);
+        }
+
+        System.out.println("Start game with ID: " + gameId);
+        return gameService.startGame(gameId);
+    }
+
+    @MessageMapping("/game/predict")
+    @SendTo("/topic/game")
+    public GameResponse handlePrediction(PredictionRequest request) {
+        return gameService.makePrediction(request);
+    }
+
 }

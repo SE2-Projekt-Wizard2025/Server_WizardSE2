@@ -16,6 +16,7 @@ public class GameResponse {
     private List<PlayerDto> players;
     private List<CardDto> handCards;
     private String lastPlayedCard;
+    private CardDto trumpCard;
 
     /**
      * No args constructor needed for Jackson / JSON deserialization
@@ -23,13 +24,14 @@ public class GameResponse {
     public GameResponse() {}
 
     public GameResponse(String gameId, GameStatus status, String currentPlayerId,
-                        List<PlayerDto> players, List<CardDto> handCards, String lastPlayedCard) {
+                        List<PlayerDto> players, List<CardDto> handCards, String lastPlayedCard, CardDto trumpCard) {
         this.gameId = gameId;
         this.status = status;
         this.currentPlayerId = currentPlayerId;
         this.players = players;
         this.handCards = handCards;
         this.lastPlayedCard = lastPlayedCard;
+        this.trumpCard = trumpCard;
     }
 
     public String getGameId() {
@@ -78,5 +80,13 @@ public class GameResponse {
 
     public void setHandCards(List<CardDto> handCards) {
         this.handCards = handCards;
+    }
+
+    public CardDto getTrumpCard() {
+        return trumpCard;
+    }
+
+    public void setTrumpCard(CardDto trumpCard) {
+        this.trumpCard = trumpCard;
     }
 }

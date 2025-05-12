@@ -1,13 +1,15 @@
 package com.aau.wizard.service.impl;
-
 import com.aau.wizard.dto.CardDto;
 import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.request.GameRequest;
+import com.aau.wizard.dto.request.PredictionRequest;
 import com.aau.wizard.dto.response.GameResponse;
+import com.aau.wizard.model.Card;
 import com.aau.wizard.model.Game;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.service.interfaces.GameService;
 import com.google.common.annotations.VisibleForTesting;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -26,7 +28,13 @@ public class GameServiceImpl implements GameService {
      * In-memory storage of all active games, keyed by their gameId.
      */
     private final Map<String, Game> games = new HashMap<>();
+    private final Map<String, RoundServiceImpl> roundServices = new HashMap<>();
 
+    private final SimpMessagingTemplate messagingTemplate;
+
+    public GameServiceImpl(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
+    }
 
     /**
      * Handles a player joining a game. Creates the game if it doesn't exist,
@@ -41,7 +49,7 @@ public class GameServiceImpl implements GameService {
         Game game = games.computeIfAbsent(request.getGameId(), Game::new);
         addPlayerIfAbsent(game, request);
 
-        return createGameResponse(game, request.getPlayerId());
+        return createGameResponse(game, request.getPlayerId(), null);
     }
 
     /**
@@ -52,7 +60,7 @@ public class GameServiceImpl implements GameService {
      * @param requestingPlayerId the player for whom the response is built
      * @return a fully populated GameResponse
      */
-    private GameResponse createGameResponse(Game game, String requestingPlayerId) {
+    private GameResponse createGameResponse(Game game, String requestingPlayerId, Card trumpCard) {
         List<PlayerDto> playerDtos = mapOrEmpty(game.getPlayers(), PlayerDto::from);
         Player requestingPlayer = game.getPlayerById(requestingPlayerId);
         List<CardDto> handCards = CardDto.safeFromPlayer(requestingPlayer);
@@ -63,7 +71,8 @@ public class GameServiceImpl implements GameService {
                 game.getCurrentPlayerId(),
                 playerDtos,
                 handCards,
-                null // lastPlayedCard can be set here later on
+                null,// lastPlayedCard can be set here later on
+                trumpCard != null ? CardDto.from(trumpCard) : null
         );
     }
 
@@ -88,6 +97,39 @@ public class GameServiceImpl implements GameService {
         return game.getPlayerById(request.getPlayerId()) == null;
     }
 
+    @Override
+    public GameResponse startGame(String gameId) {
+        Game game = games.get(gameId);
+        if (game == null) {
+            throw new IllegalArgumentException("Spiel nicht gefunden: " + gameId);
+        }
+
+        boolean started = game.startGame(); // ruft neue Methode aus Game.java auf
+        if (!started) {
+            throw new IllegalStateException("Spiel konnte nicht gestartet werden – evtl. zu wenig Spieler?");
+        }
+
+        RoundServiceImpl roundService = new RoundServiceImpl(game);
+        roundService.startRound(1);//1 ist die Rundenanzahl — später noch dynamisch setzen
+        Card trumpCard = roundService.trumpCard;
+        CardDto trumpCardDto = trumpCard != null ? CardDto.from(trumpCard) : null;
+        roundServices.put(gameId, roundService);
+
+        for (Player player : game.getPlayers()) {
+            GameResponse response = createGameResponse(game, player.getPlayerId(), trumpCard);
+            messagingTemplate.convertAndSend("/topic/game", response);
+        }
+
+        return createGameResponse(game, game.getCurrentPlayerId(), trumpCard);
+    }
+
+    @Override
+    public boolean canStartGame(String gameId) {
+        Game game = games.get(gameId);
+        return game != null && game.canStartGame();
+    }
+
+
     /**
      * Returns the game instance associated with the given game ID.
      * <p>
@@ -101,4 +143,50 @@ public class GameServiceImpl implements GameService {
     public Game getGameById(String gameId) {
         return games.get(gameId);
     }
+
+    @Override
+    public GameResponse makePrediction(PredictionRequest request) {
+        Game game = games.get(request.getGameId());
+        if (game == null) {
+            throw new IllegalArgumentException("Spiel nicht gefunden");
+        }
+
+        Player player = game.getPlayerById(request.getPlayerId());
+        if (player == null) {
+            throw new IllegalArgumentException("Spieler nicht gefunden");
+        }
+
+        int prediction = request.getPrediction();
+
+        // Sonderregel: Letzter Spieler darf keine perfekte Summe vorhersagen
+        List<Player> allPlayers = game.getPlayers();
+        List<String> predictionOrder = game.getPredictionOrder();
+
+        long alreadyPredicted = allPlayers.stream().filter(p -> p.getPrediction() != null).count();
+        String expectedPlayerId = predictionOrder.get((int) alreadyPredicted);
+        if (!expectedPlayerId.equals(player.getPlayerId())) {
+            throw new IllegalStateException("Du bist noch nicht an der Reihe, bitte warte.");
+        }
+
+        boolean isLastPlayer=predictionOrder.indexOf(player.getPlayerId())==predictionOrder.size()-1;
+        if (isLastPlayer) {
+            int sumOfOtherPredictions = allPlayers.stream()
+                    .filter(p -> !p.getPlayerId().equals(player.getPlayerId()))
+                    .map(p -> p.getPrediction() != null ? p.getPrediction() : 0)
+                    .reduce(0, Integer::sum);
+
+            int totalTricks = player.getHandCards().size();
+
+            if (sumOfOtherPredictions + prediction == totalTricks) {
+                throw new IllegalArgumentException(
+                        "Diese Vorhersage ergibt exakt die Anzahl der Stiche und ist damit verboten."
+                );
+            }
+        }
+
+        player.setPrediction(prediction);
+        return createGameResponse(game, player.getPlayerId(), null);
+    }
+
+
 }

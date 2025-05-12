@@ -2,6 +2,7 @@ package com.aau.wizard.service.impl;
 
 import com.aau.wizard.model.Card;
 import com.aau.wizard.model.Deck;
+import com.aau.wizard.model.Game;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.model.enums.CardSuit;
 import com.aau.wizard.util.Pair;
@@ -18,9 +19,11 @@ public class RoundServiceImpl {
     public CardSuit trumpCardSuit = null;
     public final List<Pair<Player, Card>> playedCards = new ArrayList<>();
     public int currentTrickNumber = 0;
+    private final Game game;
 
-    public RoundServiceImpl(List<Player> players) {
-        this.players = players;
+    public RoundServiceImpl(Game game) {
+        this.players = game.getPlayers();
+        this.game=game;
     }
 
     public void startRound(int roundNumber) {
@@ -29,8 +32,10 @@ public class RoundServiceImpl {
             player.setHandCards(new ArrayList<>(deck.draw(roundNumber)));
             player.setTricksWon(0);
             player.setBid(0);
+            player.setPrediction(null);
         }
-
+        //trumpCard = new Card(CardSuit.SPECIAL, 0); // 14 = Wizard --> nur für test
+        //trumpCardSuit = trumpCard.getSuit();        // = SPECIAL --> nur für test
         if (deck.size() < 1) {
             trumpCard = null;
             trumpCardSuit = null;
@@ -73,6 +78,30 @@ public class RoundServiceImpl {
         return winner;
     }
 
+    private List<String> createPredictionOrder(List<Player> players, String startingPlayerId) {
+        List<String> order = new ArrayList<>();
+        int startIndex = -1;
+
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(i).getPlayerId().equals(startingPlayerId)) {
+                startIndex = i;
+                break;
+            }
+        }
+
+        if (startIndex == -1) {
+            throw new IllegalArgumentException("Startspieler nicht gefunden");
+        }
+
+        for (int i = 0; i < players.size(); i++) {
+            Player p = players.get((startIndex + i) % players.size());
+            order.add(p.getPlayerId());
+        }
+
+        return order;
+    }
+
+
     public void endRound() {
         for (Player player : players) {
             int difference = Math.abs(player.getTricksWon() - player.getBid());
@@ -90,5 +119,14 @@ public class RoundServiceImpl {
             System.out.println(player.getName() + ": " + player.getBid() + " geboten, " +
                     player.getTricksWon() + " gewonnen → Punkte: " + player.getScore());
         }
+
+        Player winner = players.stream()
+                .max((p1, p2) -> Integer.compare(p1.getTricksWon(), p2.getTricksWon()))
+                .orElseThrow(() -> new IllegalStateException("Kein Gewinner gefunden"));
+
+        List<String> predictionOrder = createPredictionOrder(players, winner.getPlayerId());
+        game.setPredictionOrder(predictionOrder);
+
+        System.out.println("Neue Vorhersagereihenfolge: " + predictionOrder);
     }
 }

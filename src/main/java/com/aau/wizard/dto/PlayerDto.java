@@ -10,6 +10,7 @@ public class PlayerDto {
     private String playerName;
     private int score;
     private boolean ready;
+    private Integer prediction;
 
     /**
      * No args constructor needed for Jackson / JSON deserialization
@@ -28,17 +29,14 @@ public class PlayerDto {
      * <p>
      * Extracts basic player information such as ID, name, score, and ready state.
      *
-     * @param player the {@link Player} instance to convert (must not be {@code null})
+     * @param p the {@link Player} instance to convert (must not be {@code null})
      * @return the corresponding {@link PlayerDto}
      * @throws NullPointerException if the player or any of its required fields is {@code null}
      */
-    public static PlayerDto from(Player player) {
-        return new PlayerDto(
-                // TODO: Expand if needed
-                player.getPlayerId(),
-                player.getName(),
-                player.getScore(),
-                player.isReady());
+    public static PlayerDto from(Player p) {
+        PlayerDto dto = new PlayerDto(p.getPlayerId(), p.getName(), p.getScore(), p.isReady());
+        dto.setPrediction(p.getPrediction());
+        return dto;
     }
 
     public String getPlayerId() {
@@ -72,4 +70,8 @@ public class PlayerDto {
     public void setReady(boolean ready) {
         this.ready = ready;
     }
+
+    public Integer getPrediction(){ return prediction;}
+
+    public void setPrediction(Integer prediction){this.prediction=prediction;}
 }
