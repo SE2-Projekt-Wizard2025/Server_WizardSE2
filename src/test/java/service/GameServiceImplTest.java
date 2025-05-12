@@ -10,10 +10,14 @@ import com.aau.wizard.model.Player;
 import com.aau.wizard.service.impl.GameServiceImpl;
 import static com.aau.wizard.testutil.TestConstants.*;
 import static com.aau.wizard.testutil.TestDataFactory.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 
 import java.lang.reflect.Field;
@@ -25,6 +29,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class GameServiceImplTest {
+
+    @Mock
+    private SimpMessagingTemplate messagingTemplate;
 
     @InjectMocks
     private GameServiceImpl gameService;
@@ -146,7 +153,7 @@ public class GameServiceImplTest {
     }
 
     @Test
-<<<<<<< HEAD
+
     void testStartGameSuccess() {
         gameService.joinGame(createDefaultGameRequest());
         gameService.joinGame(createCustomGameRequest(TEST_GAME_ID, "p2", "Player2"));
@@ -164,7 +171,7 @@ public class GameServiceImplTest {
                 .toList();
 
         assertTrue(playerIds.contains(response.getCurrentPlayerId()), "Current player must be in the list");
-    }
+        verify(messagingTemplate, atLeast(1)).convertAndSend(eq("/topic/game"), any(GameResponse.class));    }
 
     @Test
     void testStartGameThrowsIfGameNotFound() {
@@ -212,7 +219,8 @@ public class GameServiceImplTest {
 
         assertNotNull(game);
         assertEquals(TEST_GAME_ID, game.getGameId());
-=======
+    }
+    @Test
     void testMakePredictionStoresPrediction() {
 
         Game game = new Game(TEST_GAME_ID);
@@ -304,9 +312,10 @@ public class GameServiceImplTest {
         });
 
         assertEquals("Du bist noch nicht an der Reihe, bitte warte.", exception.getMessage());
->>>>>>> feature/stichlogik
+
     }
 
 
 
 }
+
