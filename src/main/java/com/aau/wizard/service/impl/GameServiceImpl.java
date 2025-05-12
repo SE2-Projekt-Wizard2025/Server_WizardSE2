@@ -9,6 +9,7 @@ import com.aau.wizard.model.Game;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.service.interfaces.GameService;
 import com.google.common.annotations.VisibleForTesting;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -29,6 +30,11 @@ public class GameServiceImpl implements GameService {
     private final Map<String, Game> games = new HashMap<>();
     private final Map<String, RoundServiceImpl> roundServices = new HashMap<>();
 
+    private final SimpMessagingTemplate messagingTemplate;
+
+    public GameServiceImpl(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
+    }
 
     /**
      * Handles a player joining a game. Creates the game if it doesn't exist,
@@ -108,6 +114,11 @@ public class GameServiceImpl implements GameService {
         Card trumpCard = roundService.trumpCard;
         CardDto trumpCardDto = trumpCard != null ? CardDto.from(trumpCard) : null;
         roundServices.put(gameId, roundService);
+
+        for (Player player : game.getPlayers()) {
+            GameResponse response = createGameResponse(game, player.getPlayerId(), trumpCard);
+            messagingTemplate.convertAndSend("/topic/game", response);
+        }
 
         return createGameResponse(game, game.getCurrentPlayerId(), trumpCard);
     }
