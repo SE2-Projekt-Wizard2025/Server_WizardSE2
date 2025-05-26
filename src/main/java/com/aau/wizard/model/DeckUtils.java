@@ -19,6 +19,7 @@ public final class DeckUtils {
         return null;
     }
 
+    // fixme extract into the card subclasses
     public static boolean isWizard(Card card) {
         return card.getType() == CardType.WIZARD;
     }

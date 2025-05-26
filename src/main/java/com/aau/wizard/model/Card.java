@@ -5,6 +5,7 @@ import com.aau.wizard.model.enums.CardSuit;
 
 import java.util.Objects;
 
+// fixme extract Special/jester and special/wizard into classes for polymorphism
 public class Card {
     private final CardSuit cardSuit;
     private final int value;
