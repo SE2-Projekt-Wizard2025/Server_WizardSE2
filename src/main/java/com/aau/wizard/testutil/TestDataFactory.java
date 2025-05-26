@@ -13,6 +13,7 @@ import java.util.List;
 
 import static com.aau.wizard.testutil.TestConstants.*;
 
+// fixme move to test package
 /**
  * Utility class for creating test data.
  * Excluded from code coverage.

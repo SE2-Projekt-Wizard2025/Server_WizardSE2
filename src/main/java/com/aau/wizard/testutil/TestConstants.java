@@ -2,6 +2,7 @@ package com.aau.wizard.testutil;
 
 import com.aau.wizard.model.enums.GameStatus;
 
+// fixme move to test package
 public class TestConstants {
     public static final String TEST_GAME_ID = "12345";
     public static final GameStatus TEST_GAME_STATUS = GameStatus.LOBBY;

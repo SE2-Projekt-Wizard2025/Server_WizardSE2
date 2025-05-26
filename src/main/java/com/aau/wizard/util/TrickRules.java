@@ -7,6 +7,8 @@ import com.aau.wizard.model.enums.CardType;
 
 import java.util.List;
 
+// fixme avoid static methods in OO languages for extensibility/polymorphism
+// fixme this is not a util but a game rule -> move to some game logic package
 public final class TrickRules {
     private TrickRules() {
         //wird gebraucht...

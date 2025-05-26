@@ -1,5 +1,6 @@
 package com.aau.wizard.dto.request;
 
+// fixme extract base request and potentially response into message
 public class GameRequest {
     private String gameId;
     private String playerId;
