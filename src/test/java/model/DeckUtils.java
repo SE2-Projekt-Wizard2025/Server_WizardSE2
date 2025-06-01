@@ -1,7 +1,8 @@
 package model;
 
-import com.aau.wizard.model.Card;
+import com.aau.wizard.model.CardFactory;
 import com.aau.wizard.model.DeckUtils;
+import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.enums.CardSuit;
 import org.junit.jupiter.api.Test;
 
@@ -13,10 +14,10 @@ class DeckUtilsTest {
 
     @Test
     void getTrumpSuit_returnsWizardSuit() {
-        List<Card> cards = List.of(
-                new Card(CardSuit.RED, 5),
-                new Card(CardSuit.BLUE, 14),
-                new Card(CardSuit.GREEN, 7)
+        List<ICard> cards = List.of(
+                CardFactory.createCard(CardSuit.RED, 5),
+                CardFactory.createCard(CardSuit.BLUE, 14),
+                CardFactory.createCard(CardSuit.GREEN, 7)
         );
 
         CardSuit trumpSuit = DeckUtils.getTrumpSuit(cards);
@@ -25,10 +26,10 @@ class DeckUtilsTest {
 
     @Test
     void getTrumpSuit_returnsFirstWizardSuit() {
-        List<Card> cards = List.of(
-                new Card(CardSuit.RED, 14),
-                new Card(CardSuit.BLUE, 14),
-                new Card(CardSuit.GREEN, 7)
+        List<ICard> cards = List.of(
+                CardFactory.createCard(CardSuit.RED, 14),
+                CardFactory.createCard(CardSuit.BLUE, 14),
+                CardFactory.createCard(CardSuit.GREEN, 7)
         );
 
         CardSuit trumpSuit = DeckUtils.getTrumpSuit(cards);
@@ -37,10 +38,10 @@ class DeckUtilsTest {
 
     @Test
     void getTrumpSuit_returnsNullWhenNoWizard() {
-        List<Card> cards = List.of(
-                new Card(CardSuit.RED, 5),
-                new Card(CardSuit.BLUE, 7),
-                new Card(CardSuit.SPECIAL, 0)
+        List<ICard> cards = List.of(
+                CardFactory.createCard(CardSuit.RED, 5),
+                CardFactory.createCard(CardSuit.BLUE, 7),
+                CardFactory.createCard(CardSuit.SPECIAL, 0)
         );
 
         CardSuit trumpSuit = DeckUtils.getTrumpSuit(cards);
@@ -49,21 +50,21 @@ class DeckUtilsTest {
 
     @Test
     void getTrumpSuit_handlesEmptyList() {
-        List<Card> emptyList = List.of();
+        List<ICard> emptyList = List.of();
         CardSuit trumpSuit = DeckUtils.getTrumpSuit(emptyList);
         assertNull(trumpSuit);
     }
 
     @Test
     void isWizard_returnsTrueForWizard() {
-        Card wizard = new Card(CardSuit.SPECIAL, 14);
+        ICard wizard = CardFactory.createCard(CardSuit.SPECIAL, 14);
         assertTrue(DeckUtils.isWizard(wizard));
     }
 
     @Test
     void isWizard_returnsFalseForNonWizard() {
-        Card numberCard = new Card(CardSuit.RED, 5);
-        Card jester = new Card(CardSuit.SPECIAL, 0);
+        ICard numberCard = CardFactory.createCard(CardSuit.RED, 5);
+        ICard jester = CardFactory.createCard(CardSuit.SPECIAL, 0);
 
         assertFalse(DeckUtils.isWizard(numberCard));
         assertFalse(DeckUtils.isWizard(jester));
@@ -71,14 +72,14 @@ class DeckUtilsTest {
 
     @Test
     void isJester_returnsTrueForJester() {
-        Card jester = new Card(CardSuit.SPECIAL, 0);
+        ICard jester = CardFactory.createCard(CardSuit.SPECIAL, 0);
         assertTrue(DeckUtils.isJester(jester));
     }
 
     @Test
     void isJester_returnsFalseForNonJester() {
-        Card numberCard = new Card(CardSuit.BLUE, 7);
-        Card wizard = new Card(CardSuit.SPECIAL, 14);
+        ICard numberCard = CardFactory.createCard(CardSuit.BLUE, 7);
+        ICard wizard = CardFactory.createCard(CardSuit.SPECIAL, 14);
 
         assertFalse(DeckUtils.isJester(numberCard));
         assertFalse(DeckUtils.isJester(wizard));

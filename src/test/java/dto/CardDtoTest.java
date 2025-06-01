@@ -1,7 +1,6 @@
 package dto;
 
 import com.aau.wizard.dto.CardDto;
-import com.aau.wizard.model.Card;
 import com.aau.wizard.model.Player;
 import static com.aau.wizard.testutil.TestConstants.*;
 import static com.aau.wizard.testutil.TestDataFactory.*;
