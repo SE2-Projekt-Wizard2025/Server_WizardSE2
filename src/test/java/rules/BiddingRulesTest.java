@@ -1,4 +1,4 @@
-package util;
+package rules;
 
 import com.aau.wizard.model.Player;
 import com.aau.wizard.util.BiddingRules;

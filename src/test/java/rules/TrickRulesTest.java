@@ -1,10 +1,9 @@
-package util;
+package rules;
 
 import com.aau.wizard.model.CardFactory;
 import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.model.enums.CardSuit;
-import com.aau.wizard.model.enums.CardType;
 import com.aau.wizard.util.Pair;
 import com.aau.wizard.util.TrickRules;
 import org.junit.jupiter.api.Test;
