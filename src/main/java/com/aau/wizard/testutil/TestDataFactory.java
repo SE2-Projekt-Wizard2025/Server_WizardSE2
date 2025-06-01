@@ -4,8 +4,9 @@ import com.aau.wizard.dto.CardDto;
 import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.response.GameResponse;
-import com.aau.wizard.model.Card;
+import com.aau.wizard.model.CardFactory;
 import com.aau.wizard.model.Game;
+import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.model.enums.CardSuit;
 
@@ -51,12 +52,12 @@ public class TestDataFactory {
         return new CardDto(cardColor, cardValue, cardType);
     }
 
-    public static Card createDefaultCard() {
-        return new Card(CardSuit.RED, 1); //sollte 1 sein?
+    public static ICard createDefaultCard() {
+        return CardFactory.createCard(CardSuit.RED, 1); //sollte 1 sein?
     }
 
-    public static Card createCustomCard(CardSuit cardSuit, int cardValue) {
-        return new Card(cardSuit, cardValue);
+    public static ICard createCustomCard(CardSuit cardSuit, int cardValue) {
+        return CardFactory.createCard(cardSuit, cardValue);
     }
 
     public static List<PlayerDto> createDefaultListOfPlayerDto() {
@@ -80,7 +81,7 @@ public class TestDataFactory {
         );
     }
 
-    public static List<Card> createDefaultListOfCard() {
+    public static List<ICard> createDefaultListOfCard() {
         return List.of(
                 createDefaultCard(),
                 createCustomCard(CardSuit.BLUE, 2)

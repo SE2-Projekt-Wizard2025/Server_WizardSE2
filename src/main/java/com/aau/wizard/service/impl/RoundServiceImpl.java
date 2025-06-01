@@ -1,6 +1,6 @@
 package com.aau.wizard.service.impl;
 
-import com.aau.wizard.model.Card;
+import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Deck;
 import com.aau.wizard.model.Game;
 import com.aau.wizard.model.Player;
@@ -15,9 +15,9 @@ public class RoundServiceImpl {
 
     final List<Player> players;
     public final Deck deck = new Deck();
-    public Card trumpCard = null;
+    public ICard trumpCard = null;
     public CardSuit trumpCardSuit = null;
-    public final List<Pair<Player, Card>> playedCards = new ArrayList<>();
+    public final List<Pair<Player, ICard>> playedCards = new ArrayList<>();
     public int currentTrickNumber = 0;
     private final Game game;
 
@@ -40,7 +40,7 @@ public class RoundServiceImpl {
             trumpCard = null;
             trumpCardSuit = null;
         } else {
-            List<Card> drawn = deck.draw(1);
+            List<ICard> drawn = deck.draw(1);
             trumpCard = drawn.isEmpty() ? null : drawn.get(0);
             trumpCardSuit = trumpCard != null ? trumpCard.getSuit() : null;
         }
@@ -51,7 +51,7 @@ public class RoundServiceImpl {
         System.out.println("Trumpf: " + (trumpCardSuit != null ? trumpCardSuit : "Kein Trumpf"));
     }
 
-    public void playCard(Player player, Card card) {
+    public void playCard(Player player, ICard card) {
         if (!player.getHandCards().contains(card)) {
             throw new IllegalArgumentException("Player doesn't have that card");
         }
