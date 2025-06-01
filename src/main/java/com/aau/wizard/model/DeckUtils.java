@@ -18,12 +18,4 @@ public final class DeckUtils {
         }
         return null;
     }
-
-    public static boolean isWizard(ICard card) {
-        return card.getType() == CardType.WIZARD;
-    }
-
-    public static boolean isJester(ICard card) {
-        return card.getType() == CardType.JESTER;
-    }
 }

@@ -45,4 +45,9 @@ public class WizardCard implements ICard {
     public int hashCode() {
         return Objects.hash(cardSuit);
     }
+
+    public static boolean isWizard(ICard card) {
+        return card.getType() == CardType.WIZARD;
+    }
+
 }

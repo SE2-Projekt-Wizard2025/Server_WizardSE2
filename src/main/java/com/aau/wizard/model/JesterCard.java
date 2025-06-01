@@ -45,4 +45,8 @@ public class JesterCard implements ICard {
     public int hashCode() {
         return Objects.hash(cardSuit);
     }
+
+    public static boolean isJester(ICard card) {
+        return card.getType() == CardType.JESTER;
+    }
 }
