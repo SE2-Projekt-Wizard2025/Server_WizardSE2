@@ -1,8 +1,6 @@
 package model;
 
-import com.aau.wizard.model.CardFactory;
-import com.aau.wizard.model.DeckUtils;
-import com.aau.wizard.model.ICard;
+import com.aau.wizard.model.*;
 import com.aau.wizard.model.enums.CardSuit;
 import org.junit.jupiter.api.Test;
 
@@ -58,7 +56,7 @@ class DeckUtilsTest {
     @Test
     void isWizard_returnsTrueForWizard() {
         ICard wizard = CardFactory.createCard(CardSuit.SPECIAL, 14);
-        assertTrue(DeckUtils.isWizard(wizard));
+        assertTrue(WizardCard.isWizard(wizard));
     }
 
     @Test
@@ -66,14 +64,14 @@ class DeckUtilsTest {
         ICard numberCard = CardFactory.createCard(CardSuit.RED, 5);
         ICard jester = CardFactory.createCard(CardSuit.SPECIAL, 0);
 
-        assertFalse(DeckUtils.isWizard(numberCard));
-        assertFalse(DeckUtils.isWizard(jester));
+        assertFalse(WizardCard.isWizard(numberCard));
+        assertFalse(WizardCard.isWizard(jester));
     }
 
     @Test
     void isJester_returnsTrueForJester() {
         ICard jester = CardFactory.createCard(CardSuit.SPECIAL, 0);
-        assertTrue(DeckUtils.isJester(jester));
+        assertTrue(JesterCard.isJester(jester));
     }
 
     @Test
@@ -81,8 +79,8 @@ class DeckUtilsTest {
         ICard numberCard = CardFactory.createCard(CardSuit.BLUE, 7);
         ICard wizard = CardFactory.createCard(CardSuit.SPECIAL, 14);
 
-        assertFalse(DeckUtils.isJester(numberCard));
-        assertFalse(DeckUtils.isJester(wizard));
+        assertFalse(JesterCard.isJester(numberCard));
+        assertFalse(JesterCard.isJester(wizard));
     }
 
     @Test
