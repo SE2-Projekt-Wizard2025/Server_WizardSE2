@@ -1,3 +1,4 @@
+/**
 package com.aau.wizard.model;
 
 import com.aau.wizard.model.enums.CardType;
@@ -61,3 +62,4 @@ public class Card {
         return Objects.hash(cardSuit, value, type);
     }
 }
+*/
