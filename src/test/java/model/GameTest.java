@@ -8,9 +8,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import static com.aau.wizard.testutil.TestConstants.*;
-import static com.aau.wizard.testutil.TestDataFactory.*;
+
 import static org.junit.jupiter.api.Assertions.*;
+
+import static testutil.TestDataFactory.*;
+import static testutil.TestConstants.*;
 
 class GameTest {
 

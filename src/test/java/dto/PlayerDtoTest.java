@@ -2,11 +2,11 @@ package dto;
 
 import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.model.Player;
-import static com.aau.wizard.testutil.TestConstants.*;
-import static com.aau.wizard.testutil.TestDataFactory.*;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static testutil.TestDataFactory.*;
+import static testutil.TestConstants.*;
 
 class PlayerDtoTest {
     /**

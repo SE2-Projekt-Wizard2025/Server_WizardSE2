@@ -7,8 +7,7 @@ import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Game;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.service.impl.GameServiceImpl;
-import static com.aau.wizard.testutil.TestConstants.*;
-import static com.aau.wizard.testutil.TestDataFactory.*;
+
 import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.Test;
@@ -25,6 +24,9 @@ import java.util.Map;
 
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import static testutil.TestDataFactory.*;
+import static testutil.TestConstants.*;
 
 @ExtendWith(MockitoExtension.class)
 public class GameServiceImplTest {

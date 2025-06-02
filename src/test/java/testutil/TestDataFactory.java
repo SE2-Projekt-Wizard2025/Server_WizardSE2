@@ -1,4 +1,4 @@
-package com.aau.wizard.testutil;
+package testutil;
 
 import com.aau.wizard.dto.CardDto;
 import com.aau.wizard.dto.PlayerDto;
@@ -12,7 +12,7 @@ import com.aau.wizard.model.enums.CardSuit;
 
 import java.util.List;
 
-import static com.aau.wizard.testutil.TestConstants.*;
+import static testutil.TestConstants.*;
 
 /**
  * Utility class for creating test data.

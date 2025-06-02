@@ -3,13 +3,13 @@ package dto.response;
 import com.aau.wizard.dto.CardDto;
 import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.response.GameResponse;
-import static com.aau.wizard.testutil.TestConstants.*;
-import static com.aau.wizard.testutil.TestDataFactory.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static testutil.TestDataFactory.*;
+import static testutil.TestConstants.*;
 
 class GameResponseTest {
     private PlayerDto testPlayer;
