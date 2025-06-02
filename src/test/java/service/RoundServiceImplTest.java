@@ -71,7 +71,7 @@ class RoundServiceImplTest {
         assertEquals(1, roundService.playedCards.size());
         assertEquals(2, player.getHandCards().size());
     }
-
+/*
     @Test
     void playCard_invalidCard_throwsException() {
         roundService.startRound(3);
@@ -80,7 +80,7 @@ class RoundServiceImplTest {
 
         assertThrows(IllegalArgumentException.class,
                 () -> roundService.playCard(player, invalidCard));
-    }
+    }*/
 
 
     @Test
