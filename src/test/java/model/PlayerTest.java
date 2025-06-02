@@ -1,6 +1,7 @@
 package model;
 
-import com.aau.wizard.model.Card;
+import com.aau.wizard.model.CardFactory;
+import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.model.enums.CardSuit;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,7 +58,7 @@ class PlayerTest {
         player.setReady(true);
         assertTrue(player.isReady());
 
-        List<Card> cards = List.of(new Card(CardSuit.RED, 5));
+        List<ICard> cards = List.of(CardFactory.createCard(CardSuit.RED, 5));
         player.setHandCards(cards);
         assertEquals(cards, player.getHandCards());
     }
@@ -117,25 +118,24 @@ class PlayerTest {
 
     @Test
     void handCards_modification() {
-        List<Card> cards = new ArrayList<>();
-        cards.add(new Card(CardSuit.RED, 5));
+        List<ICard> cards = new ArrayList<>();
+        cards.add(CardFactory.createCard(CardSuit.RED, 5));
         player.setHandCards(cards);
 
-        // Verify we can modify the list through getter
-        player.getHandCards().add(new Card(CardSuit.BLUE, 7));
+        player.getHandCards().add(CardFactory.createCard(CardSuit.BLUE, 7));
         assertEquals(2, player.getHandCards().size());
     }
 
     @Test
     void playersWithSameCards_haveEqualHandCards() {
         Player playerWithCards = new Player(TEST_ID, TEST_NAME);
-        playerWithCards.setHandCards(List.of(new Card(CardSuit.RED, 5)));
+        playerWithCards.setHandCards(List.of(CardFactory.createCard(CardSuit.RED, 5)));
 
         Player sameCards = new Player(TEST_ID, TEST_NAME);
-        sameCards.setHandCards(List.of(new Card(CardSuit.RED, 5)));
+        sameCards.setHandCards(List.of(CardFactory.createCard(CardSuit.RED, 5)));
 
         Player differentCards = new Player(TEST_ID, TEST_NAME);
-        differentCards.setHandCards(List.of(new Card(CardSuit.BLUE, 7)));
+        differentCards.setHandCards(List.of(CardFactory.createCard(CardSuit.BLUE, 7)));
 
         assertEquals(playerWithCards.getHandCards(), sameCards.getHandCards());
         assertNotEquals(playerWithCards.getHandCards(), differentCards.getHandCards());

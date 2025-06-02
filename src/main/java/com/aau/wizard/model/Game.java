@@ -12,7 +12,7 @@ public class Game {
     private List<Player> players = new ArrayList<>();
     private String currentPlayerId;
     private GameStatus status;
-    private Card trumpCard;
+    private ICard trumpCard;
     private List<String> predictionOrder = new ArrayList<>();
     private String lastRoundWinnerId;
 
@@ -88,11 +88,11 @@ public class Game {
 
 
 
-    public void setTrumpCard(Card trumpCard){
+    public void setTrumpCard(ICard trumpCard){
         this.trumpCard=trumpCard;
     }
 
-    public Card getTrumpCard() {
+    public ICard getTrumpCard() {
         return trumpCard;
     }
 

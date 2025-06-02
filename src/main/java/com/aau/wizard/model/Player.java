@@ -8,7 +8,7 @@ public class Player {
     private String name;
     private int score;
     private boolean ready;
-    private List<Card> handCards = new ArrayList<>();
+    private List<ICard> handCards = new ArrayList<>();
     private Integer prediction; //kann null sein, noch keine Vorhersage
     private int tricksWon;
     private int bid;
@@ -35,11 +35,11 @@ public class Player {
         this.name = name;
     }
 
-    public List<Card> getHandCards() {
+    public List<ICard> getHandCards() {
         return handCards;
     }
 
-    public void setHandCards(List<Card> handCards) {
+    public void setHandCards(List<ICard> handCards) {
         this.handCards = handCards;
     }
 

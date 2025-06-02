@@ -1,6 +1,6 @@
 package com.aau.wizard.util;
 
-import com.aau.wizard.model.Card;
+import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.model.enums.CardSuit;
 import com.aau.wizard.model.enums.CardType;
@@ -12,18 +12,18 @@ public final class TrickRules {
         //wird gebraucht...
     }
 
-    public static Player determineTrickWinner(List<Pair<Player, Card>> playedCards, CardSuit trumpCardSuit) {
+    public static Player determineTrickWinner(List<Pair<Player, ICard>> playedCards, CardSuit trumpCardSuit) {
         if (playedCards.isEmpty()) {
             throw new IllegalArgumentException("No cards played");
         }
 
         CardSuit leadCardSuit = null;
-        Pair<Player, Card> firstNonJester = playedCards.stream()
+        Pair<Player, ICard> firstNonJester = playedCards.stream()
                 .filter(pair -> pair.second.getType() != CardType.JESTER)
                 .findFirst()
                 .orElse(null);
 
-        Card firstCard = playedCards.get(0).second;
+        ICard firstCard = playedCards.get(0).second;
         if (firstCard.getType() == CardType.JESTER) {
             if (firstNonJester != null) {
                 leadCardSuit = firstNonJester.second.getSuit();
@@ -35,7 +35,7 @@ public final class TrickRules {
         final CardSuit finalLeadCardSuit = leadCardSuit;
         Pair<Player, Integer> winner = playedCards.stream()
                 .map(pair -> {
-                    Card card = pair.second;
+                    ICard card = pair.second;
                     int score;
                     if (card.getType() == CardType.WIZARD) {
                         score = Integer.MAX_VALUE; // Wizard always wins
@@ -58,7 +58,7 @@ public final class TrickRules {
         return winner.first;
     }
 
-    public static boolean isValidPlay(Player player, Card card, List<Pair<Player, Card>> currentTrick) {
+    public static boolean isValidPlay(Player player, ICard card, List<Pair<Player, ICard>> currentTrick) {
         if (card.getType() == CardType.WIZARD || card.getType() == CardType.JESTER) {
             return true;
         }

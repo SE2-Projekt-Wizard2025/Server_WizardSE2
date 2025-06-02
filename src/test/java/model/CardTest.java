@@ -1,7 +1,8 @@
 package model;
 
+import com.aau.wizard.model.CardFactory;
 import com.aau.wizard.model.enums.CardSuit;
-import com.aau.wizard.model.Card;
+import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.enums.CardType;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -10,7 +11,8 @@ class CardTest {
 
     @Test
     void testNumberCardCreation() {
-        Card card = new Card(CardSuit.RED, 7);
+        ICard card = CardFactory.createCard(CardSuit.RED, 7);
+
 
         assertEquals(CardSuit.RED, card.getSuit());
         assertEquals(7, card.getValue());
@@ -20,7 +22,8 @@ class CardTest {
 
     @Test
     void testJesterCardCreation() {
-        Card card = new Card(CardSuit.YELLOW, 0);
+        ICard card = CardFactory.createCard(CardSuit.YELLOW, 0);
+
 
         assertEquals(CardSuit.YELLOW, card.getSuit());
         assertEquals(0, card.getValue());
@@ -30,7 +33,8 @@ class CardTest {
 
     @Test
     void testWizardCardCreation() {
-        Card card = new Card(CardSuit.BLUE, 14);
+        ICard card = CardFactory.createCard(CardSuit.BLUE, 14);
+
 
         assertEquals(CardSuit.BLUE, card.getSuit());
         assertEquals(14, card.getValue());
@@ -40,8 +44,8 @@ class CardTest {
 
     @Test
     void testEdgeCaseNumberCards() {
-        Card lowestNumber = new Card(CardSuit.GREEN, 1);
-        Card highestNumber = new Card(CardSuit.GREEN, 13);
+        ICard lowestNumber = CardFactory.createCard(CardSuit.GREEN, 1);
+        ICard highestNumber = CardFactory.createCard(CardSuit.GREEN, 13);
 
         assertEquals(CardType.NUMBER, lowestNumber.getType());
         assertEquals(CardType.NUMBER, highestNumber.getType());
@@ -52,7 +56,8 @@ class CardTest {
     @Test
     void testAllSuitsForNumberCard() {
         for (CardSuit suit : CardSuit.values()) {
-            Card card = new Card(suit, 5);
+            ICard card = CardFactory.createCard(suit, 5);
+
             assertEquals(suit, card.getSuit());
             assertTrue(card.toString().contains(suit.name().toLowerCase()));
         }
@@ -61,7 +66,8 @@ class CardTest {
     @Test
     void testAllSuitsForJester() {
         for (CardSuit suit : CardSuit.values()) {
-            Card card = new Card(suit, 0);
+            ICard card = CardFactory.createCard(suit, 0);
+
             assertEquals(suit, card.getSuit());
             assertTrue(card.toString().contains("Jester"));
             assertTrue(card.toString().contains(suit.name().toLowerCase()));
@@ -71,7 +77,7 @@ class CardTest {
     @Test
     void testAllSuitsForWizard() {
         for (CardSuit suit : CardSuit.values()) {
-            Card card = new Card(suit, 14);
+            ICard card = CardFactory.createCard(suit, 14);
             assertEquals(suit, card.getSuit());
             assertTrue(card.toString().contains("Wizard"));
             assertTrue(card.toString().contains(suit.name().toLowerCase()));
@@ -80,9 +86,10 @@ class CardTest {
 
     @Test
     void testSpecialSuitCards() {
-        Card numberSpecial = new Card(CardSuit.SPECIAL, 5);
-        Card jesterSpecial = new Card(CardSuit.SPECIAL, 0);
-        Card wizardSpecial = new Card(CardSuit.SPECIAL, 14);
+        ICard numberSpecial = CardFactory.createCard(CardSuit.SPECIAL, 5);
+        ICard jesterSpecial = CardFactory.createCard(CardSuit.SPECIAL, 0);
+        ICard wizardSpecial = CardFactory.createCard(CardSuit.SPECIAL, 14);
+
 
         assertEquals("5 of special", numberSpecial.toString());
         assertEquals("Jester (special)", jesterSpecial.toString());
@@ -91,8 +98,8 @@ class CardTest {
 
     @Test
     void hashCode_shouldBeEqualForSameCard() {
-        Card card1 = new Card(CardSuit.RED, 5);
-        Card card2 = new Card(CardSuit.RED, 5);
+        ICard card1 = CardFactory.createCard(CardSuit.RED, 5);
+        ICard card2 = CardFactory.createCard(CardSuit.RED, 5);
 
         assertEquals(card1.hashCode(), card2.hashCode(),
                 "Two cards with same suit and value should have same hash code");

@@ -1,10 +1,12 @@
 package dto.request;
 import com.aau.wizard.dto.request.GameRequest;
-import static com.aau.wizard.testutil.TestConstants.*;
-import static com.aau.wizard.testutil.TestDataFactory.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+
+
+import static testutil.TestDataFactory.*;
+import static testutil.TestConstants.*;
 
 public class GameRequestTest {
     /**

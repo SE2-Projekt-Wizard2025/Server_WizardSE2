@@ -1,4 +1,4 @@
-package com.aau.wizard.testutil;
+package testutil;
 
 import com.aau.wizard.model.enums.GameStatus;
 

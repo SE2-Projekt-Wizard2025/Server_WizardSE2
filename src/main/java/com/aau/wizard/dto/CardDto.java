@@ -1,6 +1,6 @@
 package com.aau.wizard.dto;
 
-import com.aau.wizard.model.Card;
+import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.util.CollectionUtils;
 
@@ -26,15 +26,15 @@ public class CardDto {
     }
 
     /**
-     * Maps a {@link Card} domain object to a {@link CardDto} for data transfer.
+     * Maps a {@link ICard} domain object to a {@link CardDto} for data transfer.
      * <p>
      * Converts enum values (color, value, type) to their string representations using {@code name()}.
      *
-     * @param card the {@link Card} to map (must not be {@code null})
+     * @param card the {@link ICard} to map (must not be {@code null})
      * @return the corresponding {@link CardDto}
      * @throws NullPointerException if the card or any of its fields is {@code null}
      */
-    public static CardDto from(Card card) {
+    public static CardDto from(ICard card) {
         return new CardDto(
                 card.getSuit().name(),
                 Integer.toString(card.getValue()),

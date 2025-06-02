@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class Deck {
-    private final List<Card> cards = new ArrayList<>();
+    private final List<ICard> cards = new ArrayList<>();
 
     public Deck() {
         initializeDeck();
@@ -18,15 +18,15 @@ public class Deck {
         for (CardSuit cardSuit : CardSuit.values()) {
             if (cardSuit != CardSuit.SPECIAL) {
                 for (int value = 1; value <= 13; value++) {
-                    cards.add(new Card(cardSuit, value));
+                    cards.add(CardFactory.createCard(cardSuit, value));
                 }
             }
         }
 
         // Spezialkarten (4 Wizard + 4 Jester)
         for (int i = 0; i < 4; i++) {
-            cards.add(new Card(CardSuit.SPECIAL, 14)); // Wizard
-            cards.add(new Card(CardSuit.SPECIAL, 0));  // Jester
+            cards.add(CardFactory.createCard(CardSuit.SPECIAL, 14));// Wizard
+            cards.add(CardFactory.createCard(CardSuit.SPECIAL, 0));//Jester
         }
     }
 
@@ -34,12 +34,12 @@ public class Deck {
         Collections.shuffle(cards);
     }
 
-    public List<Card> draw(int amount) {
+    public List<ICard> draw(int amount) {
         if (amount < 1 || amount > cards.size()) {
             throw new IllegalArgumentException("Cannot draw " + amount + " cards from deck");
         }
 
-        List<Card> drawn = new ArrayList<>();
+        List<ICard> drawn = new ArrayList<>();
         for (int i = 0; i < amount; i++) {
             drawn.add(cards.remove(0));
         }

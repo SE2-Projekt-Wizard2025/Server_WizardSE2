@@ -1,6 +1,7 @@
 package service;
 
-import com.aau.wizard.model.Card;
+import com.aau.wizard.model.CardFactory;
+import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Game;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.model.enums.CardSuit;
@@ -63,7 +64,7 @@ class RoundServiceImplTest {
     void playCard_validCard_playsSuccessfully() {
         roundService.startRound(3);
         Player player = players.get(0);
-        Card card = player.getHandCards().get(0);
+        ICard card = player.getHandCards().get(0);
 
         roundService.playCard(player, card);
 
@@ -75,7 +76,7 @@ class RoundServiceImplTest {
     void playCard_invalidCard_throwsException() {
         roundService.startRound(3);
         Player player = players.get(0);
-        Card invalidCard = new Card(CardSuit.BLUE, 5); // Not in player's hand
+        ICard invalidCard = CardFactory.createCard(CardSuit.BLUE, 5); // Not in player's hand
 
         assertThrows(IllegalArgumentException.class,
                 () -> roundService.playCard(player, invalidCard));

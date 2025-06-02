@@ -1,17 +1,15 @@
 package service;
 
-import com.aau.wizard.dto.CardDto;
 import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.request.PredictionRequest;
 import com.aau.wizard.dto.response.GameResponse;
-import com.aau.wizard.model.Card;
+import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Game;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.service.impl.GameServiceImpl;
-import static com.aau.wizard.testutil.TestConstants.*;
-import static com.aau.wizard.testutil.TestDataFactory.*;
+
 import static org.mockito.Mockito.*;
-import static org.mockito.ArgumentMatchers.*;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,6 +25,9 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import static testutil.TestDataFactory.*;
+import static testutil.TestConstants.*;
+
 @ExtendWith(MockitoExtension.class)
 public class GameServiceImplTest {
 
@@ -36,7 +37,7 @@ public class GameServiceImplTest {
     @InjectMocks
     private GameServiceImpl gameService;
 
-    private static final Card TEST_CARD = createDefaultCard();
+    private static final ICard TEST_CARD = createDefaultCard();
 
     /**
      * Verifies that a new game is created and a player is added when a player joins
@@ -146,7 +147,7 @@ public class GameServiceImplTest {
         assertEquals(TEST_PLAYER_NAME, response.getPlayers().get(0).getPlayerName());
     }
 
-    private void givePlayerCard(String gameId, String playerId, Card card) {
+    private void givePlayerCard(String gameId, String playerId, ICard card) {
         Game game = gameService.getGameById(gameId);
         Player player = game.getPlayerById(playerId);
         player.setHandCards(List.of(card));

@@ -4,8 +4,8 @@ import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.request.PredictionRequest;
 import com.aau.wizard.dto.response.GameResponse;
-import com.aau.wizard.model.Card;
 import com.aau.wizard.model.Game;
+import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.service.interfaces.GameService;
 import com.google.common.annotations.VisibleForTesting;
@@ -60,7 +60,7 @@ public class GameServiceImpl implements GameService {
      * @param requestingPlayerId the player for whom the response is built
      * @return a fully populated GameResponse
      */
-    private GameResponse createGameResponse(Game game, String requestingPlayerId, Card trumpCard) {
+    private GameResponse createGameResponse(Game game, String requestingPlayerId, ICard trumpCard) {
         List<PlayerDto> playerDtos = mapOrEmpty(game.getPlayers(), PlayerDto::from);
         Player requestingPlayer = game.getPlayerById(requestingPlayerId);
         List<CardDto> handCards = CardDto.safeFromPlayer(requestingPlayer);
@@ -111,7 +111,7 @@ public class GameServiceImpl implements GameService {
 
         RoundServiceImpl roundService = new RoundServiceImpl(game);
         roundService.startRound(1);//1 ist die Rundenanzahl — später noch dynamisch setzen
-        Card trumpCard = roundService.trumpCard;
+        ICard trumpCard = roundService.trumpCard;
         CardDto trumpCardDto = trumpCard != null ? CardDto.from(trumpCard) : null;
         roundServices.put(gameId, roundService);
 

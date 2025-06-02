@@ -1,9 +1,6 @@
 package com.aau.wizard.dto.request;
 
-public class GameRequest {
-    private String gameId;
-    private String playerId;
-    private String playerName;
+public class GameRequest extends BaseRequest {
     private String card;
     private String action;
 
@@ -19,32 +16,7 @@ public class GameRequest {
      * @param playerId the ID of the player
      */
     public GameRequest(String gameId, String playerId) {
-        this.gameId = gameId;
-        this.playerId = playerId;
-    }
-
-    public String getGameId() {
-        return gameId;
-    }
-
-    public void setGameId(String gameId) {
-        this.gameId = gameId;
-    }
-
-    public String getPlayerId() {
-        return playerId;
-    }
-
-    public void setPlayerId(String playerId) {
-        this.playerId = playerId;
-    }
-
-    public String getPlayerName() {
-        return playerName;
-    }
-
-    public void setPlayerName(String playerName) {
-        this.playerName = playerName;
+        super(gameId, playerId);
     }
 
     public String getCard() {

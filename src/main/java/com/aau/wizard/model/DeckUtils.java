@@ -10,20 +10,12 @@ public final class DeckUtils {
     private DeckUtils() {
     }
 
-    public static CardSuit getTrumpSuit(List<Card> cards) {
-        for (Card card : cards) {
+    public static CardSuit getTrumpSuit(List<ICard> cards) {
+        for (ICard card : cards) {
             if (card.getType() == CardType.WIZARD) {
                 return card.getSuit();
             }
         }
         return null;
-    }
-
-    public static boolean isWizard(Card card) {
-        return card.getType() == CardType.WIZARD;
-    }
-
-    public static boolean isJester(Card card) {
-        return card.getType() == CardType.JESTER;
     }
 }
