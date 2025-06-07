@@ -109,7 +109,7 @@ public class GameServiceImpl implements GameService {
             throw new IllegalStateException("Spiel konnte nicht gestartet werden – evtl. zu wenig Spieler?");
         }
 
-        RoundServiceImpl roundService = new RoundServiceImpl(game);
+        RoundServiceImpl roundService = new RoundServiceImpl(game, messagingTemplate, this);
         roundService.startRound(1);//1 ist die Rundenanzahl — später noch dynamisch setzen
         ICard trumpCard = roundService.trumpCard;
         CardDto trumpCardDto = trumpCard != null ? CardDto.from(trumpCard) : null;
@@ -187,6 +187,26 @@ public class GameServiceImpl implements GameService {
         player.setPrediction(prediction);
         return createGameResponse(game, player.getPlayerId(), null);
     }
+    public PlayerDto toDto(Player player) {
+        PlayerDto dto = new PlayerDto();
+        dto.setPlayerName(player.getName());
+        dto.setPrediction(player.getPrediction() != null ? player.getPrediction() : 0);
+        dto.setTricksWon(player.getTricksWon());
+        dto.setScore(player.getScore());
+        return dto;
+    }
+
+    public List<PlayerDto> getScoreboard(String gameId) {
+        Game game = games.get(gameId);
+        if (game == null) {
+            throw new IllegalArgumentException("Spiel nicht gefunden");
+        }
+
+        return game.getPlayers().stream()
+                .map(this::toDto)
+                .toList();
+    }
 
 
 }
+

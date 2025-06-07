@@ -1,5 +1,6 @@
 package service;
 
+import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.request.PredictionRequest;
 import com.aau.wizard.dto.response.GameResponse;
@@ -21,6 +22,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+
 
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -315,6 +317,34 @@ public class GameServiceImplTest {
         assertEquals("Du bist noch nicht an der Reihe, bitte warte.", exception.getMessage());
 
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void getScoreboard_shouldReturnCorrectDtoList() throws Exception {
+
+        Game game = new Game("game-123");
+        Player player = new Player("p1", "Alice");
+        player.setPrediction(3);
+        player.setTricksWon(3);
+        player.setScore(50);
+        game.getPlayers().add(player);
+
+        GameServiceImpl service = new GameServiceImpl(mock(SimpMessagingTemplate.class));
+        Field gamesField = GameServiceImpl.class.getDeclaredField("games");
+        gamesField.setAccessible(true);
+        Map<String, Game> gamesMap = (Map<String, Game>) gamesField.get(service);
+        gamesMap.put("game-123", game);
+
+        List<PlayerDto> scoreboard = service.getScoreboard("game-123");
+
+        assertEquals(1, scoreboard.size());
+        PlayerDto dto = scoreboard.get(0);
+        assertEquals("Alice", dto.getPlayerName());
+        assertEquals(3, dto.getPrediction());
+        assertEquals(3, dto.getTricksWon());
+        assertEquals(50, dto.getScore());
+    }
+
 
 
 

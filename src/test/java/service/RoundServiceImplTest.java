@@ -9,6 +9,10 @@ import com.aau.wizard.model.enums.CardType;
 import com.aau.wizard.service.impl.RoundServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import static org.mockito.Mockito.mock;
+import com.aau.wizard.service.interfaces.GameService;
+
 
 import java.util.List;
 
@@ -19,6 +23,9 @@ class RoundServiceImplTest {
     private List<Player> players;
     private RoundServiceImpl roundService;
     private Game game;
+    private SimpMessagingTemplate messagingTemplate;
+    private GameService gameService;
+
 
     @BeforeEach
     void setUp() {
@@ -29,9 +36,12 @@ class RoundServiceImplTest {
             );
 
             game = new Game("test-game");
-            game.setPlayers(players);
+        game.getPlayers().addAll(players);
 
-            roundService = new RoundServiceImpl(game);
+        messagingTemplate = mock(SimpMessagingTemplate.class);
+        gameService = mock(GameService.class);
+
+        roundService = new RoundServiceImpl(game, messagingTemplate, gameService);
         }
 
     @Test
