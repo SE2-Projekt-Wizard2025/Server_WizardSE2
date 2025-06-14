@@ -135,5 +135,7 @@ public class RoundServiceImpl {
                 gameService.getScoreboard(gameId)
         );
 
+        gameService.processEndOfRound(gameId);
+
     }
 }

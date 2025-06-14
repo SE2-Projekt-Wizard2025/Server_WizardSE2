@@ -7,6 +7,7 @@ import com.aau.wizard.dto.response.GameResponse;
 import com.aau.wizard.model.Game;
 import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Player;
+import com.aau.wizard.model.enums.GameStatus;
 import com.aau.wizard.service.interfaces.GameService;
 import com.google.common.annotations.VisibleForTesting;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -72,7 +73,8 @@ public class GameServiceImpl implements GameService {
                 playerDtos,
                 handCards,
                 null,// lastPlayedCard can be set here later on
-                trumpCard != null ? CardDto.from(trumpCard) : null
+                trumpCard != null ? CardDto.from(trumpCard) : null,
+                game.getCurrentRound()
         );
     }
 
@@ -104,13 +106,17 @@ public class GameServiceImpl implements GameService {
             throw new IllegalArgumentException("Spiel nicht gefunden: " + gameId);
         }
 
+        int numPlayers=game.getPlayers().size();
+        game.setMaxRound(60/numPlayers); //Wizard regel
+        game.setCurrentRound(1);
+
         boolean started = game.startGame(); // ruft neue Methode aus Game.java auf
         if (!started) {
             throw new IllegalStateException("Spiel konnte nicht gestartet werden – evtl. zu wenig Spieler?");
         }
 
         RoundServiceImpl roundService = new RoundServiceImpl(game, messagingTemplate, this);
-        roundService.startRound(1);//1 ist die Rundenanzahl — später noch dynamisch setzen
+        roundService.startRound(game.getCurrentRound());
         ICard trumpCard = roundService.trumpCard;
         CardDto trumpCardDto = trumpCard != null ? CardDto.from(trumpCard) : null;
         roundServices.put(gameId, roundService);
@@ -205,6 +211,36 @@ public class GameServiceImpl implements GameService {
         return game.getPlayers().stream()
                 .map(this::toDto)
                 .toList();
+    }
+
+    @Override
+    public void processEndOfRound(String gameId){
+        Game game = games.get(gameId);
+        if(game==null || game.getStatus() != GameStatus.PLAYING){
+            return;
+        }
+
+        if(game.getCurrentRound() >= game.getMaxRound()){
+            game.setStatus(GameStatus.ENDED);
+            System.out.println("Spiel "+gameId+ " ist beendet.");
+
+            for (Player player : game.getPlayers()){
+                GameResponse finalResponse = createGameResponse(game, player.getPlayerId(), null);
+                messagingTemplate.convertAndSend("/topic/game", finalResponse);
+            }
+        }else{
+            game.setCurrentRound(game.getCurrentRound()+1);
+            System.out.println("Starte Runde "+game.getMaxRound()+ " für Spiel "+ gameId);
+
+            RoundServiceImpl roundService=roundServices.get(gameId);
+            roundService.startRound(game.getCurrentRound());
+
+            for(Player player:game.getPlayers()){
+                GameResponse response=createGameResponse(game, player.getPlayerId(), roundService.trumpCard);
+                messagingTemplate.convertAndSend("/topic/game",response);
+            }
+        }
+
     }
 
 

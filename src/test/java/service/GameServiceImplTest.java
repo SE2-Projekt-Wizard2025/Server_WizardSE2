@@ -7,12 +7,15 @@ import com.aau.wizard.dto.response.GameResponse;
 import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Game;
 import com.aau.wizard.model.Player;
+import com.aau.wizard.model.enums.GameStatus;
 import com.aau.wizard.service.impl.GameServiceImpl;
 
 import static org.mockito.Mockito.*;
 
+import com.aau.wizard.service.impl.RoundServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -345,8 +348,80 @@ public class GameServiceImplTest {
         assertEquals(50, dto.getScore());
     }
 
+    @Test
+    void startGame_shouldInitializeRoundCountersCorrectly() throws Exception{
+        Game game = new Game(TEST_GAME_ID);
+        game.getPlayers().addAll(List.of(
+                new Player("p1", "Alice"),
+                new Player("p2", "Bob"),
+                new Player("p3", "Charlie"),
+                new Player("p4", "Dana")
+        ));
+                injectGameIntoService(game);
+                gameService.startGame(TEST_GAME_ID);
+
+        assertEquals(1, game.getCurrentRound(), "Die erste Runde sollte 1 sein.");
+        assertEquals(15, game.getMaxRound(), "Bei 4 Spielern sollte es 15 Runden geben (60/4).");
+    }
+
+    @Test
+    void processEndOfRound_shouldStartNextRound_whenGameIsNotOver() throws Exception{
+        Game game = new Game(TEST_GAME_ID);
+        game.getPlayers().addAll(List.of(new Player("p1", "Alice"), new Player("p2", "Bob"), new Player("p3", "Charlie")));
+        game.setStatus(GameStatus.PLAYING);
+        game.setCurrentRound(5);
+        game.setMaxRound(20);
+        injectGameIntoService(game);
+
+        RoundServiceImpl mockRoundService = mock(RoundServiceImpl.class);
+        injectRoundServiceIntoService(mockRoundService, game.getGameId());
+
+        gameService.processEndOfRound(TEST_GAME_ID);
+
+        assertEquals(6, game.getCurrentRound(), "Die Rundenzahl sollte auf 6 erhöht worden sein.");
+        assertEquals(GameStatus.PLAYING, game.getStatus(), "Der Spielstatus sollte weiterhin PLAYING sein.");
+        verify(mockRoundService, times(1)).startRound(6);
+
+    }
+
+    @Test
+    void processEndOfRound_shouldEndGame_whenMayRoundReached() throws Exception{
+        Game game = new Game(TEST_GAME_ID);
+        game.getPlayers().addAll(List.of(new Player("p1", "Alice"), new Player("p2", "Bob"), new Player("p3", "Charlie")));
+        game.setStatus(GameStatus.PLAYING);
+        game.setCurrentRound(20);
+        game.setMaxRound(20);
+        injectGameIntoService(game);
+
+        gameService.processEndOfRound(TEST_GAME_ID);
+
+        assertEquals(GameStatus.ENDED, game.getStatus(), "Der Spielstatus sollte auf ENDED gesetzt sein.");
+
+        ArgumentCaptor<GameResponse> responseCaptor = ArgumentCaptor.forClass(GameResponse.class);
+        verify(messagingTemplate, times(game.getPlayers().size())).convertAndSend(eq("/topic/game"), responseCaptor.capture());
+        assertEquals(GameStatus.ENDED, responseCaptor.getValue().getStatus());
+    }
+
+    @SuppressWarnings("unchecked")
+    private void injectGameIntoService(Game game) throws Exception {
+        Field gamesField = GameServiceImpl.class.getDeclaredField("games");
+        gamesField.setAccessible(true);
+        Map<String, Game> gamesMap = (Map<String, Game>) gamesField.get(gameService);
+        gamesMap.put(game.getGameId(), game);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void injectRoundServiceIntoService(RoundServiceImpl roundService, String gameId) throws Exception {
+        Field roundServicesField = GameServiceImpl.class.getDeclaredField("roundServices");
+        roundServicesField.setAccessible(true);
+        Map<String, RoundServiceImpl> roundServicesMap = (Map<String, RoundServiceImpl>) roundServicesField.get(gameService);
+        roundServicesMap.put(gameId, roundService);
+    }
+
+    }
 
 
 
-}
+
+
 

@@ -10,13 +10,13 @@ import com.aau.wizard.service.impl.RoundServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import static org.mockito.Mockito.mock;
 import com.aau.wizard.service.interfaces.GameService;
 
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class RoundServiceImplTest {
 
@@ -110,8 +110,10 @@ class RoundServiceImplTest {
         roundService.endRound();
 
         assertEquals(40, players.get(0).getScore());  // 20 + 2*10
-        assertEquals(10, players.get(1).getScore());  // 3*10 - 2*10
-        assertEquals(-10, players.get(2).getScore()); // 1*10 - 2*10
+        assertEquals(-20, players.get(1).getScore());  // -10 * 2
+        assertEquals(-20, players.get(2).getScore()); // -10*2
+
+        verify(gameService, times(1)).processEndOfRound(game.getGameId());
     }
 
     @Test

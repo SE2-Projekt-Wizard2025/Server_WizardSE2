@@ -13,6 +13,7 @@ public interface GameService {
     boolean canStartGame(String gameId);
     GameResponse makePrediction(PredictionRequest request);
     List<PlayerDto> getScoreboard(String gameId);
+    void processEndOfRound(String gameId);
 }
 
 

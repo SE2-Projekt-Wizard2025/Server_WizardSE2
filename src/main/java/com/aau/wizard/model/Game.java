@@ -15,6 +15,8 @@ public class Game {
     private ICard trumpCard;
     private List<String> predictionOrder = new ArrayList<>();
     private String lastRoundWinnerId;
+    private int currentRound;
+    private int maxRound;
 
     public Game(String gameId) {
         this.gameId = gameId;
@@ -74,7 +76,7 @@ public class Game {
     }
     //prüfen ob Spiel schon gestartet werden kann (mind. 3 Spieler)
     public boolean canStartGame() {
-        return status == GameStatus.LOBBY && players.size() >= 1;
+        return status == GameStatus.LOBBY && players.size() >= 2;
     }
 
     public boolean startGame() {
@@ -112,4 +114,19 @@ public class Game {
         this.lastRoundWinnerId = lastRoundWinnerId;
     }
 
+    public int getCurrentRound() {
+        return currentRound;
+    }
+
+    public void setCurrentRound(int currentRound) {
+        this.currentRound = currentRound;
+    }
+
+    public int getMaxRound() {
+        return maxRound;
+    }
+
+    public void setMaxRound(int maxRound) {
+        this.maxRound = maxRound;
+    }
 }
