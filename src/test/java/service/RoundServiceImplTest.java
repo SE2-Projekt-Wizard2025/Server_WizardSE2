@@ -103,9 +103,9 @@ class RoundServiceImplTest {
     void endRound_calculatesScoresCorrectly() {
         // Setup round with bids and tricks won
         roundService.startRound(3);
-        players.get(0).setBid(2); players.get(0).setTricksWon(2); // Perfect
-        players.get(1).setBid(1); players.get(1).setTricksWon(3); // Under by 2
-        players.get(2).setBid(3); players.get(2).setTricksWon(1); // Over by 2
+        players.get(0).setPrediction(2); players.get(0).setTricksWon(2); // Perfect
+        players.get(1).setPrediction(1); players.get(1).setTricksWon(3); // Under by 2
+        players.get(2).setPrediction(3); players.get(2).setTricksWon(1); // Over by 2
 
         roundService.endRound();
 

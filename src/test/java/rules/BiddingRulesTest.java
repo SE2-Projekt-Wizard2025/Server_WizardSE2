@@ -10,9 +10,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BiddingRulesTest {
 
-    private Player createPlayer(String id, String name, int bid, int tricksWon, int currentScore) {
+    private Player createPlayer(String id, String name, int prediction, int tricksWon, int currentScore) {
         Player player = new Player(id, name);
-        player.setBid(bid);
+        player.setPrediction(prediction);
         player.setTricksWon(tricksWon);
         player.setScore(currentScore);
         return player;

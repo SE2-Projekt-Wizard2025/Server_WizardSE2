@@ -6,7 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="5a88b75e-a340-4aab-ba6f-5de17d4e4b2e" name="Changes" comment="feat: Tests für RoundServiceImpl hinzugefügt">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/util/TrickRules.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/util/TrickRules.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/service/impl/RoundServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/service/impl/RoundServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/util/BiddingRules.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/util/BiddingRules.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/dto/PlayerDtoTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/dto/PlayerDtoTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/rules/BiddingRulesTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/rules/BiddingRulesTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/service/RoundServiceImplTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/service/RoundServiceImplTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

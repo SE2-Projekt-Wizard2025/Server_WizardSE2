@@ -6,6 +6,7 @@ import com.aau.wizard.model.Game;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.model.enums.CardSuit;
 import com.aau.wizard.service.interfaces.GameService;
+import com.aau.wizard.util.BiddingRules;
 import com.aau.wizard.util.Pair;
 import com.aau.wizard.util.TrickRules;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -111,20 +112,11 @@ public class RoundServiceImpl {
 
 
     public void endRound() {
-        for (Player player : players) {
-            int difference = Math.abs(player.getBid()-player.getTricksWon());
-            int score;
-            if (difference == 0) {
-                score = 20 + (player.getTricksWon() * 10);
-            } else {
-                score = -10 * difference;
-            }
-            player.setScore(player.getScore() + score);
-        }
+        BiddingRules.calculateScores(players);
 
         System.out.println("\n=== Finale Auswertung ===");
         for (Player player : players) {
-            System.out.println(player.getName() + ": " + player.getBid() + " geboten, " +
+            System.out.println(player.getName() + ": " + player.getPrediction() + " geboten, " +
                     player.getTricksWon() + " gewonnen → Punkte: " + player.getScore());
         }
 
