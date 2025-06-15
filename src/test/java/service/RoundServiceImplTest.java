@@ -48,19 +48,21 @@ class RoundServiceImplTest {
 
     @Test
     void startRound_setsTrumpCardWhenDeckHasCardsAfterDealing() {
-        int cardsNeededForPlayers = players.size() * 3;
-        int totalCardsInDeck = roundService.deck.size();
-        int cardsToDraw = totalCardsInDeck - cardsNeededForPlayers - 1;
+        Game game = new Game("123");
+        game.addPlayer(new Player("Player1", "Alice"));
+        game.addPlayer(new Player("Player2", "Bob"));
 
-        roundService.deck.draw(cardsToDraw);
+        RoundServiceImpl roundService = new RoundServiceImpl(game);
 
+        // Runde starten → deck wird hier initialisiert
         roundService.startRound(3);
 
-        assertNotNull(roundService.trumpCard);
-        assertNotNull(roundService.trumpCardSuit);
+
+        assertNotNull(roundService.trumpCard, "Trumpfkarte sollte gesetzt sein");
+        assertNotNull(roundService.trumpCardSuit, "Trumpffarbe sollte gesetzt sein");
     }
 
-    @Test
+        @Test
     void playCard_validCard_playsSuccessfully() {
         roundService.startRound(3);
         Player player = players.get(0);
