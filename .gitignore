@@ -16,6 +16,7 @@ target/
 !.idea/codeStyles/
 !.idea/inspectionProfiles/
 !.idea/runConfigurations/
+.idea/workspace.xml
 
 
 ### Eclipse ###
