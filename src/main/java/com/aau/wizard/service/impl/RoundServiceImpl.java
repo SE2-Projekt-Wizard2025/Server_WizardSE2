@@ -17,7 +17,7 @@ import java.util.List;
 public class RoundServiceImpl {
 
     final List<Player> players;
-    public final Deck deck = new Deck();
+    public Deck deck;
     public ICard trumpCard = null;
     public CardSuit trumpCardSuit = null;
     public final List<Pair<Player, ICard>> playedCards = new ArrayList<>();
@@ -35,14 +35,17 @@ public class RoundServiceImpl {
     }
 
     public void startRound(int roundNumber) {
+        this.deck = new Deck();
         deck.shuffle();
 
         for (Player player : players) {
-            player.setHandCards(new ArrayList<>(deck.draw(roundNumber)));
+            List<ICard> hand = new ArrayList<>(deck.draw(roundNumber));
+            player.setHandCards(hand);
             player.setTricksWon(0);
             player.setBid(0);
             player.setPrediction(null);
         }
+
         //trumpCard = new Card(CardSuit.SPECIAL, 0); // 14 = Wizard --> nur für test
         //trumpCardSuit = trumpCard.getSuit();        // = SPECIAL --> nur für test
         if (deck.size() < 1) {

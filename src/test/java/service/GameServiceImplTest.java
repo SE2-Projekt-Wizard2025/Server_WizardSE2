@@ -160,26 +160,33 @@ public class GameServiceImplTest {
         player.setHandCards(List.of(card));
     }
 
-    @Test
 
+    @Test
     void testStartGameSuccess() {
-        gameService.joinGame(createDefaultGameRequest());
+        // Spieler ins Spiel einfügen
+        gameService.joinGame(createDefaultGameRequest()); // Player1
         gameService.joinGame(createCustomGameRequest(TEST_GAME_ID, "p2", "Player2"));
         gameService.joinGame(createCustomGameRequest(TEST_GAME_ID, "p3", "Player3"));
 
+        // Spiel starten
         GameResponse response = gameService.startGame(TEST_GAME_ID);
 
+        // Assertions zur Spiel-Response
         assertNotNull(response);
         assertEquals("PLAYING", response.getStatus().name());
         assertEquals(3, response.getPlayers().size());
 
-        //Stellt sicher, dass der currentPlayer überhaupt unter den Spielern ist
+        // Sicherstellen, dass currentPlayerId einer der Spieler ist
         List<String> playerIds = response.getPlayers().stream()
                 .map(p -> p.getPlayerId())
                 .toList();
-
         assertTrue(playerIds.contains(response.getCurrentPlayerId()), "Current player must be in the list");
-        verify(messagingTemplate, atLeast(1)).convertAndSend(eq("/topic/game"), any(GameResponse.class));    }
+
+        // Überprüfen, ob an alle Spieler personalisierte Nachrichten geschickt wurden
+        for (String playerId : playerIds) {
+            verify(messagingTemplate).convertAndSend(eq("/topic/game/" + playerId), any(GameResponse.class));
+        }
+    }
 
     @Test
     void testStartGameThrowsIfGameNotFound() {

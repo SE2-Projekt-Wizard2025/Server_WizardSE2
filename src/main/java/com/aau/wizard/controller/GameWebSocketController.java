@@ -53,14 +53,13 @@ public class GameWebSocketController {
     }
 
     @MessageMapping("/game/start")
-    @SendTo("/topic/game")
-    public GameResponse startGame(@Payload String gameId) {
+    public void startGame(@Payload String gameId) {
         if (gameId != null && gameId.startsWith("\"") && gameId.endsWith("\"")) {
             gameId = gameId.substring(1, gameId.length() - 1);
         }
 
         System.out.println("Start game with ID: " + gameId);
-        return gameService.startGame(gameId);
+        gameService.startGame(gameId); // keine Rückgabe → personalisierte Nachrichten werden dort verschickt
     }
 
     @MessageMapping("/game/predict")
