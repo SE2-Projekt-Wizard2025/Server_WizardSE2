@@ -7,12 +7,14 @@ import com.aau.wizard.dto.response.GameResponse;
 import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Game;
 import com.aau.wizard.model.Player;
+import com.aau.wizard.model.enums.CardSuit;
 import com.aau.wizard.model.enums.GameStatus;
 import com.aau.wizard.service.impl.GameServiceImpl;
 
 import static org.mockito.Mockito.*;
 
 import com.aau.wizard.service.impl.RoundServiceImpl;
+import com.aau.wizard.util.Pair;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -401,6 +403,220 @@ public class GameServiceImplTest {
         verify(messagingTemplate, times(game.getPlayers().size())).convertAndSend(eq("/topic/game"), responseCaptor.capture());
         assertEquals(GameStatus.ENDED, responseCaptor.getValue().getStatus());
     }
+
+    @Test
+    void playCard_success_updatesCurrentPlayerAndBroadcasts() throws Exception {
+
+        Game game = new Game(TEST_GAME_ID);
+        Player player1 = new Player("p1", "Alice");
+        Player player2 = new Player("p2", "Bob");
+        Player player3 = new Player("p3", "Charlie");
+        game.getPlayers().addAll(List.of(player1, player2, player3));
+        game.setStatus(GameStatus.PLAYING);
+        game.setCurrentRound(1);
+        game.setMaxRound(1);
+
+
+        game.setCurrentPlayerId(player1.getPlayerId());
+        ICard cardToPlay = createCustomCard(CardSuit.RED, 7);
+        player1.setHandCards(List.of(cardToPlay, createDefaultCard()));
+
+        injectGameIntoService(game);
+
+        RoundServiceImpl mockRoundService = mock(RoundServiceImpl.class);
+
+        when(mockRoundService.playedCards).thenReturn(List.of(new Pair<>(player1, cardToPlay))); // Nur eine Karte gespielt
+        when(mockRoundService.trumpCard).thenReturn(createDefaultCard()); // Trumpfkarte für GameResponse
+        injectRoundServiceIntoService(mockRoundService, TEST_GAME_ID);
+
+        GameRequest request = new GameRequest(TEST_GAME_ID, player1.getPlayerId());
+        request.setCard(cardToPlay.toString()); // Karte als String übergeben
+
+        GameResponse response = gameService.playCard(request);
+
+        assertNotNull(response);
+        assertEquals(TEST_GAME_ID, response.getGameId());
+        assertEquals(GameStatus.PLAYING, response.getStatus());
+        // Überprüfen, ob der nächste Spieler am Zug ist
+        assertEquals(player2.getPlayerId(), response.getCurrentPlayerId());
+        assertEquals(player2.getPlayerId(), game.getCurrentPlayerId());
+        assertEquals(cardToPlay.toString(), response.getLastPlayedCard());
+
+        verify(mockRoundService, times(1)).playCard(player1, cardToPlay);
+        verify(mockRoundService, never()).endTrick(); // Stich sollte noch nicht beendet sein
+        verify(mockRoundService, never()).endRound(); // Runde sollte noch nicht beendet sein
+
+        ArgumentCaptor<GameResponse> responseCaptor = ArgumentCaptor.forClass(GameResponse.class);
+        verify(messagingTemplate, times(1)).convertAndSend(eq("/topic/game"), responseCaptor.capture());
+        assertEquals(player2.getPlayerId(), responseCaptor.getValue().getCurrentPlayerId());
+    }
+
+    @Test
+    void playCard_trickEnds_determinesWinnerAndResetsForNextTrick() throws Exception {
+
+        Game game = new Game(TEST_GAME_ID);
+        Player player1 = new Player("p1", "Alice");
+        Player player2 = new Player("p2", "Bob");
+        game.getPlayers().addAll(List.of(player1, player2));
+        game.setStatus(GameStatus.PLAYING);
+        game.setCurrentRound(1);
+        game.setMaxRound(1);
+
+        game.setCurrentPlayerId(player1.getPlayerId());
+        ICard card1 = createCustomCard(CardSuit.RED, 7);
+        ICard card2 = createCustomCard(CardSuit.BLUE, 8);
+
+        player1.setHandCards(List.of(card1));
+        player2.setHandCards(List.of(card2));
+
+        injectGameIntoService(game);
+
+        RoundServiceImpl mockRoundService = mock(RoundServiceImpl.class);
+
+        when(mockRoundService.playedCards).thenReturn(List.of(new Pair<>(player1, card1))); // Für den ersten Zug
+        when(mockRoundService.trumpCard).thenReturn(createDefaultCard()); // Trumpfkarte für GameResponse
+
+        // Simuliere den ersten Zug (Alice spielt)
+        GameRequest request1 = new GameRequest(TEST_GAME_ID, player1.getPlayerId());
+        request1.setCard(card1.toString());
+        gameService.playCard(request1);
+
+        // Überprüfe den Zustand
+        assertEquals(player2.getPlayerId(), game.getCurrentPlayerId()); // Bob ist an der Reihe
+        verify(mockRoundService, times(1)).playCard(player1, card1);
+        verify(mockRoundService, never()).endTrick(); // Stich noch nicht beendet
+
+        // Jetzt Bob
+        game.setCurrentPlayerId(player2.getPlayerId());
+        player2.getHandCards().add(card2);
+        GameRequest request2 = new GameRequest(TEST_GAME_ID, player2.getPlayerId());
+        request2.setCard(card2.toString());
+
+        when(mockRoundService.playedCards).thenReturn(List.of(new Pair<>(player1, card1), new Pair<>(player2, card2)));
+        when(mockRoundService.endTrick()).thenReturn(player2); // Bob gewinnt den Stich
+
+        // Rundenende triggern, keine Handkarte
+        player1.setHandCards(List.of());
+        player2.setHandCards(List.of());
+
+        GameResponse response = gameService.playCard(request2);
+
+        assertNotNull(response);
+        assertEquals(TEST_GAME_ID, response.getGameId());
+        assertEquals(GameStatus.PLAYING, response.getStatus());
+        assertEquals(player2.getPlayerId(), response.getCurrentPlayerId());
+
+        verify(mockRoundService, times(1)).playCard(player2, card2);
+        verify(mockRoundService, times(1)).endTrick();
+        verify(mockRoundService, times(1)).endRound();
+
+        ArgumentCaptor<GameResponse> responseCaptor = ArgumentCaptor.forClass(GameResponse.class);
+
+        verify(messagingTemplate, times(2)).convertAndSend(eq("/topic/game"), any(GameResponse.class));
+
+        assertEquals(player2.getPlayerId(), responseCaptor.getValue().getCurrentPlayerId());
+    }
+
+    @Test
+    void playCard_playerNotActive_throwsException() throws Exception {
+        Game game = new Game(TEST_GAME_ID);
+        Player player1 = new Player("p1", "Alice");
+        game.getPlayers().add(player1);
+        game.setStatus(GameStatus.LOBBY); // nicht Status PLAYING
+
+        injectGameIntoService(game);
+
+        GameRequest request = new GameRequest(TEST_GAME_ID, player1.getPlayerId());
+        request.setCard(createDefaultCard().toString());
+
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            gameService.playCard(request);
+        });
+
+        assertTrue(exception.getMessage().contains("Das Spiel ist nicht aktiv oder wurde nicht gefunden."));
+    }
+
+    @Test
+    void playCard_playerNotFound_throwsException() throws Exception {
+        Game game = new Game(TEST_GAME_ID);
+        game.setStatus(GameStatus.PLAYING);
+
+        injectGameIntoService(game);
+
+        GameRequest request = new GameRequest(TEST_GAME_ID, "unknownPlayer");
+        request.setCard(createDefaultCard().toString());
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            gameService.playCard(request);
+        });
+
+        assertTrue(exception.getMessage().contains("Spieler nicht gefunden."));
+    }
+
+    @Test
+    void playCard_notPlayersTurn_throwsException() throws Exception {
+        Game game = new Game(TEST_GAME_ID);
+        Player player1 = new Player("p1", "Alice");
+        Player player2 = new Player("p2", "Bob");
+        game.getPlayers().addAll(List.of(player1, player2));
+        game.setStatus(GameStatus.PLAYING);
+        game.setCurrentPlayerId(player1.getPlayerId()); // Alice ist dran
+
+        injectGameIntoService(game);
+
+        GameRequest request = new GameRequest(TEST_GAME_ID, player2.getPlayerId()); // Bob versucht zu spielen
+        request.setCard(createDefaultCard().toString());
+
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            gameService.playCard(request);
+        });
+
+        assertTrue(exception.getMessage().contains("Du bist nicht an der Reihe."));
+    }
+
+    @Test
+    void playCard_cardNotInHand_throwsException() throws Exception {
+        Game game = new Game(TEST_GAME_ID);
+        Player player1 = new Player("p1", "Alice");
+        game.getPlayers().add(player1);
+        game.setStatus(GameStatus.PLAYING);
+        game.setCurrentPlayerId(player1.getPlayerId()); // Alice ist dran
+        // Alice hat keine Karten oder nicht die gesuchte Karte
+        player1.setHandCards(List.of(createCustomCard(CardSuit.BLUE, 5)));
+
+        injectGameIntoService(game);
+
+        GameRequest request = new GameRequest(TEST_GAME_ID, player1.getPlayerId());
+        request.setCard(createCustomCard(CardSuit.RED, 7).toString());
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            gameService.playCard(request);
+        });
+
+        assertTrue(exception.getMessage().contains("Karte nicht in der Hand des Spielers:"));
+    }
+
+    @Test
+    void playCard_roundServiceNotInitialized_throwsException() throws Exception {
+        Game game = new Game(TEST_GAME_ID);
+        Player player1 = new Player("p1", "Alice");
+        game.getPlayers().add(player1);
+        game.setStatus(GameStatus.PLAYING);
+        game.setCurrentPlayerId(player1.getPlayerId());
+        player1.setHandCards(List.of(createDefaultCard()));
+
+        injectGameIntoService(game);
+
+        GameRequest request = new GameRequest(TEST_GAME_ID, player1.getPlayerId());
+        request.setCard(createDefaultCard().toString());
+
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            gameService.playCard(request);
+        });
+
+        assertTrue(exception.getMessage().contains("Runden-Logik für dieses Spiel nicht gefunden."));
+    }
+
 
     @SuppressWarnings("unchecked")
     private void injectGameIntoService(Game game) throws Exception {

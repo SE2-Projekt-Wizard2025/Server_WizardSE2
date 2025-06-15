@@ -7,6 +7,7 @@ import com.aau.wizard.model.Player;
 import com.aau.wizard.model.enums.CardSuit;
 import com.aau.wizard.model.enums.CardType;
 import com.aau.wizard.service.impl.RoundServiceImpl;
+import com.aau.wizard.util.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -86,10 +87,121 @@ class RoundServiceImplTest {
     void playCard_invalidCard_throwsException() {
         roundService.startRound(3);
         Player player = players.get(0);
-        ICard invalidCard = CardFactory.createCard(CardSuit.BLUE, 5); // Not in player's hand
+        ICard invalidCard = CardFactory.createCard(CardSuit.BLUE, 5);
+
 
         assertThrows(IllegalArgumentException.class,
                 () -> roundService.playCard(player, invalidCard));
+    }
+
+    @Test
+    void playCard_firstCardOfTrick_setsLeadingSuit() {
+        roundService.startRound(3);
+        Player player = players.get(0);
+        ICard cardToPlay = CardFactory.createCard(CardSuit.RED, 5);
+        player.getHandCards().clear();
+        player.getHandCards().add(cardToPlay);
+
+        roundService.playCard(player, cardToPlay);
+
+        assertEquals(1, roundService.playedCards.size());
+        assertEquals(cardToPlay, roundService.playedCards.get(0).second);
+        assertEquals(0, player.getHandCards().size());
+    }
+
+    @Test
+    void playCard_playerHasLeadingSuit_mustFollowSuit() {
+        roundService.startRound(3);
+        Player player1 = players.get(0);
+        Player player2 = players.get(1);
+
+        ICard leadingCard = CardFactory.createCard(CardSuit.RED, 5);
+        roundService.playedCards.add(new Pair<>(player1, leadingCard));
+
+        ICard player2RedCard = CardFactory.createCard(CardSuit.RED, 8);
+        ICard player2BlueCard = CardFactory.createCard(CardSuit.BLUE, 2);
+        player2.getHandCards().clear();
+        player2.getHandCards().addAll(List.of(player2RedCard, player2BlueCard));
+
+        assertDoesNotThrow(() -> roundService.playCard(player2, player2RedCard));
+        assertEquals(2, roundService.playedCards.size());
+        assertEquals(0, player2.getHandCards().size());
+    }
+
+    @Test
+    void playCard_playerHasLeadingSuit_cannotPlayOtherSuit() {
+        roundService.startRound(3);
+        Player player1 = players.get(0);
+        Player player2 = players.get(1);
+
+        ICard leadingCard = CardFactory.createCard(CardSuit.RED, 5);
+        roundService.playedCards.add(new Pair<>(player1, leadingCard));
+
+        ICard player2RedCard = CardFactory.createCard(CardSuit.RED, 8);
+        ICard player2BlueCard = CardFactory.createCard(CardSuit.BLUE, 2);
+        player2.getHandCards().clear();
+        player2.getHandCards().addAll(List.of(player2RedCard, player2BlueCard));
+
+        assertThrows(IllegalStateException.class,
+                () -> roundService.playCard(player2, player2BlueCard),
+                "Sollte fehlschlagen, da Spieler die führende Farbe hat und diese bedienen muss.");
+    }
+
+    @Test
+    void playCard_playerHasNoLeadingSuit_canPlayAnyCard() {
+        roundService.startRound(3);
+        Player player1 = players.get(0);
+        Player player2 = players.get(1);
+
+        ICard leadingCard = CardFactory.createCard(CardSuit.RED, 5);
+        roundService.playedCards.add(new Pair<>(player1, leadingCard));
+
+        ICard player2BlueCard = CardFactory.createCard(CardSuit.BLUE, 2);
+        player2.getHandCards().clear();
+        player2.getHandCards().add(player2BlueCard);
+
+        assertDoesNotThrow(() -> roundService.playCard(player2, player2BlueCard));
+        assertEquals(2, roundService.playedCards.size());
+        assertEquals(0, player2.getHandCards().size());
+    }
+
+    @Test
+    void playCard_jesterCard_canAlwaysBePlayed() {
+        roundService.startRound(3);
+        Player player1 = players.get(0);
+        Player player2 = players.get(1);
+
+        ICard leadingCard = CardFactory.createCard(CardSuit.RED, 5);
+        roundService.playedCards.add(new Pair<>(player1, leadingCard));
+
+        ICard jester = CardFactory.createCard(CardSuit.SPECIAL, 0); // Jester
+        ICard player2RedCard = CardFactory.createCard(CardSuit.RED, 8);
+        player2.getHandCards().clear();
+        player2.getHandCards().addAll(List.of(player2RedCard, jester)); // Spieler hat Rot und Jester
+
+        assertDoesNotThrow(() -> roundService.playCard(player2, jester));
+        assertEquals(2, roundService.playedCards.size());
+        assertTrue(player2.getHandCards().contains(player2RedCard)); // Rote Karte sollte noch da sein
+    }
+
+    @Test
+    void playCard_wizardCard_canAlwaysBePlayed() {
+        roundService.startRound(3);
+        Player player1 = players.get(0);
+        Player player2 = players.get(1);
+
+        ICard leadingCard = CardFactory.createCard(CardSuit.RED, 5);
+        roundService.playedCards.add(new Pair<>(player1, leadingCard));
+
+        ICard wizard = CardFactory.createCard(CardSuit.SPECIAL, 14); // Wizard
+        ICard player2RedCard = CardFactory.createCard(CardSuit.RED, 8);
+        player2.getHandCards().clear();
+        player2.getHandCards().addAll(List.of(player2RedCard, wizard)); // Spieler hat Rot und Wizard
+
+
+        assertDoesNotThrow(() -> roundService.playCard(player2, wizard));
+        assertEquals(2, roundService.playedCards.size());
+        assertTrue(player2.getHandCards().contains(player2RedCard)); // Rote Karte sollte noch da sein
     }
 
 
@@ -100,8 +212,102 @@ class RoundServiceImplTest {
     }
 
     @Test
+    void endTrick_determinesWinnerCorrectly_noTrump() {
+
+        roundService.trumpCard = null;
+
+        Player p1 = players.get(0);
+        Player p2 = players.get(1);
+        Player p3 = players.get(2);
+
+        ICard red5 = CardFactory.createCard(CardSuit.RED, 5);
+        ICard red10 = CardFactory.createCard(CardSuit.RED, 10);
+        ICard blue8 = CardFactory.createCard(CardSuit.BLUE, 8);
+
+        roundService.playedCards.add(new Pair<>(p1, red5));
+        roundService.playedCards.add(new Pair<>(p2, red10)); // P2 sollte gewinnen
+        roundService.playedCards.add(new Pair<>(p3, blue8)); // Falsche Farbe
+
+        Player winner = roundService.endTrick();
+
+        assertEquals(p2, winner);
+        assertEquals(1, p2.getTricksWon());
+        assertEquals(0, roundService.playedCards.size()); // Karten geleert
+        assertEquals(1, roundService.currentTrickNumber); // Stichzähler erhöht
+    }
+
+    @Test
+    void endTrick_determinesWinnerCorrectly_withTrump() {
+        roundService.trumpCard = CardFactory.createCard(CardSuit.YELLOW, 0);
+        roundService.trumpCardSuit = CardSuit.YELLOW; // Trumpffarbe ist Gelb
+
+        Player p1 = players.get(0);
+        Player p2 = players.get(1);
+        Player p3 = players.get(2);
+
+        ICard red5 = CardFactory.createCard(CardSuit.RED, 5);
+        ICard yellow2 = CardFactory.createCard(CardSuit.YELLOW, 2); // Trumpf
+        ICard red10 = CardFactory.createCard(CardSuit.RED, 10);
+
+        roundService.playedCards.add(new Pair<>(p1, red5));
+        roundService.playedCards.add(new Pair<>(p2, yellow2)); // P2 spielt Trumpf
+        roundService.playedCards.add(new Pair<>(p3, red10));
+
+        Player winner = roundService.endTrick();
+
+        assertEquals(p2, winner); // P2 gewinnt mit Trumpf
+        assertEquals(1, p2.getTricksWon());
+    }
+
+    @Test
+    void endTrick_determinesWinnerCorrectly_withWizard() {
+        roundService.trumpCard = CardFactory.createCard(CardSuit.RED, 0);
+        roundService.trumpCardSuit = CardSuit.RED;
+
+        Player p1 = players.get(0);
+        Player p2 = players.get(1);
+        Player p3 = players.get(2);
+
+        ICard red5 = CardFactory.createCard(CardSuit.RED, 5);
+        ICard wizard = CardFactory.createCard(CardSuit.SPECIAL, 14); // Wizard
+        ICard red10 = CardFactory.createCard(CardSuit.RED, 10);
+
+        roundService.playedCards.add(new Pair<>(p1, red5));
+        roundService.playedCards.add(new Pair<>(p2, wizard)); // P2 spielt Wizard
+        roundService.playedCards.add(new Pair<>(p3, red10));
+
+        Player winner = roundService.endTrick();
+
+        assertEquals(p2, winner); // Wizard gewinnt immer
+        assertEquals(1, p2.getTricksWon());
+    }
+
+    @Test
+    void endTrick_determinesWinnerCorrectly_withJester() {
+        roundService.trumpCard = CardFactory.createCard(CardSuit.RED, 0);
+        roundService.trumpCardSuit = CardSuit.RED;
+
+        Player p1 = players.get(0);
+        Player p2 = players.get(1);
+        Player p3 = players.get(2);
+
+        ICard red5 = CardFactory.createCard(CardSuit.RED, 5);
+        ICard jester = CardFactory.createCard(CardSuit.SPECIAL, 0); // Jester
+        ICard red10 = CardFactory.createCard(CardSuit.RED, 10);
+
+        roundService.playedCards.add(new Pair<>(p1, red5));
+        roundService.playedCards.add(new Pair<>(p2, jester));
+        roundService.playedCards.add(new Pair<>(p3, red10));
+
+        Player winner = roundService.endTrick();
+
+        // Jester verliert immer
+        assertEquals(p3, winner);
+        assertEquals(1, p3.getTricksWon());
+    }
+
+    @Test
     void endRound_calculatesScoresCorrectly() {
-        // Setup round with bids and tricks won
         roundService.startRound(3);
         players.get(0).setPrediction(2); players.get(0).setTricksWon(2); // Perfect
         players.get(1).setPrediction(1); players.get(1).setTricksWon(3); // Under by 2
@@ -118,7 +324,7 @@ class RoundServiceImplTest {
 
     @Test
     void endRound_setsPredictionOrderStartingWithWinner() {
-        // Charlie gewinnt
+
         players.get(0).setBid(1); players.get(0).setTricksWon(1);
         players.get(1).setBid(2); players.get(1).setTricksWon(2);
         players.get(2).setBid(3); players.get(2).setTricksWon(4);
