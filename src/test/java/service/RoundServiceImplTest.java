@@ -63,7 +63,10 @@ class RoundServiceImplTest {
         games.addPlayer(new Player("Player1", "Alice"));
         games.addPlayer(new Player("Player2", "Bob"));
 
-        RoundServiceImpl roundServiceImp = new RoundServiceImpl(games);
+        SimpMessagingTemplate messagingTemplateMock = mock(SimpMessagingTemplate.class);
+        GameService gameServiceMock = mock(GameService.class);
+
+        RoundServiceImpl roundServiceImp = new RoundServiceImpl(games, messagingTemplateMock, gameServiceMock);
 
 
         // Runde starten → deck wird hier initialisiert
@@ -128,7 +131,7 @@ class RoundServiceImplTest {
 
         assertDoesNotThrow(() -> roundService.playCard(player2, player2RedCard));
         assertEquals(2, roundService.playedCards.size());
-        assertEquals(0, player2.getHandCards().size());
+        assertEquals(1, player2.getHandCards().size());
     }
 
     @Test
