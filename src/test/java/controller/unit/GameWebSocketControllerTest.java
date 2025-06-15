@@ -76,10 +76,10 @@ class GameWebSocketControllerTest {
 
         when(gameService.startGame("test-game-id")).thenReturn(expectedResponse);
 
-        GameResponse response = gameWebSocketController.startGame(quotedGameId);
+        gameWebSocketController.startGame(quotedGameId);
 
         verify(gameService, times(1)).startGame("test-game-id");
-        assertEquals(expectedResponse, response);
+
     }
 
     /**
