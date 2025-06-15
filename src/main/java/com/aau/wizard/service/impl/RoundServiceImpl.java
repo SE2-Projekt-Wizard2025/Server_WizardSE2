@@ -36,7 +36,6 @@ public class RoundServiceImpl {
             player.setTricksWon(0);
             player.setBid(0);
             player.setPrediction(null);
-            //System.out.println("Hand für " + player.getPlayerName() + ": " + hand);
         }
 
         //trumpCard = new Card(CardSuit.SPECIAL, 0); // 14 = Wizard --> nur für test

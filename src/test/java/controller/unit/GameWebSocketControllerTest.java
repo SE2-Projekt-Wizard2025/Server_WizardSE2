@@ -45,12 +45,10 @@ class GameWebSocketControllerTest {
 
         gameWebSocketController.joinGame(request);
 
-        // Erwartung: nur Broadcast an alle (nicht personalisiert)
+        
         verify(gameService, times(1)).joinGame(any(GameRequest.class));
         verify(messagingTemplate, times(1)).convertAndSend("/topic/game", expectedResponse);
 
-        // NICHT prüfen:
-        // verify(messagingTemplate).convertAndSend("/topic/game/Player1", expectedResponse);
     }
 
 

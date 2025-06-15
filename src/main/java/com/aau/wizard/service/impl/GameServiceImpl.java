@@ -117,7 +117,6 @@ public class GameServiceImpl implements GameService {
 
         for (Player player : game.getPlayers()) {
             GameResponse response = createGameResponse(game, player.getPlayerId(), trumpCard);
-            System.out.println("Sende GameResponse an /topic/game/" + player.getPlayerId());
             messagingTemplate.convertAndSend("/topic/game/" + player.getPlayerId(), response);
         }
 
