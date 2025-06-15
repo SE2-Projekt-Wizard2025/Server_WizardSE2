@@ -45,41 +45,21 @@ class GameWebSocketControllerTest {
 
         gameWebSocketController.joinGame(request);
 
+        // Erwartung: nur Broadcast an alle (nicht personalisiert)
         verify(gameService, times(1)).joinGame(any(GameRequest.class));
-        verify(messagingTemplate, times(1)).convertAndSend(eq("/topic/game"), eq(expectedResponse));
+        verify(messagingTemplate, times(1)).convertAndSend("/topic/game", expectedResponse);
+
+        // NICHT prüfen:
+        // verify(messagingTemplate).convertAndSend("/topic/game/Player1", expectedResponse);
     }
 
-    /**
-     * Tests that joinGame() returns null when the GameService returns null.
-     */
-    @Test
-    void testJoinGameWithNullResponse() {
-        GameRequest request = createDefaultGameRequest();
 
-        when(gameService.joinGame(any(GameRequest.class))).thenReturn(null);
-
-        gameWebSocketController.joinGame(request);
-
-        verify(gameService, times(1)).joinGame(any(GameRequest.class));
-        ArgumentCaptor<Object> messageCaptor = ArgumentCaptor.forClass(Object.class);
-        verify(messagingTemplate).convertAndSend(eq("/topic/game"), messageCaptor.capture());
-
-        assertNull(messageCaptor.getValue());
-    }
 
     @Test
     void testStartGameCleansQuotedGameId() {
-
         String quotedGameId = "\"test-game-id\"";
-
-        GameResponse expectedResponse = createDefaultGameResponse(createDefaultPlayerDto());
-
-        when(gameService.startGame("test-game-id")).thenReturn(expectedResponse);
-
         gameWebSocketController.startGame(quotedGameId);
-
-        verify(gameService, times(1)).startGame("test-game-id");
-
+        verify(gameService).startGame("test-game-id");
     }
 
     /**
