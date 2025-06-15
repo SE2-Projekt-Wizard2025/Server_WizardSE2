@@ -243,6 +243,60 @@ public class GameServiceImpl implements GameService {
 
     }
 
+    @Override
+    public GameResponse playCard(GameRequest request) {
+        Game game = games.get(request.getGameId());
+        if (game == null || game.getStatus() != GameStatus.PLAYING) {
+            throw new IllegalStateException("Das Spiel ist nicht aktiv oder wurde nicht gefunden.");
+        }
+
+        Player player = game.getPlayerById(request.getPlayerId());
+        if (player == null) {
+            throw new IllegalArgumentException("Spieler nicht gefunden.");
+        }
+
+        if (!game.getCurrentPlayerId().equals(player.getPlayerId())) {
+            throw new IllegalStateException("Du bist nicht an der Reihe.");
+        }
+
+        RoundServiceImpl roundService = roundServices.get(request.getGameId());
+        if (roundService == null) {
+            throw new IllegalStateException("Runden-Logik für dieses Spiel nicht gefunden.");
+        }
+
+        ICard cardObject = ICard.fromString(request.getCard());
+
+        ICard cardToPlay = player.getHandCards().stream()
+                .filter(c -> c.equals(cardObject))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Karte nicht in der Hand des Spielers: " + request.getCard()));
+
+        roundService.playCard(player, cardToPlay);
+
+        // Prüfen, ob der Stich beendet ist
+        if (roundService.playedCards.size() == game.getPlayers().size()) {
+            Player trickWinner = roundService.endTrick();
+            game.setCurrentPlayerId(trickWinner.getPlayerId());
+
+            // Prüfen, ob die Runde beendet ist, keine Handkarten mehr
+            if (trickWinner.getHandCards().isEmpty()) {
+                roundService.endRound();
+            }
+        } else {
+            // Nächsten Spieler bestimmen
+            int currentPlayerIndex = game.getPlayers().indexOf(player);
+            int nextPlayerIndex = (currentPlayerIndex + 1) % game.getPlayers().size();
+            game.setCurrentPlayerId(game.getPlayers().get(nextPlayerIndex).getPlayerId());
+        }
+
+
+        GameResponse response = createGameResponse(game, request.getPlayerId(), roundService.trumpCard);
+        response.setLastPlayedCard(cardToPlay.toString());
+        messagingTemplate.convertAndSend("/topic/game", response);
+
+        return response;
+    }
+
 
 }
 

@@ -14,6 +14,7 @@ public interface GameService {
     GameResponse makePrediction(PredictionRequest request);
     List<PlayerDto> getScoreboard(String gameId);
     void processEndOfRound(String gameId);
+    GameResponse playCard(GameRequest request);
 }
 
 

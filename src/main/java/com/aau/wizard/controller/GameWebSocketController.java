@@ -69,6 +69,12 @@ public class GameWebSocketController {
         return gameService.makePrediction(request);
     }
 
+    @MessageMapping("/game/play")
+    @SendTo("/topic/game")
+    public GameResponse playCard(GameRequest request) {
+        return gameService.playCard(request);
+    }
+
     @MessageMapping("/game/{gameId}/scoreboard")
     @SendTo("/topic/game/{gameId}/scoreboard")
     public List<PlayerDto> sendScoreboard(@DestinationVariable String gameId) {
