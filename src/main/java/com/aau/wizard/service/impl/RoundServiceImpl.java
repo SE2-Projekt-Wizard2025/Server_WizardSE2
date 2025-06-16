@@ -141,4 +141,12 @@ public class RoundServiceImpl {
         gameService.processEndOfRound(gameId);
 
     }
+
+    public List<Pair<Player, ICard>> getPlayedCards() {
+        return playedCards;
+    }
+
+    public ICard getTrumpCard() {
+        return trumpCard;
+    }
 }

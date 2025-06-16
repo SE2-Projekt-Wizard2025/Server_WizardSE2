@@ -102,6 +102,19 @@ public class TestDataFactory {
         );
     }
 
+    public static GameResponse createDefaultGameResponse(PlayerDto... players) {
+        return new GameResponse(
+                TEST_GAME_ID,
+                TEST_GAME_STATUS,
+                TEST_PLAYER_ID,
+                List.of(players),
+                createDefaultListOfCardDto(),
+                TEST_LAST_PLAYED_CARD,
+                null, // trumpCard ist in Tests derweil null
+                1
+        );
+    }
+
     public static GameRequest createDefaultGameRequest() {
         GameRequest request = new GameRequest();
         request.setGameId(TEST_GAME_ID);

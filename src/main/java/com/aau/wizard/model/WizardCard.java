@@ -3,6 +3,8 @@ package com.aau.wizard.model;
 import com.aau.wizard.model.enums.CardSuit;
 import com.aau.wizard.model.enums.CardType;
 
+import java.util.Objects;
+
 public class WizardCard extends AbstractSpecialCard {
     public WizardCard(CardSuit cardSuit) {
         super(cardSuit);
@@ -20,10 +22,20 @@ public class WizardCard extends AbstractSpecialCard {
 
     @Override
     public String toString() {
-        return "Wizard (" + cardSuit.name().toLowerCase() + ")";
+        return "WIZARD";
     }
-
     public static boolean isWizard(ICard card) {
         return card.getType() == CardType.WIZARD;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        return o != null && getClass() == o.getClass();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getClass());
     }
 }

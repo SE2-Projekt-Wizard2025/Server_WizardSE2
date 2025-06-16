@@ -6,6 +6,8 @@ import com.aau.wizard.dto.response.GameResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 import static testutil.TestDataFactory.*;
@@ -35,10 +37,16 @@ class GameResponseTest {
      */
     @Test
     void testAllArgsConstructor() {
-        GameResponse response = createDefaultGameResponse(testPlayer);
+        PlayerDto player2 = createCustomPlayerDto("Player2", "SecondPlayer", 0, true);
+        GameResponse response = createDefaultGameResponse(testPlayer, player2);
 
-        assertGameResponse(response);
+        assertThat(response).isNotNull();
+        assertEquals(TEST_GAME_ID, response.getGameId());
+        assertEquals(2, response.getPlayers().size());
+        assertEquals(testPlayer.getPlayerId(), response.getPlayers().get(0).getPlayerId());
+        assertEquals(player2.getPlayerId(), response.getPlayers().get(1).getPlayerId());
     }
+
 
     /**
      * Tests that GameResponse can be correctly deserialized from JSON using Jackson.

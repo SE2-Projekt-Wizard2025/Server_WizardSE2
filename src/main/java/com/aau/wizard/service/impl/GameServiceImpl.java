@@ -275,7 +275,7 @@ public class GameServiceImpl implements GameService {
         roundService.playCard(player, cardToPlay);
 
         // Prüfen, ob der Stich beendet ist
-        if (roundService.playedCards.size() == game.getPlayers().size()) {
+        if (roundService.getPlayedCards().size() == game.getPlayers().size()) {
             Player trickWinner = roundService.endTrick();
             game.setCurrentPlayerId(trickWinner.getPlayerId());
 
@@ -291,7 +291,7 @@ public class GameServiceImpl implements GameService {
         }
 
 
-        GameResponse response = createGameResponse(game, request.getPlayerId(), roundService.trumpCard);
+        GameResponse response = createGameResponse(game, request.getPlayerId(), roundService.getTrumpCard());
         response.setLastPlayedCard(cardToPlay.toString());
         messagingTemplate.convertAndSend("/topic/game", response);
 

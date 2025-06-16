@@ -79,7 +79,7 @@ class BiddingRulesTest {
     @Test
     void calculateScores_newPlayerZeroInitialScore() {
         Player player = new Player("p1", "Newbie");
-        player.setBid(2);
+        player.setPrediction(2);
         player.setTricksWon(2);
 
         BiddingRules.calculateScores(List.of(player));

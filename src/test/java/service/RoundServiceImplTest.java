@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import com.aau.wizard.service.interfaces.GameService;
 
-
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -331,9 +330,9 @@ class RoundServiceImplTest {
     @Test
     void endRound_setsPredictionOrderStartingWithWinner() {
 
-        players.get(0).setBid(1); players.get(0).setTricksWon(1);
-        players.get(1).setBid(2); players.get(1).setTricksWon(2);
-        players.get(2).setBid(3); players.get(2).setTricksWon(4);
+        players.get(0).setPrediction(1); players.get(0).setTricksWon(1);
+        players.get(1).setPrediction(2); players.get(1).setTricksWon(2);
+        players.get(2).setPrediction(3); players.get(2).setTricksWon(4);
 
         roundService.endRound();
 
@@ -352,6 +351,5 @@ class RoundServiceImplTest {
 
         players.forEach(p -> assertNull(p.getPrediction(), "Prediction sollte zurückgesetzt sein"));
     }
-
 
 }
