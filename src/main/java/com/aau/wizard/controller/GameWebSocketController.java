@@ -1,14 +1,18 @@
 package com.aau.wizard.controller;
 
+import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.response.GameResponse;
 import com.aau.wizard.service.interfaces.GameService;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import com.aau.wizard.dto.request.PredictionRequest;
+
+import java.util.List;
 
 
 /**
@@ -62,6 +66,18 @@ public class GameWebSocketController {
     @SendTo("/topic/game")
     public GameResponse handlePrediction(PredictionRequest request) {
         return gameService.makePrediction(request);
+    }
+
+    @MessageMapping("/game/play")
+    @SendTo("/topic/game")
+    public GameResponse playCard(GameRequest request) {
+        return gameService.playCard(request);
+    }
+
+    @MessageMapping("/game/{gameId}/scoreboard")
+    @SendTo("/topic/game/{gameId}/scoreboard")
+    public List<PlayerDto> sendScoreboard(@DestinationVariable String gameId) {
+        return gameService.getScoreboard(gameId);
     }
 
 }

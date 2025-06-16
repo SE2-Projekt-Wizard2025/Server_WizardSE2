@@ -7,6 +7,7 @@ import com.aau.wizard.dto.response.GameResponse;
 import com.aau.wizard.model.Game;
 import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Player;
+import com.aau.wizard.model.enums.GameStatus;
 import com.aau.wizard.service.interfaces.GameService;
 import com.google.common.annotations.VisibleForTesting;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -72,7 +73,8 @@ public class GameServiceImpl implements GameService {
                 playerDtos,
                 handCards,
                 null,// lastPlayedCard can be set here later on
-                trumpCard != null ? CardDto.from(trumpCard) : null
+                trumpCard != null ? CardDto.from(trumpCard) : null,
+                game.getCurrentRound()
         );
     }
 
@@ -104,13 +106,17 @@ public class GameServiceImpl implements GameService {
             throw new IllegalArgumentException("Spiel nicht gefunden: " + gameId);
         }
 
+        int numPlayers=game.getPlayers().size();
+        game.setMaxRound(60/numPlayers); //Wizard regel
+        game.setCurrentRound(1);
+
         boolean started = game.startGame(); // ruft neue Methode aus Game.java auf
         if (!started) {
             throw new IllegalStateException("Spiel konnte nicht gestartet werden – evtl. zu wenig Spieler?");
         }
 
-        RoundServiceImpl roundService = new RoundServiceImpl(game);
-        roundService.startRound(1);//1 ist die Rundenanzahl — später noch dynamisch setzen
+        RoundServiceImpl roundService = new RoundServiceImpl(game, messagingTemplate, this);
+        roundService.startRound(game.getCurrentRound());
         ICard trumpCard = roundService.trumpCard;
         CardDto trumpCardDto = trumpCard != null ? CardDto.from(trumpCard) : null;
         roundServices.put(gameId, roundService);
@@ -188,6 +194,110 @@ public class GameServiceImpl implements GameService {
         player.setPrediction(prediction);
         return createGameResponse(game, player.getPlayerId(), null);
     }
+    public PlayerDto toDto(Player player) {
+        PlayerDto dto = new PlayerDto();
+        dto.setPlayerName(player.getName());
+        dto.setPrediction(player.getPrediction() != null ? player.getPrediction() : 0);
+        dto.setTricksWon(player.getTricksWon());
+        dto.setScore(player.getScore());
+        return dto;
+    }
+
+    public List<PlayerDto> getScoreboard(String gameId) {
+        Game game = games.get(gameId);
+        if (game == null) {
+            throw new IllegalArgumentException("Spiel nicht gefunden");
+        }
+
+        return game.getPlayers().stream()
+                .map(this::toDto)
+                .toList();
+    }
+
+    @Override
+    public void processEndOfRound(String gameId){
+        Game game = games.get(gameId);
+        if(game==null || game.getStatus() != GameStatus.PLAYING){
+            return;
+        }
+
+        if(game.getCurrentRound() >= game.getMaxRound()){
+            game.setStatus(GameStatus.ENDED);
+            System.out.println("Spiel "+gameId+ " ist beendet.");
+
+            for (Player player : game.getPlayers()){
+                GameResponse finalResponse = createGameResponse(game, player.getPlayerId(), null);
+                messagingTemplate.convertAndSend("/topic/game", finalResponse);
+            }
+        }else{
+            game.setCurrentRound(game.getCurrentRound()+1);
+            System.out.println("Starte Runde "+game.getMaxRound()+ " für Spiel "+ gameId);
+
+            RoundServiceImpl roundService=roundServices.get(gameId);
+            roundService.startRound(game.getCurrentRound());
+
+            for(Player player:game.getPlayers()){
+                GameResponse response=createGameResponse(game, player.getPlayerId(), roundService.trumpCard);
+                messagingTemplate.convertAndSend("/topic/game",response);
+            }
+        }
+
+    }
+
+    @Override
+    public GameResponse playCard(GameRequest request) {
+        Game game = games.get(request.getGameId());
+        if (game == null || game.getStatus() != GameStatus.PLAYING) {
+            throw new IllegalStateException("Das Spiel ist nicht aktiv oder wurde nicht gefunden.");
+        }
+
+        Player player = game.getPlayerById(request.getPlayerId());
+        if (player == null) {
+            throw new IllegalArgumentException("Spieler nicht gefunden.");
+        }
+
+        if (!game.getCurrentPlayerId().equals(player.getPlayerId())) {
+            throw new IllegalStateException("Du bist nicht an der Reihe.");
+        }
+
+        RoundServiceImpl roundService = roundServices.get(request.getGameId());
+        if (roundService == null) {
+            throw new IllegalStateException("Runden-Logik für dieses Spiel nicht gefunden.");
+        }
+
+        ICard cardObject = ICard.fromString(request.getCard());
+
+        ICard cardToPlay = player.getHandCards().stream()
+                .filter(c -> c.equals(cardObject))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Karte nicht in der Hand des Spielers: " + request.getCard()));
+
+        roundService.playCard(player, cardToPlay);
+
+        // Prüfen, ob der Stich beendet ist
+        if (roundService.getPlayedCards().size() == game.getPlayers().size()) {
+            Player trickWinner = roundService.endTrick();
+            game.setCurrentPlayerId(trickWinner.getPlayerId());
+
+            // Prüfen, ob die Runde beendet ist, keine Handkarten mehr
+            if (trickWinner.getHandCards().isEmpty()) {
+                roundService.endRound();
+            }
+        } else {
+            // Nächsten Spieler bestimmen
+            int currentPlayerIndex = game.getPlayers().indexOf(player);
+            int nextPlayerIndex = (currentPlayerIndex + 1) % game.getPlayers().size();
+            game.setCurrentPlayerId(game.getPlayers().get(nextPlayerIndex).getPlayerId());
+        }
+
+
+        GameResponse response = createGameResponse(game, request.getPlayerId(), roundService.getTrumpCard());
+        response.setLastPlayedCard(cardToPlay.toString());
+        messagingTemplate.convertAndSend("/topic/game", response);
+
+        return response;
+    }
 
 
 }
+

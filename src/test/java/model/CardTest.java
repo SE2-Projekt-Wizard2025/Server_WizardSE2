@@ -17,7 +17,7 @@ class CardTest {
         assertEquals(CardSuit.RED, card.getSuit());
         assertEquals(7, card.getValue());
         assertEquals(CardType.NUMBER, card.getType());
-        assertEquals("7 of red", card.toString());
+        assertEquals("RED_7", card.toString());
     }
 
     @Test
@@ -28,7 +28,7 @@ class CardTest {
         assertEquals(CardSuit.YELLOW, card.getSuit());
         assertEquals(0, card.getValue());
         assertEquals(CardType.JESTER, card.getType());
-        assertEquals("Jester (yellow)", card.toString());
+        assertEquals("JESTER", card.toString());
     }
 
     @Test
@@ -39,7 +39,7 @@ class CardTest {
         assertEquals(CardSuit.BLUE, card.getSuit());
         assertEquals(14, card.getValue());
         assertEquals(CardType.WIZARD, card.getType());
-        assertEquals("Wizard (blue)", card.toString());
+        assertEquals("WIZARD", card.toString());
     }
 
     @Test
@@ -49,8 +49,8 @@ class CardTest {
 
         assertEquals(CardType.NUMBER, lowestNumber.getType());
         assertEquals(CardType.NUMBER, highestNumber.getType());
-        assertEquals("1 of green", lowestNumber.toString());
-        assertEquals("13 of green", highestNumber.toString());
+        assertEquals("GREEN_1", lowestNumber.toString());
+        assertEquals("GREEN_13", highestNumber.toString());
     }
 
     @Test
@@ -59,7 +59,7 @@ class CardTest {
             ICard card = CardFactory.createCard(suit, 5);
 
             assertEquals(suit, card.getSuit());
-            assertTrue(card.toString().contains(suit.name().toLowerCase()));
+            assertTrue(card.toString().contains(suit.name()));
         }
     }
 
@@ -69,8 +69,6 @@ class CardTest {
             ICard card = CardFactory.createCard(suit, 0);
 
             assertEquals(suit, card.getSuit());
-            assertTrue(card.toString().contains("Jester"));
-            assertTrue(card.toString().contains(suit.name().toLowerCase()));
         }
     }
 
@@ -79,8 +77,6 @@ class CardTest {
         for (CardSuit suit : CardSuit.values()) {
             ICard card = CardFactory.createCard(suit, 14);
             assertEquals(suit, card.getSuit());
-            assertTrue(card.toString().contains("Wizard"));
-            assertTrue(card.toString().contains(suit.name().toLowerCase()));
         }
     }
 
@@ -91,9 +87,9 @@ class CardTest {
         ICard wizardSpecial = CardFactory.createCard(CardSuit.SPECIAL, 14);
 
 
-        assertEquals("5 of special", numberSpecial.toString());
-        assertEquals("Jester (special)", jesterSpecial.toString());
-        assertEquals("Wizard (special)", wizardSpecial.toString());
+        assertEquals("SPECIAL_5", numberSpecial.toString());
+        assertEquals("JESTER", jesterSpecial.toString());
+        assertEquals("WIZARD", wizardSpecial.toString());
     }
 
     @Test

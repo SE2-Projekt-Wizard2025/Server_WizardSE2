@@ -93,11 +93,25 @@ public class TestDataFactory {
                 TEST_GAME_ID,
                 TEST_GAME_STATUS,
                 TEST_PLAYER_ID,
-                createDefaultListOfPlayerDto(),
+                List.of(testPlayer),
                 createDefaultListOfCardDto(),
                 TEST_LAST_PLAYED_CARD,
-                null //trumpCard ist in Tests derweil null
+                null,//trumpCard ist in Tests derweil null
+                1
 
+        );
+    }
+
+    public static GameResponse createDefaultGameResponse(PlayerDto... players) {
+        return new GameResponse(
+                TEST_GAME_ID,
+                TEST_GAME_STATUS,
+                TEST_PLAYER_ID,
+                List.of(players),
+                createDefaultListOfCardDto(),
+                TEST_LAST_PLAYED_CARD,
+                null, // trumpCard ist in Tests derweil null
+                1
         );
     }
 

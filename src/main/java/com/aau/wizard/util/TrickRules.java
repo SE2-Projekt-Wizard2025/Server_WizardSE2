@@ -5,6 +5,7 @@ import com.aau.wizard.model.Player;
 import com.aau.wizard.model.enums.CardSuit;
 import com.aau.wizard.model.enums.CardType;
 
+import java.util.Comparator;
 import java.util.List;
 
 public final class TrickRules {
@@ -33,8 +34,9 @@ public final class TrickRules {
         }
 
         final CardSuit finalLeadCardSuit = leadCardSuit;
-        Pair<Player, Integer> winner = playedCards.stream()
-                .map(pair -> {
+        List<TrickCardInfo> cardScores= new java.util.ArrayList<>();
+        for (int i=0; i< playedCards.size(); i++){
+            Pair<Player, ICard> pair=playedCards.get(i);
                     ICard card = pair.second;
                     int score;
                     if (card.getType() == CardType.WIZARD) {
@@ -50,12 +52,16 @@ public final class TrickRules {
                             score = 0;
                         }
                     }
-                    return new Pair<>(pair.first, score);
-                })
-                .max((p1, p2) -> Integer.compare(p1.second, p2.second))
+                    cardScores.add(new TrickCardInfo(pair.first, score, i));
+                }
+
+        TrickCardInfo winnerInfo = cardScores.stream()
+                .max(Comparator
+                        .<TrickCardInfo>comparingInt(info -> info.score) // Höchster Score gewinnt
+                        .thenComparingInt(info -> info.originalIndex))   // Bei gleichem Score, frühere Karte gewinnt
                 .orElseThrow(() -> new IllegalStateException("No winner determined"));
 
-        return winner.first;
+        return winnerInfo.player;
     }
 
     public static boolean isValidPlay(Player player, ICard card, List<Pair<Player, ICard>> currentTrick) {
@@ -69,5 +75,17 @@ public final class TrickRules {
         CardSuit leadCardSuit = currentTrick.get(0).second.getSuit();
         boolean hasLeadSuit = player.getHandCards().stream().anyMatch(c -> c.getSuit() == leadCardSuit);
         return !hasLeadSuit || card.getSuit() == leadCardSuit;
+    }
+
+    private static class TrickCardInfo{
+        Player player;
+        int score;
+        int originalIndex; //index der gespielten Karte im Stich
+
+        TrickCardInfo(Player player, int score, int originalIndex){
+            this.player=player;
+            this.score=score;
+            this.originalIndex=originalIndex;
+        }
     }
 }

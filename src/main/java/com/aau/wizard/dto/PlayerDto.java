@@ -11,6 +11,7 @@ public class PlayerDto {
     private int score;
     private boolean ready;
     private Integer prediction;
+    private int tricksWon;
 
     /**
      * No args constructor needed for Jackson / JSON deserialization
@@ -74,4 +75,12 @@ public class PlayerDto {
     public Integer getPrediction(){ return prediction;}
 
     public void setPrediction(Integer prediction){this.prediction=prediction;}
+
+    public int getTricksWon() {
+        return tricksWon;
+    }
+
+    public void setTricksWon(int tricksWon) {
+        this.tricksWon = tricksWon;
+    }
 }

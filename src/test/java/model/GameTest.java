@@ -128,7 +128,7 @@ class GameTest {
     void testStartGameFails() {
         // zu wenig Spieler
         game.setPlayers(new ArrayList<>(List.of(new Player("p1", "A"))));
-        assertTrue(game.startGame());
+        assertFalse(game.startGame(), "sollte bei zu wenigen Spielern false zurückgeben.");
     }
 
 }

@@ -17,17 +17,7 @@ public abstract class AbstractSpecialCard implements ICard {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ICard)) return false;
-        ICard that = (ICard) o;
-        return this.getType() == that.getType()
-                && this.getValue() == that.getValue()
-                && this.getSuit() == that.getSuit();
-    }
+    public abstract boolean equals(Object o);
 
     @Override
-    public int hashCode() {
-        return Objects.hash(cardSuit, getValue(), getType());
-    }
-}
+    public abstract int hashCode();}
