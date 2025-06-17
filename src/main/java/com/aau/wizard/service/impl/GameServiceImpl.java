@@ -313,7 +313,12 @@ public class GameServiceImpl implements GameService {
 
         GameResponse response = createGameResponse(game, request.getPlayerId(), roundService.getTrumpCard());
         response.setLastPlayedCard(cardToPlay.toString());
-        messagingTemplate.convertAndSend("/topic/game", response);
+
+        for (Player p : game.getPlayers()) {
+            GameResponse playerResponse = createGameResponse(game, p.getPlayerId(), roundService.getTrumpCard());
+            playerResponse.setLastPlayedCard(cardToPlay.toString());
+            messagingTemplate.convertAndSend("/topic/game/" + p.getPlayerId(), playerResponse);
+        }
 
         return response;
     }
