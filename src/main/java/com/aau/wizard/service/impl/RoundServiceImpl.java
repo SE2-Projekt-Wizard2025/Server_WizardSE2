@@ -124,11 +124,25 @@ public class RoundServiceImpl {
         BiddingRules.calculateScores(players);
 
         System.out.println("\n=== Finale Auswertung ===");
-        for (Player player : players) {
+        /*for (Player player : players) {
             System.out.println(player.getName() + ": " + player.getPrediction() + " geboten, " +
                     player.getTricksWon() + " gewonnen → Punkte: " + player.getScore());
-        }
+        }*/
+        System.out.println("\n=== Finale Auswertung ===");
+        for (Player player : players) {
+            int prediction = player.getPrediction();
+            int tricksWon = player.getTricksWon();
+            int score = player.getScore();
+            int diff = Math.abs(prediction - tricksWon);
+            int pointsThisRound = (diff == 0) ? (20 + 10 * tricksWon) : (-10 * diff);
 
+            System.out.println(player.getName()
+                    + ": Geboten=" + prediction
+                    + ", Gewonnen=" + tricksWon
+                    + ", Differenz=" + diff
+                    + " → Punkte diese Runde: " + pointsThisRound
+                    + " → Gesamtscore: " + score);
+        }
         Player winner = players.stream()
                 .max((p1, p2) -> Integer.compare(p1.getTricksWon(), p2.getTricksWon()))
                 .orElseThrow(() -> new IllegalStateException("Kein Gewinner gefunden"));
