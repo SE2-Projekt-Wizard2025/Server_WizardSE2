@@ -165,35 +165,53 @@ public class GameServiceImpl implements GameService {
 
         int prediction = request.getPrediction();
 
-        // Sonderregel: Letzter Spieler darf keine perfekte Summe vorhersagen
         List<Player> allPlayers = game.getPlayers();
         List<String> predictionOrder = game.getPredictionOrder();
 
         long alreadyPredicted = allPlayers.stream().filter(p -> p.getPrediction() != null).count();
         String expectedPlayerId = predictionOrder.get((int) alreadyPredicted);
+        //logging
+        System.out.println("Vorhersage erhalten von: " + player.getPlayerId());
+        System.out.println("Erwartet wird Vorhersage von: " + expectedPlayerId);
         if (!expectedPlayerId.equals(player.getPlayerId())) {
             throw new IllegalStateException("Du bist noch nicht an der Reihe, bitte warte.");
         }
 
-        boolean isLastPlayer=predictionOrder.indexOf(player.getPlayerId())==predictionOrder.size()-1;
+        boolean isLastPlayer = predictionOrder.indexOf(player.getPlayerId()) == predictionOrder.size() - 1;
         if (isLastPlayer) {
             int sumOfOtherPredictions = allPlayers.stream()
                     .filter(p -> !p.getPlayerId().equals(player.getPlayerId()))
                     .map(p -> p.getPrediction() != null ? p.getPrediction() : 0)
                     .reduce(0, Integer::sum);
-
             int totalTricks = player.getHandCards().size();
-
             if (sumOfOtherPredictions + prediction == totalTricks) {
-                throw new IllegalArgumentException(
-                        "Diese Vorhersage ergibt exakt die Anzahl der Stiche und ist damit verboten."
-                );
+                throw new IllegalArgumentException("Diese Vorhersage ergibt exakt die Anzahl der Stiche und ist damit verboten.");
             }
         }
 
         player.setPrediction(prediction);
-        return createGameResponse(game, player.getPlayerId(), null);
+
+        //Status auf PLAYING setzen, wenn alle vorhergesagt haben
+        boolean allPredicted = allPlayers.stream().allMatch(p -> p.getPrediction() != null);
+        RoundServiceImpl roundService = roundServices.get(game.getGameId());
+        ICard trumpCard = roundService != null ? roundService.getTrumpCard() : null;
+
+        if (allPredicted) {
+            game.setStatus(GameStatus.PLAYING);
+            game.setCurrentPlayerId(game.getPredictionOrder().get(0));
+            System.out.println("Vorhersagen abgeschlossen. Spiel startet. Erste Spielerin: " + game.getCurrentPlayerId());
+
+            //Sende aktualisierten Zustand mit Trumpfkarte an alle Spieler
+            for (Player p : game.getPlayers()) {
+                GameResponse response = createGameResponse(game, p.getPlayerId(), trumpCard);
+                messagingTemplate.convertAndSend("/topic/game/" + p.getPlayerId(), response);
+            }
+        }
+
+        //Normale Antwort (nur für den Spieler, der gerade vorhersagt)
+        return createGameResponse(game, player.getPlayerId(), trumpCard);
     }
+
     public PlayerDto toDto(Player player) {
         PlayerDto dto = new PlayerDto();
         dto.setPlayerName(player.getName());
@@ -255,7 +273,9 @@ public class GameServiceImpl implements GameService {
         if (player == null) {
             throw new IllegalArgumentException("Spieler nicht gefunden.");
         }
-
+        //logging
+        System.out.println("Server erwartet: " + game.getCurrentPlayerId());
+        System.out.println("Spieler sendet: " + request.getPlayerId());
         if (!game.getCurrentPlayerId().equals(player.getPlayerId())) {
             throw new IllegalStateException("Du bist nicht an der Reihe.");
         }

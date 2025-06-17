@@ -5,6 +5,7 @@ import com.aau.wizard.model.Deck;
 import com.aau.wizard.model.Game;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.model.enums.CardSuit;
+import com.aau.wizard.model.enums.GameStatus;
 import com.aau.wizard.service.interfaces.GameService;
 import com.aau.wizard.util.BiddingRules;
 import com.aau.wizard.util.Pair;
@@ -37,6 +38,11 @@ public class RoundServiceImpl {
     public void startRound(int roundNumber) {
         this.deck = new Deck();
         deck.shuffle();
+
+        game.setStatus(GameStatus.PREDICTION);
+        game.setPredictionOrder(createPredictionOrder(players, game.getCurrentPlayerId()));
+        //logging
+        System.out.println("Neue Vorhersagereihenfolge: " + game.getPredictionOrder());
 
         for (Player player : players) {
             List<ICard> hand = new ArrayList<>(deck.draw(roundNumber));
