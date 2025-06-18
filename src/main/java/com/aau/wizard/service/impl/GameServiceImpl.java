@@ -258,7 +258,7 @@ public class GameServiceImpl implements GameService {
 
             for (Player player : game.getPlayers()){
                 GameResponse finalResponse = createGameResponse(game, player.getPlayerId(), null);
-                messagingTemplate.convertAndSend("/topic/game", finalResponse);
+                messagingTemplate.convertAndSend("/topic/game/" + player.getPlayerId(), finalResponse);
             }
         }else{
             game.setCurrentRound(game.getCurrentRound()+1);
@@ -269,8 +269,7 @@ public class GameServiceImpl implements GameService {
 
             for(Player player:game.getPlayers()){
                 GameResponse response=createGameResponse(game, player.getPlayerId(), roundService.trumpCard);
-                messagingTemplate.convertAndSend("/topic/game",response);
-            }
+                messagingTemplate.convertAndSend("/topic/game/" + player.getPlayerId(), response);            }
         }
 
     }
@@ -312,30 +311,31 @@ public class GameServiceImpl implements GameService {
             Player trickWinner = roundService.endTrick();
             game.setCurrentPlayerId(trickWinner.getPlayerId());
 
-            // Prüfen, ob die Runde beendet ist, keine Handkarten mehr
+            for (Player p : game.getPlayers()) {
+                GameResponse playerResponse = createGameResponse(game, p.getPlayerId(), roundService.getTrumpCard());
+                playerResponse.setLastPlayedCard(cardToPlay.toString());
+                playerResponse.setLastTrickWinnerId(trickWinner.getPlayerId());
+                messagingTemplate.convertAndSend("/topic/game/" + p.getPlayerId(), playerResponse);
+            }
+
             if (trickWinner.getHandCards().isEmpty()) {
                 roundService.endRound();
             }
+
+            return createGameResponse(game, request.getPlayerId(), roundService.getTrumpCard());
         } else {
-            // Nächsten Spieler bestimmen
             int currentPlayerIndex = game.getPlayers().indexOf(player);
             int nextPlayerIndex = (currentPlayerIndex + 1) % game.getPlayers().size();
             game.setCurrentPlayerId(game.getPlayers().get(nextPlayerIndex).getPlayerId());
+
+            for (Player p : game.getPlayers()) {
+                GameResponse playerResponse = createGameResponse(game, p.getPlayerId(), roundService.getTrumpCard());
+                playerResponse.setLastPlayedCard(cardToPlay.toString());
+                messagingTemplate.convertAndSend("/topic/game/" + p.getPlayerId(), playerResponse);
+            }
+
+            return createGameResponse(game, request.getPlayerId(), roundService.getTrumpCard());
         }
-
-
-        GameResponse response = createGameResponse(game, request.getPlayerId(), roundService.getTrumpCard());
-        response.setLastPlayedCard(cardToPlay.toString());
-
-        for (Player p : game.getPlayers()) {
-            GameResponse playerResponse = createGameResponse(game, p.getPlayerId(), roundService.getTrumpCard());
-            playerResponse.setLastPlayedCard(cardToPlay.toString());
-            messagingTemplate.convertAndSend("/topic/game/" + p.getPlayerId(), playerResponse);
-        }
-
-        return response;
     }
-
-
 }
 
