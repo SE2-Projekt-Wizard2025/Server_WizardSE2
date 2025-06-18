@@ -1,5 +1,6 @@
 package com.aau.wizard.service.impl;
 
+import com.aau.wizard.controller.GameWebSocketController;
 import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Deck;
 import com.aau.wizard.model.Game;
@@ -11,9 +12,11 @@ import com.aau.wizard.util.BiddingRules;
 import com.aau.wizard.util.Pair;
 import com.aau.wizard.util.TrickRules;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class RoundServiceImpl {
 
@@ -26,7 +29,7 @@ public class RoundServiceImpl {
     private final Game game;
     private final SimpMessagingTemplate messagingTemplate;
     private final GameService gameService;
-
+    private static final Logger logger = LoggerFactory.getLogger(RoundServiceImpl.class);
 
     public RoundServiceImpl(Game game, SimpMessagingTemplate messagingTemplate, GameService gameService) {
         this.players = game.getPlayers();
@@ -42,7 +45,7 @@ public class RoundServiceImpl {
         game.setStatus(GameStatus.PREDICTION);
         game.setPredictionOrder(createPredictionOrder(players, game.getCurrentPlayerId()));
         //logging
-        System.out.println("Neue Vorhersagereihenfolge: " + game.getPredictionOrder());
+        logger.info("Neue Vorhersagereihenfolge: {}", game.getPredictionOrder());
 
         for (Player player : players) {
             List<ICard> hand = new ArrayList<>(deck.draw(roundNumber));
@@ -66,7 +69,7 @@ public class RoundServiceImpl {
         currentTrickNumber = 0;
         playedCards.clear();
 
-        System.out.println("Trumpf: " + (trumpCardSuit != null ? trumpCardSuit : "Kein Trumpf"));
+        logger.info("Trumpf: {}", trumpCardSuit != null ? trumpCardSuit : "Kein Trumpf");
     }
 
     public void playCard(Player player, ICard card) {
@@ -89,7 +92,7 @@ public class RoundServiceImpl {
 
         Player winner = TrickRules.determineTrickWinner(playedCards, trumpCardSuit);
         winner.setTricksWon(winner.getTricksWon() + 1);
-        System.out.println("Stich " + (currentTrickNumber + 1) + " gewonnen von " + winner.getName() + " (" + winner.getTricksWon() + " Stiche)");
+        logger.info("Stich {} gewonnen von {} ({} Stiche)", currentTrickNumber + 1, winner.getName(), winner.getTricksWon());
 
         playedCards.clear();
         currentTrickNumber++;
@@ -123,9 +126,9 @@ public class RoundServiceImpl {
     public void endRound() {
         BiddingRules.calculateScores(players);
 
-        System.out.println("\n=== Finale Auswertung ===");
+        logger.info("=== Finale Auswertung ===");
 
-        System.out.println("\n=== Finale Auswertung ===");
+        logger.info("=== Finale Auswertung ===");
         for (Player player : players) {
             int prediction = player.getPrediction();
             int tricksWon = player.getTricksWon();
@@ -133,12 +136,9 @@ public class RoundServiceImpl {
             int diff = Math.abs(prediction - tricksWon);
             int pointsThisRound = (diff == 0) ? (20 + 10 * tricksWon) : (-10 * diff);
 
-            System.out.println(player.getName()
-                    + ": Geboten=" + prediction
-                    + ", Gewonnen=" + tricksWon
-                    + ", Differenz=" + diff
-                    + " → Punkte diese Runde: " + pointsThisRound
-                    + " → Gesamtscore: " + score);
+            logger.info("{}: Geboten={}, Gewonnen={}, Differenz={} → Punkte diese Runde: {} → Gesamtscore: {}",
+                    player.getName(), prediction, tricksWon, diff, pointsThisRound, score);
+
         }
         Player winner = players.stream()
                 .max((p1, p2) -> Integer.compare(p1.getTricksWon(), p2.getTricksWon()))
@@ -147,7 +147,7 @@ public class RoundServiceImpl {
         List<String> predictionOrder = createPredictionOrder(players, winner.getPlayerId());
         game.setPredictionOrder(predictionOrder);
 
-        System.out.println("Neue Vorhersagereihenfolge: " + predictionOrder);
+        logger.info("Neue Vorhersagereihenfolge: {}", predictionOrder);
 
         String gameId = game.getGameId();
         messagingTemplate.convertAndSend(

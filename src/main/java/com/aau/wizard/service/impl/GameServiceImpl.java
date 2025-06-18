@@ -12,12 +12,12 @@ import com.aau.wizard.service.interfaces.GameService;
 import com.google.common.annotations.VisibleForTesting;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import static com.aau.wizard.util.CollectionUtils.mapOrEmpty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Default implementation of the GameService interface.
@@ -36,6 +36,8 @@ public class GameServiceImpl implements GameService {
     public GameServiceImpl(SimpMessagingTemplate messagingTemplate) {
         this.messagingTemplate = messagingTemplate;
     }
+    private static final Logger logger = LoggerFactory.getLogger(GameServiceImpl.class);
+
 
     /**
      * Handles a player joining a game. Creates the game if it doesn't exist,
@@ -178,8 +180,8 @@ public class GameServiceImpl implements GameService {
         long alreadyPredicted = allPlayers.stream().filter(p -> p.getPrediction() != null).count();
         String expectedPlayerId = predictionOrder.get((int) alreadyPredicted);
         //logging
-        System.out.println("Vorhersage erhalten von: " + player.getPlayerId());
-        System.out.println("Erwartet wird Vorhersage von: " + expectedPlayerId);
+        logger.info("Vorhersage erhalten von: {}", player.getPlayerId());
+        logger.info("Erwartet wird Vorhersage von: {}", expectedPlayerId);
         if (!expectedPlayerId.equals(player.getPlayerId())) {
             throw new IllegalStateException("Du bist noch nicht an der Reihe, bitte warte.");
         }
@@ -206,7 +208,7 @@ public class GameServiceImpl implements GameService {
         if (allPredicted) {
             game.setStatus(GameStatus.PLAYING);
             game.setCurrentPlayerId(game.getPredictionOrder().get(0));
-            System.out.println("Vorhersagen abgeschlossen. Spiel startet. Erste Spielerin: " + game.getCurrentPlayerId());
+            logger.info("Vorhersagen abgeschlossen. Spiel startet. Erste SpielerIn: {}", game.getCurrentPlayerId());
 
             //Sende aktualisierten Zustand mit Trumpfkarte an alle Spieler
             for (Player p : game.getPlayers()) {
@@ -254,7 +256,7 @@ public class GameServiceImpl implements GameService {
 
         if(game.getCurrentRound() >= game.getMaxRound()){
             game.setStatus(GameStatus.ENDED);
-            System.out.println("Spiel "+gameId+ " ist beendet.");
+            logger.info("Spiel {} ist beendet.", gameId);
 
             for (Player player : game.getPlayers()){
                 GameResponse finalResponse = createGameResponse(game, player.getPlayerId(), null);
@@ -262,7 +264,7 @@ public class GameServiceImpl implements GameService {
             }
         }else{
             game.setCurrentRound(game.getCurrentRound()+1);
-            System.out.println("Starte Runde "+game.getMaxRound()+ " für Spiel "+ gameId);
+            logger.info("Starte Runde {} für Spiel {}", game.getMaxRound(), gameId);
 
             RoundServiceImpl roundService=roundServices.get(gameId);
             roundService.startRound(game.getCurrentRound());
@@ -286,8 +288,8 @@ public class GameServiceImpl implements GameService {
             throw new IllegalArgumentException("Spieler nicht gefunden.");
         }
         //logging
-        System.out.println("Server erwartet: " + game.getCurrentPlayerId());
-        System.out.println("Spieler sendet: " + request.getPlayerId());
+        logger.info("Server erwartet: {}", game.getCurrentPlayerId());
+        logger.info("Spieler sendet: {}", request.getPlayerId());
         if (!game.getCurrentPlayerId().equals(player.getPlayerId())) {
             throw new IllegalStateException("Du bist nicht an der Reihe.");
         }

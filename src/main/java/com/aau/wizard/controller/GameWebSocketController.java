@@ -11,8 +11,9 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import com.aau.wizard.dto.request.PredictionRequest;
-
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -24,6 +25,7 @@ import java.util.List;
 public class GameWebSocketController {
     private final GameService gameService;
     private final SimpMessagingTemplate messagingTemplate;
+    private static final Logger logger = LoggerFactory.getLogger(GameWebSocketController.class);
     /**
      * Injects the game service to delegate game logic operations.
      *
@@ -45,8 +47,8 @@ public class GameWebSocketController {
      */
     @MessageMapping("/game/join")
     public void joinGame(GameRequest gameRequest) {
-        System.out.println("Received join request from: " + gameRequest.getPlayerName() +
-                " (ID: " + gameRequest.getPlayerId() + ") for Game: " + gameRequest.getGameId());
+        logger.info("Received join request from: {} (ID: {}) for Game: {}",
+                gameRequest.getPlayerName(), gameRequest.getPlayerId(), gameRequest.getGameId());
 
         GameResponse response = gameService.joinGame(gameRequest);
         messagingTemplate.convertAndSend("/topic/game", response);
@@ -58,7 +60,7 @@ public class GameWebSocketController {
             gameId = gameId.substring(1, gameId.length() - 1);
         }
 
-        System.out.println("Start game with ID: " + gameId);
+        logger.info("Start game with ID: {}", gameId);
         gameService.startGame(gameId); // keine Rückgabe → personalisierte Nachrichten werden dort verschickt
     }
 
