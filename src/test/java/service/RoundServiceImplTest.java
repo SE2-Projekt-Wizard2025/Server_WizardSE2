@@ -44,9 +44,14 @@ class RoundServiceImplTest {
         roundService = new RoundServiceImpl(game, messagingTemplate, gameService);
         }
 
+    void prepareGameAndStartRound(int roundNumber, String startingPlayerId) {
+        game.setCurrentPlayerId(startingPlayerId);
+        roundService.startRound(roundNumber);
+    }
+
     @Test
     void startRound_initializesGameStateCorrectly() {
-        roundService.startRound(3);
+        prepareGameAndStartRound(3, "p1");
 
         // Verify each player got 3 cards
         players.forEach(p -> assertEquals(3, p.getHandCards().size()));
@@ -68,7 +73,8 @@ class RoundServiceImplTest {
         RoundServiceImpl roundServiceImp = new RoundServiceImpl(games, messagingTemplateMock, gameServiceMock);
 
 
-        // Runde starten → deck wird hier initialisiert
+        //Runde starten → deck wird hier initialisiert
+        games.setCurrentPlayerId("Player1");
         roundServiceImp.startRound(3);
 
 
@@ -78,7 +84,7 @@ class RoundServiceImplTest {
 
         @Test
     void playCard_validCard_playsSuccessfully() {
-        roundService.startRound(3);
+        prepareGameAndStartRound(3, "p1");
         Player player = players.get(0);
         ICard card = player.getHandCards().get(0);
 
@@ -90,7 +96,7 @@ class RoundServiceImplTest {
 
     @Test
     void playCard_invalidCard_throwsException() {
-        roundService.startRound(3);
+        prepareGameAndStartRound(3, "p1");
         Player player = players.get(0);
         ICard invalidCard = CardFactory.createCard(CardSuit.BLUE, 5);
 
@@ -101,7 +107,7 @@ class RoundServiceImplTest {
 
     @Test
     void playCard_firstCardOfTrick_setsLeadingSuit() {
-        roundService.startRound(3);
+        prepareGameAndStartRound(3, "p1");
         Player player = players.get(0);
         ICard cardToPlay = CardFactory.createCard(CardSuit.RED, 5);
         player.getHandCards().clear();
@@ -116,7 +122,7 @@ class RoundServiceImplTest {
 
     @Test
     void playCard_playerHasLeadingSuit_mustFollowSuit() {
-        roundService.startRound(3);
+        prepareGameAndStartRound(3, "p1");
         Player player1 = players.get(0);
         Player player2 = players.get(1);
 
@@ -135,7 +141,7 @@ class RoundServiceImplTest {
 
     @Test
     void playCard_playerHasLeadingSuit_cannotPlayOtherSuit() {
-        roundService.startRound(3);
+        prepareGameAndStartRound(3, "p1");
         Player player1 = players.get(0);
         Player player2 = players.get(1);
 
@@ -154,7 +160,7 @@ class RoundServiceImplTest {
 
     @Test
     void playCard_playerHasNoLeadingSuit_canPlayAnyCard() {
-        roundService.startRound(3);
+        prepareGameAndStartRound(3, "p1");
         Player player1 = players.get(0);
         Player player2 = players.get(1);
 
@@ -172,7 +178,7 @@ class RoundServiceImplTest {
 
     @Test
     void playCard_jesterCard_canAlwaysBePlayed() {
-        roundService.startRound(3);
+        prepareGameAndStartRound(3, "p1");
         Player player1 = players.get(0);
         Player player2 = players.get(1);
 
@@ -191,7 +197,7 @@ class RoundServiceImplTest {
 
     @Test
     void playCard_wizardCard_canAlwaysBePlayed() {
-        roundService.startRound(3);
+        prepareGameAndStartRound(3, "p1");
         Player player1 = players.get(0);
         Player player2 = players.get(1);
 
@@ -212,7 +218,7 @@ class RoundServiceImplTest {
 
     @Test
     void endTrick_noCardsPlayed_throwsException() {
-        roundService.startRound(3);
+        prepareGameAndStartRound(3, "p1");
         assertThrows(IllegalStateException.class, () -> roundService.endTrick());
     }
 
@@ -313,7 +319,7 @@ class RoundServiceImplTest {
 
     @Test
     void endRound_calculatesScoresCorrectly() {
-        roundService.startRound(3);
+        prepareGameAndStartRound(3, "p1");
         players.get(0).setPrediction(2); players.get(0).setTricksWon(2); // Perfect
         players.get(1).setPrediction(1); players.get(1).setTricksWon(3); // Under by 2
         players.get(2).setPrediction(3); players.get(2).setTricksWon(1); // Over by 2
@@ -347,7 +353,7 @@ class RoundServiceImplTest {
     void startRound_resetsPredictions() {
         players.forEach(p -> p.setPrediction(2));
 
-        roundService.startRound(3);
+        prepareGameAndStartRound(3, "p1");
 
         players.forEach(p -> assertNull(p.getPrediction(), "Prediction sollte zurückgesetzt sein"));
     }

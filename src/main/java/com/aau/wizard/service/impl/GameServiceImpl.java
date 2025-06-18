@@ -324,7 +324,9 @@ public class GameServiceImpl implements GameService {
                 roundService.endRound();
             }
 
-            return createGameResponse(game, request.getPlayerId(), roundService.getTrumpCard());
+            GameResponse response = createGameResponse(game, request.getPlayerId(), roundService.getTrumpCard());
+            response.setLastPlayedCard(cardToPlay.toString());
+            return response;
         } else {
             int currentPlayerIndex = game.getPlayers().indexOf(player);
             int nextPlayerIndex = (currentPlayerIndex + 1) % game.getPlayers().size();
@@ -336,8 +338,9 @@ public class GameServiceImpl implements GameService {
                 messagingTemplate.convertAndSend("/topic/game/" + p.getPlayerId(), playerResponse);
             }
 
-            return createGameResponse(game, request.getPlayerId(), roundService.getTrumpCard());
-        }
+            GameResponse response = createGameResponse(game, request.getPlayerId(), roundService.getTrumpCard());
+            response.setLastPlayedCard(cardToPlay.toString());
+            return response;        }
     }
 }
 

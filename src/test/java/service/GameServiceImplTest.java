@@ -175,16 +175,15 @@ public class GameServiceImplTest {
 
         // Assertions zur Spiel-Response
         assertNotNull(response);
-        assertEquals("PLAYING", response.getStatus().name());
-        assertEquals(3, response.getPlayers().size());
+        assertEquals("PREDICTION", response.getStatus().name());
 
-        // Sicherstellen, dass currentPlayerId einer der Spieler ist
         List<String> playerIds = response.getPlayers().stream()
                 .map(p -> p.getPlayerId())
                 .toList();
+
+        assertEquals(3, playerIds.size());
         assertTrue(playerIds.contains(response.getCurrentPlayerId()), "Current player must be in the list");
 
-        // Überprüfen, ob an alle Spieler personalisierte Nachrichten geschickt wurden
         for (String playerId : playerIds) {
             verify(messagingTemplate).convertAndSend(eq("/topic/game/" + playerId), any(GameResponse.class));
         }
@@ -405,9 +404,9 @@ public class GameServiceImplTest {
 
         assertEquals(GameStatus.ENDED, game.getStatus(), "Der Spielstatus sollte auf ENDED gesetzt sein.");
 
-        ArgumentCaptor<GameResponse> responseCaptor = ArgumentCaptor.forClass(GameResponse.class);
-        verify(messagingTemplate, times(game.getPlayers().size())).convertAndSend(eq("/topic/game"), responseCaptor.capture());
-        assertEquals(GameStatus.ENDED, responseCaptor.getValue().getStatus());
+        for (Player player : game.getPlayers()) {
+            verify(messagingTemplate).convertAndSend(eq("/topic/game/" + player.getPlayerId()), any(GameResponse.class));
+        }
     }
 
     @Test
@@ -421,23 +420,19 @@ public class GameServiceImplTest {
         game.setStatus(GameStatus.PLAYING);
         game.setCurrentRound(1);
         game.setMaxRound(1);
-
-
         game.setCurrentPlayerId(player1.getPlayerId());
+
         ICard cardToPlay = createCustomCard(CardSuit.RED, 7);
-        player1.setHandCards(List.of(cardToPlay, createDefaultCard()));
+        player1.setHandCards(new ArrayList<>(List.of(cardToPlay, createDefaultCard())));
 
         injectGameIntoService(game);
 
-        RoundServiceImpl mockRoundService = mock(RoundServiceImpl.class);
-
-        when(mockRoundService.getPlayedCards()).thenReturn(List.of(new Pair<>(player1, cardToPlay)));
-        when(mockRoundService.getTrumpCard()).thenReturn(createDefaultCard());
-        injectRoundServiceIntoService(mockRoundService, TEST_GAME_ID);
+        RoundServiceImpl realRoundService = new RoundServiceImpl(game, messagingTemplate, gameService);
+        injectRoundServiceIntoService(realRoundService, TEST_GAME_ID);
 
         GameRequest request = new GameRequest(TEST_GAME_ID, player1.getPlayerId());
-        String cardString = cardToPlay.getSuit().name() + "_" + cardToPlay.getValue();
-        request.setCard(cardString);
+        request.setCard(cardToPlay.getSuit().name() + "_" + cardToPlay.getValue());
+
 
         GameResponse response = gameService.playCard(request);
 
@@ -447,15 +442,10 @@ public class GameServiceImplTest {
         // Überprüfen, ob der nächste Spieler am Zug ist
         assertEquals(player2.getPlayerId(), response.getCurrentPlayerId());
         assertEquals(player2.getPlayerId(), game.getCurrentPlayerId());
+
         assertEquals(cardToPlay.toString(), response.getLastPlayedCard());
 
-        verify(mockRoundService, times(1)).playCard(player1, cardToPlay);
-        verify(mockRoundService, never()).endTrick(); // Stich sollte noch nicht beendet sein
-        verify(mockRoundService, never()).endRound(); // Runde sollte noch nicht beendet sein
-
-        ArgumentCaptor<GameResponse> responseCaptor = ArgumentCaptor.forClass(GameResponse.class);
-        verify(messagingTemplate, times(1)).convertAndSend(eq("/topic/game"), responseCaptor.capture());
-        assertEquals(player2.getPlayerId(), responseCaptor.getValue().getCurrentPlayerId());
+        verify(messagingTemplate).convertAndSend(eq("/topic/game/" + player2.getPlayerId()), any(GameResponse.class));
     }
 
     @Test
