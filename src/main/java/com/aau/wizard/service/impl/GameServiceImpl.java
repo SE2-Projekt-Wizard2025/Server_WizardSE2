@@ -125,7 +125,7 @@ public class GameServiceImpl implements GameService {
         RoundServiceImpl roundService = new RoundServiceImpl(game, messagingTemplate, this);
         roundService.startRound(game.getCurrentRound());
         ICard trumpCard = roundService.trumpCard;
-        CardDto trumpCardDto = trumpCard != null ? CardDto.from(trumpCard) : null;
+        // CardDto trumpCardDto = trumpCard != null ? CardDto.from(trumpCard) : null;
         roundServices.put(gameId, roundService);
 
         for (Player player : game.getPlayers()) {

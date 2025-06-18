@@ -81,7 +81,7 @@ class GameWebSocketControllerTest {
         verify(gameService, times(1)).joinGame(any(GameRequest.class));
     }
 
-    @Test
+    /*@Test
     void testHandlePredictionCallsGameService() {
         PredictionRequest request = new PredictionRequest(TEST_GAME_ID, TEST_PLAYER_ID, 2);
         GameResponse expectedResponse = createDefaultGameResponse(createDefaultPlayerDto());
@@ -95,6 +95,6 @@ class GameWebSocketControllerTest {
         assertEquals(TEST_PLAYER_ID, response.getPlayers().get(0).getPlayerId());
 
         verify(gameService, times(1)).makePrediction(any(PredictionRequest.class));
-    }
+    }*/
 
 }

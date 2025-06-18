@@ -81,12 +81,7 @@ public class TestDataFactory {
         );
     }
 
-    public static List<ICard> createDefaultListOfCard() {
-        return List.of(
-                createDefaultCard(),
-                createCustomCard(CardSuit.BLUE, 2)
-        );
-    }
+
 
     public static GameResponse createDefaultGameResponse(PlayerDto testPlayer) {
         return new GameResponse(

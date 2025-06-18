@@ -41,7 +41,7 @@ public class GameWebSocketController {
      * The resulting {@link GameResponse} is broadcast to all clients subscribed to "/topic/game".
      *
      * @param gameRequest the request payload containing game and player info
-     * @return the updated game state as a response
+     * //@return the updated game state as a response
      */
     @MessageMapping("/game/join")
     public void joinGame(GameRequest gameRequest) {

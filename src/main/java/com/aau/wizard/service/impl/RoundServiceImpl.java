@@ -124,10 +124,7 @@ public class RoundServiceImpl {
         BiddingRules.calculateScores(players);
 
         System.out.println("\n=== Finale Auswertung ===");
-        /*for (Player player : players) {
-            System.out.println(player.getName() + ": " + player.getPrediction() + " geboten, " +
-                    player.getTricksWon() + " gewonnen → Punkte: " + player.getScore());
-        }*/
+
         System.out.println("\n=== Finale Auswertung ===");
         for (Player player : players) {
             int prediction = player.getPrediction();
