@@ -97,7 +97,8 @@ public class TestDataFactory {
                 createDefaultListOfCardDto(),
                 TEST_LAST_PLAYED_CARD,
                 null,//trumpCard ist in Tests derweil null
-                1
+                1,
+                null
 
         );
     }
@@ -111,7 +112,8 @@ public class TestDataFactory {
                 createDefaultListOfCardDto(),
                 TEST_LAST_PLAYED_CARD,
                 null, // trumpCard ist in Tests derweil null
-                1
+                1,
+                null
         );
     }
 

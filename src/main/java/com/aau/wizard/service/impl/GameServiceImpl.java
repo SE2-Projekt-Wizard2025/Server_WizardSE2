@@ -66,6 +66,12 @@ public class GameServiceImpl implements GameService {
         Player requestingPlayer = game.getPlayerById(requestingPlayerId);
         List<CardDto> handCards = CardDto.safeFromPlayer(requestingPlayer);
 
+        String currentPredictionPlayerId = null;
+        if (game.getStatus() == GameStatus.PREDICTION) {
+            long predictedCount = game.getPlayers().stream().filter(p -> p.getPrediction() != null).count();
+            currentPredictionPlayerId = game.getPredictionOrder().get((int) predictedCount);
+        }
+
         return new GameResponse(
                 game.getGameId(),
                 game.getStatus(),
@@ -74,7 +80,8 @@ public class GameServiceImpl implements GameService {
                 handCards,
                 null,// lastPlayedCard can be set here later on
                 trumpCard != null ? CardDto.from(trumpCard) : null,
-                game.getCurrentRound()
+                game.getCurrentRound(),
+                currentPredictionPlayerId
         );
     }
 
@@ -206,7 +213,13 @@ public class GameServiceImpl implements GameService {
                 GameResponse response = createGameResponse(game, p.getPlayerId(), trumpCard);
                 messagingTemplate.convertAndSend("/topic/game/" + p.getPlayerId(), response);
             }
+        }else{
+            for (Player p : game.getPlayers()) {
+                GameResponse updatedResponse = createGameResponse(game, p.getPlayerId(), trumpCard);
+                messagingTemplate.convertAndSend("/topic/game/" + p.getPlayerId(), updatedResponse);
+            }
         }
+
 
         //Normale Antwort (nur für den Spieler, der gerade vorhersagt)
         return createGameResponse(game, player.getPlayerId(), trumpCard);
