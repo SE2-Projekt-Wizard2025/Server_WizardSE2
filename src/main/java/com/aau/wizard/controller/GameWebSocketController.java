@@ -63,9 +63,16 @@ public class GameWebSocketController {
     }
 
     @MessageMapping("/game/predict")
-    @SendTo("/topic/game")
-    public GameResponse handlePrediction(PredictionRequest request) {
-        return gameService.makePrediction(request);
+    public void handlePrediction(PredictionRequest request) {
+        try {
+            GameResponse response = gameService.makePrediction(request);
+            messagingTemplate.convertAndSend("/topic/game/" + request.getPlayerId(), response);
+        } catch (IllegalArgumentException e) {
+            messagingTemplate.convertAndSend(
+                    "/topic/errors/" + request.getPlayerId(),
+                    e.getMessage()
+            );
+        }
     }
 
     @MessageMapping("/game/play")
