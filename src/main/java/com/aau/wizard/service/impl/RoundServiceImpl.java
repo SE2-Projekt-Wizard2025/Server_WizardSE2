@@ -13,7 +13,10 @@ import com.aau.wizard.util.Pair;
 import com.aau.wizard.util.TrickRules;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +80,7 @@ public class RoundServiceImpl {
             throw new IllegalArgumentException("Player doesn't have that card");
         }
 
-        if (!playedCards.isEmpty() && !TrickRules.isValidPlay(player, card, playedCards)) {
+        if (!playedCards.isEmpty() && !TrickRules.isValidPlay(player, card, playedCards, trumpCardSuit)) {
             throw new IllegalStateException("Invalid card play: " + card + " by " + player.getName());
         }
 
@@ -124,22 +127,24 @@ public class RoundServiceImpl {
 
 
     public void endRound() {
+
+        String gameId = game.getGameId();
+        Map<String, Integer> scoresBeforeRound = new HashMap<>();
+        for (Player player : players) {
+            scoresBeforeRound.put(player.getPlayerId(), player.getScore());
+        }
         BiddingRules.calculateScores(players);
 
-        logger.info("=== Finale Auswertung ===");
-
-        logger.info("=== Finale Auswertung ===");
+        logger.info("=== Auswertung Runde {} ===", game.getCurrentRound());
         for (Player player : players) {
-            int prediction = player.getPrediction();
-            int tricksWon = player.getTricksWon();
-            int score = player.getScore();
-            int diff = Math.abs(prediction - tricksWon);
-            int pointsThisRound = (diff == 0) ? (20 + 10 * tricksWon) : (-10 * diff);
+            int pointsThisRound = player.getScore() - scoresBeforeRound.get(player.getPlayerId());
+            player.addRoundScore(pointsThisRound);
 
             logger.info("{}: Geboten={}, Gewonnen={}, Differenz={} → Punkte diese Runde: {} → Gesamtscore: {}",
-                    player.getName(), prediction, tricksWon, diff, pointsThisRound, score);
+                    player.getName(), player.getPrediction(), player.getTricksWon(), pointsThisRound, player.getScore());
 
         }
+
         Player winner = players.stream()
                 .max((p1, p2) -> Integer.compare(p1.getTricksWon(), p2.getTricksWon()))
                 .orElseThrow(() -> new IllegalStateException("Kein Gewinner gefunden"));
@@ -149,13 +154,14 @@ public class RoundServiceImpl {
 
         logger.info("Neue Vorhersagereihenfolge: {}", predictionOrder);
 
-        String gameId = game.getGameId();
+        game.setStatus(GameStatus.ROUND_END_SUMMARY);
+
         messagingTemplate.convertAndSend(
                 "/topic/game/" + gameId + "/scoreboard",
                 gameService.getScoreboard(gameId)
         );
+        logger.info("Scoreboard nach Runde {} an Client gesendet. Status: ROUND_END_SUMMARY.", game.getCurrentRound());
 
-        gameService.processEndOfRound(gameId);
 
     }
 
@@ -165,5 +171,9 @@ public class RoundServiceImpl {
 
     public ICard getTrumpCard() {
         return trumpCard;
+    }
+
+    public void proceedToNextRound(String gameId) {
+        gameService.processEndOfRound(gameId);
     }
 }

@@ -64,7 +64,7 @@ public final class TrickRules {
         return winnerInfo.player;
     }
 
-    public static boolean isValidPlay(Player player, ICard card, List<Pair<Player, ICard>> currentTrick) {
+    public static boolean isValidPlay(Player player, ICard card, List<Pair<Player, ICard>> currentTrick, CardSuit trumpCardSuit) {
         if (card.getType() == CardType.WIZARD || card.getType() == CardType.JESTER) {
             return true;
         }
@@ -74,7 +74,20 @@ public final class TrickRules {
 
         CardSuit leadCardSuit = currentTrick.get(0).second.getSuit();
         boolean hasLeadSuit = player.getHandCards().stream().anyMatch(c -> c.getSuit() == leadCardSuit);
-        return !hasLeadSuit || card.getSuit() == leadCardSuit;
+        boolean hasTrumpSuitInHand = player.getHandCards().stream().anyMatch(c -> c.getSuit() == trumpCardSuit);
+
+        if (hasLeadSuit) {
+            return card.getSuit() == leadCardSuit; // MUSS die Anspielfarbe legen
+        }
+        // Spieler hat die farbe nicht
+        else {
+            if (hasTrumpSuitInHand) {
+                return card.getSuit() == trumpCardSuit;
+            }
+            else {
+                return true;
+            }
+        }
     }
 
     private static class TrickCardInfo{

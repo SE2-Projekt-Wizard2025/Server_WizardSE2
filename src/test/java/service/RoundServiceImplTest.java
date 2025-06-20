@@ -98,6 +98,7 @@ class RoundServiceImplTest {
     void playCard_invalidCard_throwsException() {
         prepareGameAndStartRound(3, "p1");
         Player player = players.get(0);
+        player.getHandCards().clear();
         ICard invalidCard = CardFactory.createCard(CardSuit.BLUE, 5);
 
 
@@ -329,9 +330,7 @@ class RoundServiceImplTest {
         assertEquals(40, players.get(0).getScore());  // 20 + 2*10
         assertEquals(-20, players.get(1).getScore());  // -10 * 2
         assertEquals(-20, players.get(2).getScore()); // -10*2
-
-        verify(gameService, times(1)).processEndOfRound(game.getGameId());
-    }
+}
 
     @Test
     void endRound_setsPredictionOrderStartingWithWinner() {

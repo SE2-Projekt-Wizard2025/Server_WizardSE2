@@ -233,6 +233,7 @@ public class GameServiceImpl implements GameService {
         dto.setPrediction(player.getPrediction() != null ? player.getPrediction() : 0);
         dto.setTricksWon(player.getTricksWon());
         dto.setScore(player.getScore());
+        dto.setRoundScores(player.getRoundScores());
         return dto;
     }
 
@@ -274,6 +275,10 @@ public class GameServiceImpl implements GameService {
                 messagingTemplate.convertAndSend("/topic/game/" + player.getPlayerId(), response);            }
         }
 
+    }
+    @Override
+    public void proceedToNextRound(String gameId) {
+        processEndOfRound(gameId);
     }
 
     @Override
@@ -321,7 +326,12 @@ public class GameServiceImpl implements GameService {
             }
 
             if (trickWinner.getHandCards().isEmpty()) {
+                logger.info("Alle Stiche in Runde {} gespielt. Beende Runde...", game.getCurrentRound());
                 roundService.endRound();
+            }else {
+                GameResponse response = createGameResponse(game, request.getPlayerId(), roundService.getTrumpCard());
+                response.setLastPlayedCard(cardToPlay.toString());
+                return response;
             }
 
             GameResponse response = createGameResponse(game, request.getPlayerId(), roundService.getTrumpCard());

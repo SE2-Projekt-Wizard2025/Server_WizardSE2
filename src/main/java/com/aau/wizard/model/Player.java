@@ -7,6 +7,7 @@ public class Player {
     private String playerId;
     private String name;
     private int score;
+    private List<Integer> roundScores = new ArrayList<>(); // Punkte der Runde
     private boolean ready;
     private List<ICard> handCards = new ArrayList<>();
     private Integer prediction; //kann null sein, noch keine Vorhersage
@@ -17,6 +18,8 @@ public class Player {
         this.playerId = playerId;
         this.name = name;
         this.ready = false;
+        this.score = 0;
+        this.tricksWon = 0;
     }
 
     public String getPlayerId() {
@@ -77,5 +80,13 @@ public class Player {
 
     public void setTricksWon(int tricksWon){
         this.tricksWon=tricksWon;
+    }
+
+    public List<Integer> getRoundScores() {
+        return roundScores;
+    }
+
+    public void addRoundScore(int scoreThisRound) {
+        this.roundScores.add(scoreThisRound);
     }
 }

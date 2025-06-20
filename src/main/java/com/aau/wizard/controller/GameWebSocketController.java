@@ -89,4 +89,18 @@ public class GameWebSocketController {
         return gameService.getScoreboard(gameId);
     }
 
+    /**
+     *Behandelt Anfragen, um nach der Scoreboard-Anzeige zur nächsten Runde fortzufahren.
+     * @param gameId Die ID des Spiels, das fortgesetzt werden soll.
+     */
+    @MessageMapping("/game/proceedToNextRound")
+    public void proceedToNextRound(@Payload String gameId) {
+
+        if (gameId != null && gameId.startsWith("\"") && gameId.endsWith("\"")) {
+            gameId = gameId.substring(1, gameId.length() - 1);
+        }
+        logger.info("Anfrage erhalten, zur nächsten Runde für Spiel-ID {} fortzufahren.", gameId);
+        gameService.proceedToNextRound(gameId);
+    }
+
 }

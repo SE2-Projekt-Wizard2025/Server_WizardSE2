@@ -15,6 +15,7 @@ public interface GameService {
     List<PlayerDto> getScoreboard(String gameId);
     void processEndOfRound(String gameId);
     GameResponse playCard(GameRequest request);
+    void proceedToNextRound(String gameId);
 }
 
 
