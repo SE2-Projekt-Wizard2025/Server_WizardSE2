@@ -279,6 +279,7 @@ public class GameServiceImpl implements GameService {
     @Override
     public GameResponse playCard(GameRequest request) {
         Game game = games.get(request.getGameId());
+        boolean isCheating = Boolean.TRUE.equals(request.getIsCheating());
         if (game == null || game.getStatus() != GameStatus.PLAYING) {
             throw new IllegalStateException("Das Spiel ist nicht aktiv oder wurde nicht gefunden.");
         }
@@ -306,7 +307,7 @@ public class GameServiceImpl implements GameService {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Karte nicht in der Hand des Spielers: " + request.getCard()));
 
-        roundService.playCard(player, cardToPlay, request.getIsCheating());
+        roundService.playCard(player, cardToPlay, isCheating);
 
         // Prüfen, ob der Stich beendet ist
         if (roundService.getPlayedCards().size() == game.getPlayers().size()) {

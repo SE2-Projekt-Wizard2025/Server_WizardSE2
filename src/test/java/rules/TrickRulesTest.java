@@ -109,9 +109,9 @@ class TrickRulesTest {
         Player player = createTestPlayer("p1", "Player1");
         ICard wizard = CardFactory.createCard(CardSuit.RED, 14);
 
-        assertTrue(TrickRules.isValidPlay(player, wizard, List.of()));
+        assertTrue(TrickRules.isValidPlay(player, wizard, List.of(), false));
         assertTrue(TrickRules.isValidPlay(player, wizard,
-                List.of(new Pair<>(player, CardFactory.createCard(CardSuit.BLUE, 7)))));
+                List.of(new Pair<>(player, CardFactory.createCard(CardSuit.BLUE, 7))), false));
     }
 
     @Test
@@ -119,9 +119,9 @@ class TrickRulesTest {
         Player player = createTestPlayer("p1", "Player1");
         ICard jester = CardFactory.createCard(CardSuit.RED, 0);
 
-        assertTrue(TrickRules.isValidPlay(player, jester, List.of()));
+        assertTrue(TrickRules.isValidPlay(player, jester, List.of(), false));
         assertTrue(TrickRules.isValidPlay(player, jester,
-                List.of(new Pair<>(player, CardFactory.createCard(CardSuit.BLUE, 7)))));
+                List.of(new Pair<>(player, CardFactory.createCard(CardSuit.BLUE, 7))), false));
     }
 
     @Test
@@ -129,7 +129,7 @@ class TrickRulesTest {
         Player player = createTestPlayer("p1", "Player1");
         ICard card = CardFactory.createCard(CardSuit.RED, 7);
 
-        assertTrue(TrickRules.isValidPlay(player, card, List.of()));
+        assertTrue(TrickRules.isValidPlay(player, card, List.of(), false));
     }
 
     @Test
@@ -145,11 +145,11 @@ class TrickRulesTest {
                 new Pair<>(createTestPlayer("p2", "Player2"), CardFactory.createCard(CardSuit.RED, 10))
         );
 
-        assertTrue(TrickRules.isValidPlay(player, CardFactory.createCard(CardSuit.RED, 5), currentTrick));
+        assertTrue(TrickRules.isValidPlay(player, CardFactory.createCard(CardSuit.RED, 5), currentTrick, false));
 
-        assertFalse(TrickRules.isValidPlay(player, CardFactory.createCard(CardSuit.BLUE, 5), currentTrick));
+        assertFalse(TrickRules.isValidPlay(player, CardFactory.createCard(CardSuit.BLUE, 5), currentTrick, false));
 
         player.setHandCards(List.of(CardFactory.createCard(CardSuit.BLUE, 8)));
-        assertTrue(TrickRules.isValidPlay(player, CardFactory.createCard(CardSuit.BLUE, 5), currentTrick));
+        assertTrue(TrickRules.isValidPlay(player, CardFactory.createCard(CardSuit.BLUE, 5), currentTrick, false));
     }
 }

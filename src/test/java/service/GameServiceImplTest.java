@@ -476,7 +476,7 @@ public class GameServiceImplTest {
         gameService.playCard(request1);
 
         // Überprüfe den Zustand
-        verify(mockRoundService).playCard(player1, card1);
+        verify(mockRoundService).playCard(player1, card1, false);
         verify(mockRoundService, never()).endTrick();
         assertEquals("p2", game.getCurrentPlayerId(), "Nach Alice sollte Bob an der Reihe sein.");
 
@@ -490,7 +490,7 @@ public class GameServiceImplTest {
         request2.setCard(card2String);
         gameService.playCard(request2);
 
-        verify(mockRoundService).playCard(player2, card2);
+        verify(mockRoundService).playCard(player2, card2, false);
         verify(mockRoundService, times(1)).endTrick();
 
 

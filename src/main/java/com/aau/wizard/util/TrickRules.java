@@ -65,6 +65,10 @@ public final class TrickRules {
     }
 
     public static boolean isValidPlay(Player player, ICard card, List<Pair<Player, ICard>> currentTrick, boolean isCheating) {
+        if (isCheating) {
+            return true;
+        }
+
         if (card.getType() == CardType.WIZARD || card.getType() == CardType.JESTER) {
             return true;
         }

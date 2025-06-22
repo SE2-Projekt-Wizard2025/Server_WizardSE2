@@ -88,7 +88,7 @@ class RoundServiceImplTest {
         Player player = players.get(0);
         ICard card = player.getHandCards().get(0);
 
-        roundService.playCard(player, card);
+        roundService.playCard(player, card, false);
 
         assertEquals(1, roundService.playedCards.size());
         assertEquals(2, player.getHandCards().size());
@@ -102,7 +102,7 @@ class RoundServiceImplTest {
 
 
         assertThrows(IllegalArgumentException.class,
-                () -> roundService.playCard(player, invalidCard));
+                () -> roundService.playCard(player, invalidCard, false));
     }
 
     @Test
@@ -113,7 +113,7 @@ class RoundServiceImplTest {
         player.getHandCards().clear();
         player.getHandCards().add(cardToPlay);
 
-        roundService.playCard(player, cardToPlay);
+        roundService.playCard(player, cardToPlay, false);
 
         assertEquals(1, roundService.playedCards.size());
         assertEquals(cardToPlay, roundService.playedCards.get(0).second);
@@ -134,7 +134,7 @@ class RoundServiceImplTest {
         player2.getHandCards().clear();
         player2.getHandCards().addAll(List.of(player2RedCard, player2BlueCard));
 
-        assertDoesNotThrow(() -> roundService.playCard(player2, player2RedCard));
+        assertDoesNotThrow(() -> roundService.playCard(player2, player2RedCard, false));
         assertEquals(2, roundService.playedCards.size());
         assertEquals(1, player2.getHandCards().size());
     }
@@ -154,7 +154,7 @@ class RoundServiceImplTest {
         player2.getHandCards().addAll(List.of(player2RedCard, player2BlueCard));
 
         assertThrows(IllegalStateException.class,
-                () -> roundService.playCard(player2, player2BlueCard),
+                () -> roundService.playCard(player2, player2BlueCard, false),
                 "Sollte fehlschlagen, da Spieler die führende Farbe hat und diese bedienen muss.");
     }
 
@@ -171,7 +171,7 @@ class RoundServiceImplTest {
         player2.getHandCards().clear();
         player2.getHandCards().add(player2BlueCard);
 
-        assertDoesNotThrow(() -> roundService.playCard(player2, player2BlueCard));
+        assertDoesNotThrow(() -> roundService.playCard(player2, player2BlueCard, false));
         assertEquals(2, roundService.playedCards.size());
         assertEquals(0, player2.getHandCards().size());
     }
@@ -190,7 +190,7 @@ class RoundServiceImplTest {
         player2.getHandCards().clear();
         player2.getHandCards().addAll(List.of(player2RedCard, jester)); // Spieler hat Rot und Jester
 
-        assertDoesNotThrow(() -> roundService.playCard(player2, jester));
+        assertDoesNotThrow(() -> roundService.playCard(player2, jester, false));
         assertEquals(2, roundService.playedCards.size());
         assertTrue(player2.getHandCards().contains(player2RedCard)); // Rote Karte sollte noch da sein
     }
@@ -210,7 +210,7 @@ class RoundServiceImplTest {
         player2.getHandCards().addAll(List.of(player2RedCard, wizard)); // Spieler hat Rot und Wizard
 
 
-        assertDoesNotThrow(() -> roundService.playCard(player2, wizard));
+        assertDoesNotThrow(() -> roundService.playCard(player2, wizard, false));
         assertEquals(2, roundService.playedCards.size());
         assertTrue(player2.getHandCards().contains(player2RedCard)); // Rote Karte sollte noch da sein
     }
