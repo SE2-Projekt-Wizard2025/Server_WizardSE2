@@ -72,7 +72,7 @@ class GameWebSocketControllerTest {
     void testStartGame_Success() {
         String gameId = TEST_GAME_ID;
         GameResponse dummyResponse = new GameResponse(gameId, GameStatus.PLAYING, null, null, null, null, null, 1, null);
-
+        when(gameService.startGame(gameId)).thenReturn(dummyResponse);
 
         gameWebSocketController.startGame(gameId);
 
