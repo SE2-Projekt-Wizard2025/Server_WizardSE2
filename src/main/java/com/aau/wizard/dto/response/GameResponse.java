@@ -18,6 +18,8 @@ public class GameResponse {
     private String lastPlayedCard;
     private CardDto trumpCard;
     private int currentRound;
+    private String currentPredictionPlayerId;
+    private String lastTrickWinnerId;
 
     /**
      * No args constructor needed for Jackson / JSON deserialization
@@ -25,7 +27,7 @@ public class GameResponse {
     public GameResponse() {}
 
     public GameResponse(String gameId, GameStatus status, String currentPlayerId,
-                        List<PlayerDto> players, List<CardDto> handCards, String lastPlayedCard, CardDto trumpCard, int currentRound) {
+                        List<PlayerDto> players, List<CardDto> handCards, String lastPlayedCard, CardDto trumpCard, int currentRound, String currentPredictionPlayerId) {
         this.gameId = gameId;
         this.status = status;
         this.currentPlayerId = currentPlayerId;
@@ -34,6 +36,7 @@ public class GameResponse {
         this.lastPlayedCard = lastPlayedCard;
         this.trumpCard = trumpCard;
         this.currentRound=currentRound;
+        this.currentPredictionPlayerId = currentPredictionPlayerId;
     }
 
     public String getGameId() {
@@ -98,5 +101,21 @@ public class GameResponse {
 
     public void setCurrentRound(int currentRound) {
         this.currentRound = currentRound;
+    }
+
+    public String getCurrentPredictionPlayerId() {
+        return currentPredictionPlayerId;
+    }
+
+    public void setCurrentPredictionPlayerId(String currentPredictionPlayerId) {
+        this.currentPredictionPlayerId = currentPredictionPlayerId;
+    }
+
+    public String getLastTrickWinnerId() {
+        return lastTrickWinnerId;
+    }
+
+    public void setLastTrickWinnerId(String lastTrickWinnerId) {
+        this.lastTrickWinnerId = lastTrickWinnerId;
     }
 }

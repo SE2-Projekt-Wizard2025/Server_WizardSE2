@@ -81,12 +81,7 @@ public class TestDataFactory {
         );
     }
 
-    public static List<ICard> createDefaultListOfCard() {
-        return List.of(
-                createDefaultCard(),
-                createCustomCard(CardSuit.BLUE, 2)
-        );
-    }
+
 
     public static GameResponse createDefaultGameResponse(PlayerDto testPlayer) {
         return new GameResponse(
@@ -97,7 +92,8 @@ public class TestDataFactory {
                 createDefaultListOfCardDto(),
                 TEST_LAST_PLAYED_CARD,
                 null,//trumpCard ist in Tests derweil null
-                1
+                1,
+                null
 
         );
     }
@@ -111,7 +107,8 @@ public class TestDataFactory {
                 createDefaultListOfCardDto(),
                 TEST_LAST_PLAYED_CARD,
                 null, // trumpCard ist in Tests derweil null
-                1
+                1,
+                null
         );
     }
 

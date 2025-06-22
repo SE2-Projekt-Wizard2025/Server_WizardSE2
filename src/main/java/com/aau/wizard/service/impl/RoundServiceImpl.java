@@ -1,18 +1,24 @@
 package com.aau.wizard.service.impl;
 
+import com.aau.wizard.dto.response.GameResponse;
 import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Deck;
 import com.aau.wizard.model.Game;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.model.enums.CardSuit;
+import com.aau.wizard.model.enums.GameStatus;
 import com.aau.wizard.service.interfaces.GameService;
 import com.aau.wizard.util.BiddingRules;
 import com.aau.wizard.util.Pair;
 import com.aau.wizard.util.TrickRules;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class RoundServiceImpl {
 
@@ -25,6 +31,7 @@ public class RoundServiceImpl {
     private final Game game;
     private final SimpMessagingTemplate messagingTemplate;
     private final GameService gameService;
+    private static final Logger logger = LoggerFactory.getLogger(RoundServiceImpl.class);
 
 
     public RoundServiceImpl(Game game, SimpMessagingTemplate messagingTemplate, GameService gameService) {
@@ -38,6 +45,9 @@ public class RoundServiceImpl {
         this.deck = new Deck();
         deck.shuffle();
 
+        game.setStatus(GameStatus.PREDICTION);
+        game.setPredictionOrder(createPredictionOrder(players, game.getCurrentPlayerId()));
+
         for (Player player : players) {
             List<ICard> hand = new ArrayList<>(deck.draw(roundNumber));
             player.setHandCards(hand);
@@ -46,8 +56,6 @@ public class RoundServiceImpl {
             player.setPrediction(null);
         }
 
-        //trumpCard = new Card(CardSuit.SPECIAL, 0); // 14 = Wizard --> nur für test
-        //trumpCardSuit = trumpCard.getSuit();        // = SPECIAL --> nur für test
         if (deck.size() < 1) {
             trumpCard = null;
             trumpCardSuit = null;
@@ -59,21 +67,21 @@ public class RoundServiceImpl {
 
         currentTrickNumber = 0;
         playedCards.clear();
-
-        System.out.println("Trumpf: " + (trumpCardSuit != null ? trumpCardSuit : "Kein Trumpf"));
     }
 
     public void playCard(Player player, ICard card) {
         if (!player.getHandCards().contains(card)) {
             throw new IllegalArgumentException("Player doesn't have that card");
         }
+        synchronized (playedCards) {
 
-        if (!playedCards.isEmpty() && !TrickRules.isValidPlay(player, card, playedCards)) {
-            throw new IllegalStateException("Invalid card play: " + card + " by " + player.getName());
+            if (!playedCards.isEmpty() && !TrickRules.isValidPlay(player, card, playedCards, trumpCardSuit)) {
+                throw new IllegalStateException("Invalid card play: " + card + " by " + player.getName());
+            }
+
+            player.getHandCards().remove(card);
+            playedCards.add(new Pair<>(player, card));
         }
-
-        player.getHandCards().remove(card);
-        playedCards.add(new Pair<>(player, card));
     }
 
     public Player endTrick() {
@@ -83,7 +91,6 @@ public class RoundServiceImpl {
 
         Player winner = TrickRules.determineTrickWinner(playedCards, trumpCardSuit);
         winner.setTricksWon(winner.getTricksWon() + 1);
-        System.out.println("Stich " + (currentTrickNumber + 1) + " gewonnen von " + winner.getName() + " (" + winner.getTricksWon() + " Stiche)");
 
         playedCards.clear();
         currentTrickNumber++;
@@ -102,7 +109,10 @@ public class RoundServiceImpl {
         }
 
         if (startIndex == -1) {
-            throw new IllegalArgumentException("Startspieler nicht gefunden");
+          if (players.isEmpty()) {
+                throw new IllegalArgumentException("Keine Spieler im Spiel.");
+            }
+            startIndex = 0;
         }
 
         for (int i = 0; i < players.size(); i++) {
@@ -115,12 +125,17 @@ public class RoundServiceImpl {
 
 
     public void endRound() {
+
+        String gameId = game.getGameId();
+        Map<String, Integer> scoresBeforeRound = new HashMap<>();
+        for (Player player : players) {
+            scoresBeforeRound.put(player.getPlayerId(), player.getScore());
+        }
         BiddingRules.calculateScores(players);
 
-        System.out.println("\n=== Finale Auswertung ===");
         for (Player player : players) {
-            System.out.println(player.getName() + ": " + player.getPrediction() + " geboten, " +
-                    player.getTricksWon() + " gewonnen → Punkte: " + player.getScore());
+            int pointsThisRound = player.getScore() - scoresBeforeRound.get(player.getPlayerId());
+            player.addRoundScore(pointsThisRound);
         }
 
         Player winner = players.stream()
@@ -130,16 +145,17 @@ public class RoundServiceImpl {
         List<String> predictionOrder = createPredictionOrder(players, winner.getPlayerId());
         game.setPredictionOrder(predictionOrder);
 
-        System.out.println("Neue Vorhersagereihenfolge: " + predictionOrder);
+        game.setStatus(GameStatus.ROUND_END_SUMMARY);
 
-        String gameId = game.getGameId();
         messagingTemplate.convertAndSend(
                 "/topic/game/" + gameId + "/scoreboard",
                 gameService.getScoreboard(gameId)
         );
 
-        gameService.processEndOfRound(gameId);
-
+        for (Player player : players) {
+            GameResponse response = gameService.createGameResponse(game, player.getPlayerId(), trumpCard);
+            messagingTemplate.convertAndSend("/topic/game/" + player.getPlayerId(), response);
+        }
     }
 
     public List<Pair<Player, ICard>> getPlayedCards() {
@@ -148,5 +164,9 @@ public class RoundServiceImpl {
 
     public ICard getTrumpCard() {
         return trumpCard;
+    }
+
+    public void proceedToNextRound(String gameId) {
+        gameService.processEndOfRound(gameId);
     }
 }

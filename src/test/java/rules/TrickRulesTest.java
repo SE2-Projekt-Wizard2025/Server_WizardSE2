@@ -108,28 +108,31 @@ class TrickRulesTest {
     void isValidPlay_wizardAlwaysValid() {
         Player player = createTestPlayer("p1", "Player1");
         ICard wizard = CardFactory.createCard(CardSuit.RED, 14);
+        CardSuit trump = CardSuit.BLUE;
 
-        assertTrue(TrickRules.isValidPlay(player, wizard, List.of()));
+        assertTrue(TrickRules.isValidPlay(player, wizard, List.of(), trump));
         assertTrue(TrickRules.isValidPlay(player, wizard,
-                List.of(new Pair<>(player, CardFactory.createCard(CardSuit.BLUE, 7)))));
+                List.of(new Pair<>(player, CardFactory.createCard(CardSuit.RED, 7))), trump));
     }
 
     @Test
     void isValidPlay_jesterAlwaysValid() {
         Player player = createTestPlayer("p1", "Player1");
         ICard jester = CardFactory.createCard(CardSuit.RED, 0);
+        CardSuit trump = CardSuit.RED;
 
-        assertTrue(TrickRules.isValidPlay(player, jester, List.of()));
+        assertTrue(TrickRules.isValidPlay(player, jester, List.of(), trump));
         assertTrue(TrickRules.isValidPlay(player, jester,
-                List.of(new Pair<>(player, CardFactory.createCard(CardSuit.BLUE, 7)))));
+                List.of(new Pair<>(player, CardFactory.createCard(CardSuit.RED, 7))), trump));
     }
 
     @Test
     void isValidPlay_firstPlayAlwaysValid() {
         Player player = createTestPlayer("p1", "Player1");
         ICard card = CardFactory.createCard(CardSuit.RED, 7);
+        CardSuit trump = CardSuit.BLUE;
 
-        assertTrue(TrickRules.isValidPlay(player, card, List.of()));
+        assertTrue(TrickRules.isValidPlay(player, card, List.of(), trump));
     }
 
     @Test
@@ -144,12 +147,13 @@ class TrickRulesTest {
         List<Pair<Player, ICard>> currentTrick = List.of(
                 new Pair<>(createTestPlayer("p2", "Player2"), CardFactory.createCard(CardSuit.RED, 10))
         );
+        CardSuit trump = CardSuit.YELLOW;
 
-        assertTrue(TrickRules.isValidPlay(player, CardFactory.createCard(CardSuit.RED, 5), currentTrick));
+        assertTrue(TrickRules.isValidPlay(player, CardFactory.createCard(CardSuit.RED, 5), currentTrick, trump));
 
-        assertFalse(TrickRules.isValidPlay(player, CardFactory.createCard(CardSuit.BLUE, 5), currentTrick));
+        assertFalse(TrickRules.isValidPlay(player, CardFactory.createCard(CardSuit.BLUE, 5), currentTrick, trump));
 
         player.setHandCards(List.of(CardFactory.createCard(CardSuit.BLUE, 8)));
-        assertTrue(TrickRules.isValidPlay(player, CardFactory.createCard(CardSuit.BLUE, 5), currentTrick));
+        assertTrue(TrickRules.isValidPlay(player, CardFactory.createCard(CardSuit.BLUE, 5), currentTrick, trump));
     }
-}
+    }

@@ -32,6 +32,8 @@ class PlayerTest {
         assertFalse(player.isReady());
         assertNotNull(player.getHandCards());
         assertTrue(player.getHandCards().isEmpty());
+        assertNotNull(player.getRoundScores());
+        assertTrue(player.getRoundScores().isEmpty());
     }
 
     @Test
@@ -139,6 +141,28 @@ class PlayerTest {
 
         assertEquals(playerWithCards.getHandCards(), sameCards.getHandCards());
         assertNotEquals(playerWithCards.getHandCards(), differentCards.getHandCards());
+    }
+    @Test
+    void addRoundScore_addsScoreToRoundScoresList() {
+        player.addRoundScore(10);
+        player.addRoundScore(-5);
+
+        List<Integer> expectedScores = List.of(10, -5);
+        assertEquals(expectedScores, player.getRoundScores(), "Round scores sollten korrekt hinzugefügt werden.");
+        assertEquals(2, player.getRoundScores().size(), "Die Größe der Rundenpunkte-Liste sollte korrekt sein.");
+    }
+
+    @Test
+    void getRoundScores_returnsCorrectList() {
+
+        assertNotNull(player.getRoundScores());
+        assertTrue(player.getRoundScores().isEmpty());
+
+        List<Integer> scores = new ArrayList<>();
+        scores.add(20);
+
+        player.addRoundScore(20);
+        assertEquals(scores, player.getRoundScores());
     }
 
 }
