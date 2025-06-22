@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5a88b75e-a340-4aab-ba6f-5de17d4e4b2e" name="Changes" comment="feat: Tests für RoundServiceImpl hinzugefügt">
+    <list default="true" id="5a88b75e-a340-4aab-ba6f-5de17d4e4b2e" name="Changes" comment="fix: resolved issue of duplicate code for Card-Variations">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/service/impl/GameServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/service/impl/GameServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aau/wizard/dto/request/GameRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aau/wizard/dto/request/GameRequest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,7 +50,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/SE2-Projekt-Wizard2025/Server_WizardSE2.git&quot;,
-    &quot;accountId&quot;: &quot;869532ff-2234-41a8-b9c1-c6981078bba6&quot;
+    &quot;accountId&quot;: &quot;2d713f3f-662e-4fae-9652-032ac33158b5&quot;
   }
 }</component>
   <component name="JsbtTreeLayoutManager">
@@ -59,7 +59,7 @@
     </layout>
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
+    <option name="selectedTabId" value="DEPENDENCY_CHECKER_PROBLEMS_TAB" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
@@ -72,7 +72,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Application.WizardApplication.executor": "Debug",
+    "Application.WizardApplication.executor": "Run",
     "JUnit.BiddingRulesTest$CalculateScoresTests.exact negative difference calculation.executor": "Run",
     "JUnit.BiddingRulesTest.executor": "Run",
     "JUnit.CardDtoTest.executor": "Run",
@@ -99,6 +99,7 @@
     "JUnit.PlayerTest.equals_withHandCards.executor": "Run",
     "JUnit.PlayerTest.executor": "Run",
     "JUnit.RoundServiceImplTest.executor": "Run",
+    "JUnit.RoundServiceImplTest.playCard_invalidCard_throwsException.executor": "Run",
     "JUnit.RoundServiceImplTest.startRound_setsTrumpCardWhenDeckHasCardsAfterDealing.executor": "Run",
     "JUnit.RoundServiceImplTest.startRound_setsTrumpCardWhenDeckNotEmpty.executor": "Debug",
     "JUnit.TrickRulesTest$LeadSuitTests.player must follow lead suit if possible.executor": "Debug",
@@ -118,7 +119,7 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "12-spieler-setup",
+    "git-widget-placeholder": "feature/cheat-ignore-color",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/UNI nicht onedrive/Wizard2025/Stand 0805/Server_WizardSE2",
@@ -127,7 +128,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "SDKs",
+    "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2",
     "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
@@ -140,6 +141,7 @@
       <recent name="C:\Users\HP\OneDrive\Desktop\AAU\SE2\Wizard\Server_WizardSE2\src\main\java" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/test/java" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/.idea" />
     </key>
@@ -173,37 +175,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="CardTest.hashCode_shouldBeEqualForSameCard" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="Server_WizardSE2" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="model.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="model" />
-      <option name="MAIN_CLASS_NAME" value="model.CardTest" />
-      <option name="METHOD_NAME" value="hashCode_shouldBeEqualForSameCard" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="DeckUtilsTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="Server_WizardSE2" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="model.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="model" />
-      <option name="MAIN_CLASS_NAME" value="model.DeckUtilsTest" />
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="RoundServiceImplTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="Server_WizardSE2" />
       <extension name="coverage">
@@ -219,6 +190,30 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="RoundServiceImplTest.playCard_invalidCard_throwsException" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Server_WizardSE2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="service.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="service" />
+      <option name="MAIN_CLASS_NAME" value="service.RoundServiceImplTest" />
+      <option name="METHOD_NAME" value="playCard_invalidCard_throwsException" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="java in Server_WizardSE2" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Server_WizardSE2" />
+      <option name="TEST_OBJECT" value="directory" />
+      <dir value="$PROJECT_DIR$/src/test/java" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="WizardApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="Server_WizardSE2" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.aau.wizard.WizardApplication" />
@@ -228,18 +223,18 @@
     </configuration>
     <list>
       <item itemvalue="Application.WizardApplication" />
+      <item itemvalue="JUnit.RoundServiceImplTest.playCard_invalidCard_throwsException" />
+      <item itemvalue="JUnit.java in Server_WizardSE2" />
       <item itemvalue="JUnit.CardTest" />
-      <item itemvalue="JUnit.CardTest.hashCode_shouldBeEqualForSameCard" />
-      <item itemvalue="JUnit.DeckUtilsTest" />
       <item itemvalue="JUnit.RoundServiceImplTest" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Application.WizardApplication" />
-        <item itemvalue="JUnit.CardTest" />
-        <item itemvalue="JUnit.DeckUtilsTest" />
-        <item itemvalue="JUnit.CardTest.hashCode_shouldBeEqualForSameCard" />
+        <item itemvalue="JUnit.java in Server_WizardSE2" />
+        <item itemvalue="JUnit.RoundServiceImplTest.playCard_invalidCard_throwsException" />
         <item itemvalue="JUnit.RoundServiceImplTest" />
+        <item itemvalue="JUnit.CardTest" />
       </list>
     </recent_temporary>
   </component>
@@ -442,7 +437,39 @@
       <option name="project" value="LOCAL" />
       <updated>1746816731708</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="ref: extracted a base request from Game- &amp; PredictionRequest">
+      <option name="closed" value="true" />
+      <created>1748848675873</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1748848675873</updated>
+    </task>
+    <task id="LOCAL-00024" summary="ref: moved testutil to test folder">
+      <option name="closed" value="true" />
+      <created>1748849582487</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1748849582487</updated>
+    </task>
+    <task id="LOCAL-00025" summary="fix: removed testcase for now due to unknown problem with sonar">
+      <option name="closed" value="true" />
+      <created>1748849981317</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1748849981317</updated>
+    </task>
+    <task id="LOCAL-00026" summary="fix: resolved issue of duplicate code for Card-Variations">
+      <option name="closed" value="true" />
+      <created>1748852052170</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1748852052170</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -475,9 +502,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/.." />
     </ignored-roots>
-    <MESSAGE value="Sonar + Jacoco Setup" />
-    <MESSAGE value="Merge branch 'main' into feature/11-setup-basic-structure" />
-    <MESSAGE value="feat/fix: Grundlegende Probleme bzgl verwendung von Kotlin behoben (pom.xml ...)" />
     <MESSAGE value="feat: Klassen für die Karten / Deck hinzugefügt" />
     <MESSAGE value="test: Unit Tests für die Regel-Klassen hinzugefügt" />
     <MESSAGE value="fix: Spezialfall für Gamemanager ausgebessert" />
@@ -499,7 +523,11 @@
     <MESSAGE value="todo: zurzeit 2 tests die fixed werden müssten auskommentiert, damit jacoco for now geht (CardDtoTest)" />
     <MESSAGE value="refactor: visibility für variablen in RoundServiceImpl aktualisiert" />
     <MESSAGE value="feat: Tests für RoundServiceImpl hinzugefügt" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: Tests für RoundServiceImpl hinzugefügt" />
+    <MESSAGE value="ref: extracted a base request from Game- &amp; PredictionRequest" />
+    <MESSAGE value="ref: moved testutil to test folder" />
+    <MESSAGE value="fix: removed testcase for now due to unknown problem with sonar" />
+    <MESSAGE value="fix: resolved issue of duplicate code for Card-Variations" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: resolved issue of duplicate code for Card-Variations" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -512,14 +540,14 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Server_WizardSE2$java_in_Server_WizardSE2.ic" NAME="java in Server_WizardSE2 Coverage Results" MODIFIED="1745059256329" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
+    <SUITE FILE_PATH="coverage/Server_WizardSE2$java_in_Server_WizardSE2.ic" NAME="java in Server_WizardSE2 Coverage Results" MODIFIED="1748851898047" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
+    <SUITE FILE_PATH="coverage/Server_WizardSE2$controller_in_Server_WizardSE2.ic" NAME="controller in Server_WizardSE2 Coverage Results" MODIFIED="1744899555261" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
     <SUITE FILE_PATH="coverage/Server_WizardSE2$GameManagerTest.ic" NAME="GameManagerTest Coverage Results" MODIFIED="1746353141274" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
       <FILTER>com.aau.wizard.core.logic.*</FILTER>
     </SUITE>
     <SUITE FILE_PATH="coverage/Server_WizardSE2$GameServiceImplTest.ic" NAME="GameServiceImplTest Coverage Results" MODIFIED="1744900486640" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
       <FILTER>service.*</FILTER>
     </SUITE>
-    <SUITE FILE_PATH="coverage/Server_WizardSE2$controller_in_Server_WizardSE2.ic" NAME="controller in Server_WizardSE2 Coverage Results" MODIFIED="1744899555261" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
     <SUITE FILE_PATH="coverage/Server_WizardSE2$GameResponseTest.ic" NAME="GameResponseTest Coverage Results" MODIFIED="1744988526230" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
       <FILTER>dto.response.*</FILTER>
     </SUITE>
