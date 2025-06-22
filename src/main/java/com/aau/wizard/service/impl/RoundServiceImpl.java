@@ -1,6 +1,5 @@
 package com.aau.wizard.service.impl;
 
-import com.aau.wizard.controller.GameWebSocketController;
 import com.aau.wizard.dto.response.GameResponse;
 import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Deck;
@@ -17,8 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors; // <<< WICHTIG: Diesen Import hinzufügen!
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +26,7 @@ public class RoundServiceImpl {
     public Deck deck;
     public ICard trumpCard = null;
     public CardSuit trumpCardSuit = null;
-    public final List<Pair<Player, ICard>> playedCards = new ArrayList<>(); // Diese Liste ist das Problem
+    public final List<Pair<Player, ICard>> playedCards = new ArrayList<>();
     public int currentTrickNumber = 0;
     private final Game game;
     private final SimpMessagingTemplate messagingTemplate;
@@ -50,8 +47,6 @@ public class RoundServiceImpl {
 
         game.setStatus(GameStatus.PREDICTION);
         game.setPredictionOrder(createPredictionOrder(players, game.getCurrentPlayerId()));
-        //logging
-        logger.info("Neue Vorhersagereihenfolge: {}", game.getPredictionOrder());
 
         for (Player player : players) {
             List<ICard> hand = new ArrayList<>(deck.draw(roundNumber));
@@ -71,9 +66,7 @@ public class RoundServiceImpl {
         }
 
         currentTrickNumber = 0;
-        playedCards.clear(); // <<< WICHTIG: Sicherstellen, dass dies bei Rundenstart passiert
-
-        logger.info("Trumpf: {}", trumpCardSuit != null ? trumpCardSuit : "Kein Trumpf");
+        playedCards.clear();
     }
 
     public void playCard(Player player, ICard card) {
@@ -98,9 +91,8 @@ public class RoundServiceImpl {
 
         Player winner = TrickRules.determineTrickWinner(playedCards, trumpCardSuit);
         winner.setTricksWon(winner.getTricksWon() + 1);
-        logger.info("Stich {} gewonnen von {} ({} Stiche)", currentTrickNumber + 1, winner.getName(), winner.getTricksWon());
 
-        playedCards.clear(); // <<< DIESE ZEILE SOLLTE playedCards ZURÜCKSETZEN >>>
+        playedCards.clear();
         currentTrickNumber++;
         return winner;
     }
@@ -121,7 +113,6 @@ public class RoundServiceImpl {
                 throw new IllegalArgumentException("Keine Spieler im Spiel.");
             }
             startIndex = 0;
-            logger.warn("Startspieler '{}' nicht gefunden, verwende '{}' als Startspieler für Vorhersagereihenfolge.", startingPlayerId, players.get(0).getName());
         }
 
         for (int i = 0; i < players.size(); i++) {
@@ -142,14 +133,9 @@ public class RoundServiceImpl {
         }
         BiddingRules.calculateScores(players);
 
-        logger.info("=== Auswertung Runde {} ===", game.getCurrentRound());
         for (Player player : players) {
             int pointsThisRound = player.getScore() - scoresBeforeRound.get(player.getPlayerId());
             player.addRoundScore(pointsThisRound);
-
-            logger.info("{}: Geboten={}, Gewonnen={}, Differenz={} → Punkte diese Runde: {} → Gesamtscore: {}",
-                    player.getName(), player.getPrediction(), player.getTricksWon(), pointsThisRound, player.getScore());
-
         }
 
         Player winner = players.stream()
@@ -158,8 +144,6 @@ public class RoundServiceImpl {
 
         List<String> predictionOrder = createPredictionOrder(players, winner.getPlayerId());
         game.setPredictionOrder(predictionOrder);
-
-        logger.info("Neue Vorhersagereihenfolge: {}", predictionOrder);
 
         game.setStatus(GameStatus.ROUND_END_SUMMARY);
 

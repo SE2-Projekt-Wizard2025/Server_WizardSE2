@@ -1,11 +1,9 @@
 package service;
 
-import com.aau.wizard.dto.CardDto;
 import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.request.PredictionRequest;
 import com.aau.wizard.dto.response.GameResponse;
-import com.aau.wizard.model.CardFactory;
 import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Game;
 import com.aau.wizard.model.Player;
@@ -24,19 +22,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-
-
 import static org.junit.jupiter.api.Assertions.*;
-
 import static testutil.TestDataFactory.*;
 import static testutil.TestConstants.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -507,7 +501,8 @@ public class GameServiceImplTest {
         Game game = new Game(TEST_GAME_ID);
         Player player1 = new Player("p1", "Alice");
         game.getPlayers().add(player1);
-        game.setStatus(GameStatus.LOBBY); // nicht Status PLAYING
+        game.setStatus(GameStatus.LOBBY); // nicht PLAYING
+        game.setCurrentPlayerId(player1.getPlayerId()); // hinzufügen!
 
         injectGameIntoService(game);
 
@@ -517,6 +512,8 @@ public class GameServiceImplTest {
         Exception exception = assertThrows(IllegalStateException.class, () -> {
             gameService.playCard(request);
         });
+
+        System.out.println("Fehlermeldung war: " + exception.getMessage());
 
         assertTrue(exception.getMessage().contains("Das Spiel ist nicht aktiv oder wurde nicht gefunden."));
     }
@@ -605,9 +602,6 @@ public class GameServiceImplTest {
         assertTrue(exception.getMessage().contains("Runden-Logik für dieses Spiel nicht gefunden."));
     }
 
-
-
-
     @SuppressWarnings("unchecked")
     private void injectGameIntoService(Game game) throws Exception {
         Field gamesField = GameServiceImpl.class.getDeclaredField("games");
@@ -624,7 +618,106 @@ public class GameServiceImplTest {
         roundServicesMap.put(gameId, roundService);
     }
 
+    @Test
+    void playCard_invalidCardFormat_throwsException() throws Exception {
+        Game game = new Game(TEST_GAME_ID);
+        Player player1 = new Player("p1", "Alice");
+        game.getPlayers().add(player1);
+        game.setStatus(GameStatus.PLAYING);
+        game.setCurrentPlayerId(player1.getPlayerId());
+        player1.setHandCards(List.of(createCustomCard(CardSuit.RED, 7)));
+
+        injectGameIntoService(game);
+        injectRoundServiceIntoService(mock(RoundServiceImpl.class), TEST_GAME_ID);
+
+        GameRequest request = new GameRequest(TEST_GAME_ID, player1.getPlayerId());
+        request.setCard("INVALID_FORMAT");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            gameService.playCard(request);
+        });
     }
+
+    @Test
+    void playCard_gameOver_throwsException() throws Exception {
+        Game game = new Game(TEST_GAME_ID);
+        Player player1 = new Player("p1", "Alice");
+        game.getPlayers().add(player1);
+        game.setStatus(GameStatus.ENDED); // Spiel ist beendet
+        game.setCurrentPlayerId(player1.getPlayerId());
+        player1.setHandCards(List.of(createDefaultCard()));
+
+        injectGameIntoService(game);
+
+        GameRequest request = new GameRequest(TEST_GAME_ID, player1.getPlayerId());
+        request.setCard(createDefaultCard().toString());
+
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            gameService.playCard(request);
+        });
+
+        assertEquals("Das Spiel ist bereits beendet.", exception.getMessage());
+    }
+
+    @Test
+    void playCard_gameNotFound_throwsException() {
+        GameRequest request = new GameRequest("invalid_game_id", "p1");
+        request.setCard(createDefaultCard().toString());
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            gameService.playCard(request);
+        });
+
+        assertTrue(exception.getMessage().contains("Spiel nicht gefunden"));
+    }
+
+    @Test
+    void playCard_playerHasNoCards_throwsException() throws Exception {
+        Game game = new Game(TEST_GAME_ID);
+        Player player1 = new Player("p1", "Alice");
+        game.getPlayers().add(player1);
+        game.setStatus(GameStatus.PLAYING);
+        game.setCurrentPlayerId(player1.getPlayerId());
+        player1.setHandCards(new ArrayList<>()); // Leere Hand
+
+        injectGameIntoService(game);
+        injectRoundServiceIntoService(mock(RoundServiceImpl.class), TEST_GAME_ID);
+
+        GameRequest request = new GameRequest(TEST_GAME_ID, player1.getPlayerId());
+        request.setCard(createDefaultCard().toString());
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            gameService.playCard(request);
+        });
+
+        assertTrue(exception.getMessage().contains("Karte nicht in der Hand"));
+    };
+
+    @Test
+    void playCard_cardRemovedFromHand() throws Exception {
+        Game game = new Game(TEST_GAME_ID);
+        Player player1 = new Player("p1", "Alice");
+        game.getPlayers().add(player1);
+        game.setStatus(GameStatus.PLAYING);
+        game.setCurrentPlayerId(player1.getPlayerId());
+
+        ICard cardToPlay = createCustomCard(CardSuit.RED, 7);
+        player1.setHandCards(new ArrayList<>(List.of(cardToPlay, createDefaultCard())));
+
+        injectGameIntoService(game);
+        RoundServiceImpl realRoundService = new RoundServiceImpl(game, messagingTemplate, gameService);
+        injectRoundServiceIntoService(realRoundService, TEST_GAME_ID);
+
+        GameRequest request = new GameRequest(TEST_GAME_ID, player1.getPlayerId());
+        request.setCard(cardToPlay.getSuit().name() + "_" + cardToPlay.getValue());
+
+        gameService.playCard(request);
+
+        assertFalse(player1.getHandCards().contains(cardToPlay), "Gespielte Karte sollte aus der Hand entfernt sein.");
+    }
+    }
+
+
 
 
 

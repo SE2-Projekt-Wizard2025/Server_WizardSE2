@@ -1,18 +1,15 @@
 package com.aau.wizard.util;
-
 import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.model.enums.CardSuit;
 import com.aau.wizard.model.enums.CardType;
 import org.slf4j.LoggerFactory;
-
 import java.util.Comparator;
 import java.util.List;
-import org.slf4j.Logger; // <<< DIES IST DER KORREKTE IMPORT FÜR DEN LOGGER
-import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+
 
 public final class TrickRules {
-    private static final Logger logger = LoggerFactory.getLogger(TrickRules.class);
 
     private TrickRules() {
         //wird gebraucht...

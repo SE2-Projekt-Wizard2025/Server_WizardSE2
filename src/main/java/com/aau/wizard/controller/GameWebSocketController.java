@@ -1,5 +1,6 @@
 package com.aau.wizard.controller;
 
+import com.aau.wizard.GameExceptions;
 import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.response.GameResponse;
@@ -14,6 +15,10 @@ import com.aau.wizard.dto.request.PredictionRequest;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.aau.wizard.GameExceptions.GameNotFoundException;
+import com.aau.wizard.GameExceptions.PlayerNotFoundException;
+import com.aau.wizard.GameExceptions.InvalidTurnException;
+import com.aau.wizard.GameExceptions.InvalidPredictionException;
 
 
 /**
@@ -47,21 +52,35 @@ public class GameWebSocketController {
      */
     @MessageMapping("/game/join")
     public void joinGame(GameRequest gameRequest) {
-        logger.info("Received join request from: {} (ID: {}) for Game: {}",
-                gameRequest.getPlayerName(), gameRequest.getPlayerId(), gameRequest.getGameId());
-
-        GameResponse response = gameService.joinGame(gameRequest);
-        messagingTemplate.convertAndSend("/topic/game", response);
+        try {
+            GameResponse response = gameService.joinGame(gameRequest);
+            messagingTemplate.convertAndSend("/topic/game", response);
+         } catch (Exception e) {
+            messagingTemplate.convertAndSend(
+                    "/topic/errors/" + gameRequest.getPlayerId(),
+                    "Fehler beim Beitritt zum Spiel: " + e.getMessage()
+            );
+        }
     }
 
     @MessageMapping("/game/start")
     public void startGame(@Payload String gameId) {
-        if (gameId != null && gameId.startsWith("\"") && gameId.endsWith("\"")) {
-            gameId = gameId.substring(1, gameId.length() - 1);
-        }
+        String cleanGameId = (gameId != null && gameId.startsWith("\"") && gameId.endsWith("\"")) ?
+                gameId.substring(1, gameId.length() - 1) : gameId;
 
-        logger.info("Start game with ID: {}", gameId);
-        gameService.startGame(gameId); // keine Rückgabe → personalisierte Nachrichten werden dort verschickt
+        try {
+            gameService.startGame(cleanGameId);
+        } catch (GameNotFoundException | GameExceptions.GameStartException e) {
+            messagingTemplate.convertAndSend(
+                    "/topic/errors",
+                    "Fehler beim Starten des Spiels " + cleanGameId + ": " + e.getMessage()
+            );
+        } catch (Exception e) {
+            messagingTemplate.convertAndSend(
+                    "/topic/errors",
+                    "Ein unerwarteter Fehler ist beim Starten des Spiels aufgetreten."
+            );
+        }
     }
 
     @MessageMapping("/game/predict")
@@ -69,10 +88,15 @@ public class GameWebSocketController {
         try {
             GameResponse response = gameService.makePrediction(request);
             messagingTemplate.convertAndSend("/topic/game/" + request.getPlayerId(), response);
-        } catch (IllegalArgumentException e) {
+         } catch (GameNotFoundException | PlayerNotFoundException | InvalidTurnException | InvalidPredictionException e) {
             messagingTemplate.convertAndSend(
                     "/topic/errors/" + request.getPlayerId(),
                     e.getMessage()
+            );
+        } catch (Exception e) {
+           messagingTemplate.convertAndSend(
+                    "/topic/errors/" + request.getPlayerId(),
+                    "Ein unerwarteter Fehler ist aufgetreten."
             );
         }
     }
@@ -80,14 +104,46 @@ public class GameWebSocketController {
     @MessageMapping("/game/play")
     @SendTo("/topic/game")
     public GameResponse playCard(GameRequest request) {
-        return gameService.playCard(request);
+        try {
+             return gameService.playCard(request);
+        } catch (GameNotFoundException | GameExceptions.GameAlreadyEndedException |
+                 GameExceptions.GameNotActiveException |
+                 PlayerNotFoundException | InvalidTurnException | GameExceptions.RoundLogicException |
+                 GameExceptions.CardNotInHandException e) {
+           messagingTemplate.convertAndSend(
+                    "/topic/errors/" + request.getPlayerId(),
+                    e.getMessage()
+            );
+            return null;
+        } catch (Exception e) {
+           messagingTemplate.convertAndSend(
+                    "/topic/errors/" + request.getPlayerId(),
+                    "Ein unerwarteter Fehler ist beim Spielen der Karte aufgetreten."
+            );
+            return null;
+        }
     }
 
     @MessageMapping("/game/{gameId}/scoreboard")
     @SendTo("/topic/game/{gameId}/scoreboard")
     public List<PlayerDto> sendScoreboard(@DestinationVariable String gameId) {
-        return gameService.getScoreboard(gameId);
+        try {
+           return gameService.getScoreboard(gameId);
+        } catch (GameNotFoundException e) {
+            messagingTemplate.convertAndSend(
+                    "/topic/errors/" + gameId,
+                    "Fehler beim Abrufen des Scoreboards: " + e.getMessage()
+            );
+            return List.of();
+        } catch (Exception e) {
+             messagingTemplate.convertAndSend(
+                    "/topic/errors/" + gameId,
+                    "Ein unerwarteter Fehler ist beim Abrufen des Scoreboards aufgetreten."
+            );
+            return List.of();
+        }
     }
+
 
     /**
      *Behandelt Anfragen, um nach der Scoreboard-Anzeige zur nächsten Runde fortzufahren.
@@ -96,11 +152,20 @@ public class GameWebSocketController {
     @MessageMapping("/game/proceedToNextRound")
     public void proceedToNextRound(@Payload String gameId) {
 
-        if (gameId != null && gameId.startsWith("\"") && gameId.endsWith("\"")) {
-            gameId = gameId.substring(1, gameId.length() - 1);
+        String cleanGameId = (gameId != null && gameId.startsWith("\"") && gameId.endsWith("\"")) ?
+                gameId.substring(1, gameId.length() - 1) : gameId;
+        try {
+            gameService.proceedToNextRound(cleanGameId);
+       } catch (GameNotFoundException | GameExceptions.RoundLogicException | GameExceptions.RoundProgressionException e) {
+            messagingTemplate.convertAndSend(
+                    "/topic/errors/" + cleanGameId,
+                    "Fehler beim Fortfahren zur nächsten Runde in Spiel " + cleanGameId + ": " + e.getMessage()
+            );
+        } catch (Exception e) {
+            messagingTemplate.convertAndSend(
+                    "/topic/errors/" + cleanGameId,
+                    "Ein unerwarteter Fehler ist beim Fortfahren zur nächsten Runde aufgetreten."
+            );
         }
-        logger.info("Anfrage erhalten, zur nächsten Runde für Spiel-ID {} fortzufahren.", gameId);
-        gameService.proceedToNextRound(gameId);
     }
-
 }
