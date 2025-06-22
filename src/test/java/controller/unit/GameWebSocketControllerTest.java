@@ -1,6 +1,7 @@
 package controller.unit;
 
 import com.aau.wizard.controller.GameWebSocketController;
+import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.response.GameResponse;
 import com.aau.wizard.model.enums.GameStatus;
@@ -11,6 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -93,5 +96,42 @@ class GameWebSocketControllerTest {
 
         verify(gameService, times(1)).makePrediction(any(PredictionRequest.class));
     }*/
+
+
+    @Test
+    void testPlayCard() {
+        GameRequest request = createDefaultGameRequest();
+        GameResponse expectedResponse = createDefaultGameResponse(createDefaultPlayerDto());
+
+        when(gameService.playCard(any(GameRequest.class))).thenReturn(expectedResponse);
+
+        GameResponse response = gameWebSocketController.playCard(request);
+
+        assertNotNull(response);
+        assertEquals(TEST_GAME_ID, response.getGameId());
+        verify(gameService, times(1)).playCard(request);
+    }
+
+    @Test
+    void testSendScoreboard() {
+        String gameId = TEST_GAME_ID;
+        List<PlayerDto> expectedScoreboard = List.of(createDefaultPlayerDto());
+
+        when(gameService.getScoreboard(gameId)).thenReturn(expectedScoreboard);
+
+        List<PlayerDto> result = gameWebSocketController.sendScoreboard(gameId);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(TEST_PLAYER_ID, result.get(0).getPlayerId());
+        verify(gameService, times(1)).getScoreboard(gameId);
+    }
+
+    @Test
+    void testStartGameWithUnquotedGameId() {
+        String unquotedGameId = "test-game-id";
+        gameWebSocketController.startGame(unquotedGameId);
+        verify(gameService).startGame(unquotedGameId);
+    }
 
 }

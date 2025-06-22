@@ -25,7 +25,7 @@ public class WizardCard extends AbstractSpecialCard {
         return "WIZARD";
     }
     public static boolean isWizard(ICard card) {
-        return card.getType() == CardType.WIZARD;
+        return card != null && card.getType() == CardType.WIZARD; //null check wird gebraucht
     }
 
     @Override

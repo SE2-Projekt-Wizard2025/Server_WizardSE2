@@ -1,9 +1,6 @@
 package service;
 
-import com.aau.wizard.model.CardFactory;
-import com.aau.wizard.model.ICard;
-import com.aau.wizard.model.Game;
-import com.aau.wizard.model.Player;
+import com.aau.wizard.model.*;
 import com.aau.wizard.model.enums.CardSuit;
 import com.aau.wizard.model.enums.CardType;
 import com.aau.wizard.model.enums.GameStatus;
@@ -441,6 +438,32 @@ class RoundServiceImplTest {
         );
 
         verify(gameService, never()).processEndOfRound(anyString());
+    }
+
+    @Test
+    void getPlayedCards_ShouldReturnEmptyListInitially() {
+        RoundServiceImpl roundService = new RoundServiceImpl(game, messagingTemplate, gameService);
+        List<Pair<Player, ICard>> playedCards = roundService.getPlayedCards();
+
+        assertNotNull(playedCards);
+        assertTrue(playedCards.isEmpty());
+    }
+
+
+    @Test
+    void getTrumpCard_ShouldReturnNullInitially() {
+        RoundServiceImpl roundService = new RoundServiceImpl(game, messagingTemplate, gameService);
+        assertNull(roundService.getTrumpCard());
+    }
+
+    @Test
+    void getTrumpCard_ShouldReturnSetTrumpCard() {
+        RoundServiceImpl roundService = new RoundServiceImpl(game, messagingTemplate, gameService);
+        ICard trumpCard = new WizardCard(CardSuit.SPECIAL);
+
+        roundService.trumpCard = trumpCard;
+        ICard result = roundService.getTrumpCard();
+        assertEquals(trumpCard, result);
     }
 
 }

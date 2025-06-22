@@ -1,7 +1,10 @@
 package model;
 
 import com.aau.wizard.model.Game;
+import com.aau.wizard.model.ICard;
+import com.aau.wizard.model.NumberCard;
 import com.aau.wizard.model.Player;
+import com.aau.wizard.model.enums.CardSuit;
 import com.aau.wizard.model.enums.GameStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -131,4 +134,41 @@ class GameTest {
         assertFalse(game.startGame(), "sollte bei zu wenigen Spielern false zurückgeben.");
     }
 
+
+
+    @Test
+    void testSetAndGetTrumpCard() {
+        ICard trumpCard = new NumberCard(CardSuit.RED, 10);
+        game.setTrumpCard(trumpCard);
+        assertEquals(trumpCard, game.getTrumpCard());
+    }
+
+    @Test
+    void testGetTrumpCardInitiallyNull() {
+        assertNull(game.getTrumpCard());
+    }
+
+    @Test
+    void testSetTrumpCardToNull() {
+        game.setTrumpCard(null);
+        assertNull(game.getTrumpCard());
+    }
+
+    @Test
+    void testSetAndGetLastRoundWinnerId() {
+        game.setLastRoundWinnerId("player1");
+        assertEquals("player1", game.getLastRoundWinnerId());
+    }
+
+    @Test
+    void testGetLastRoundWinnerIdInitiallyNull() {
+        assertNull(game.getLastRoundWinnerId());
+    }
+
+    @Test
+    void testSetLastRoundWinnerIdToNull() {
+        game.setLastRoundWinnerId("player1");
+        game.setLastRoundWinnerId(null);
+        assertNull(game.getLastRoundWinnerId());
+    }
 }
