@@ -198,7 +198,7 @@ public class GameServiceImpl implements GameService {
 
             notifyAllPlayersOfGameUpdate(game, trumpCard);
         }
-
+        notifyAllPlayersOfGameUpdate(game, trumpCard);
         return createGameResponse(game, player.getPlayerId(), trumpCard);
     }
     private void validatePredictionTurn(Game game, Player player) {

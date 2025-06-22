@@ -1,5 +1,6 @@
 package service;
 
+import com.aau.wizard.GameExceptions;
 import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.request.PredictionRequest;
@@ -187,9 +188,10 @@ public class GameServiceImplTest {
 
     @Test
     void testStartGameThrowsIfGameNotFound() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception = assertThrows(GameExceptions.GameNotFoundException.class, () -> {
             gameService.startGame("nonexistent-id");
         });
+
 
         assertTrue(exception.getMessage().contains("Spiel nicht gefunden"));
     }
@@ -198,7 +200,7 @@ public class GameServiceImplTest {
 
         gameService.joinGame(createDefaultGameRequest());
 
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
+        Exception exception = assertThrows(GameExceptions.GameStartException.class, () -> {
             gameService.startGame(TEST_GAME_ID);
         });
 
@@ -288,7 +290,7 @@ public class GameServiceImplTest {
 
         PredictionRequest request = new PredictionRequest(TEST_GAME_ID, TEST_PLAYER_ID, 1);
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(GameExceptions.InvalidPredictionException.class, () -> {
             gameService.makePrediction(request);
         });
     }
@@ -316,7 +318,7 @@ public class GameServiceImplTest {
         gamesMap.put(TEST_GAME_ID, game);
 
 
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
+        Exception exception = assertThrows(GameExceptions.InvalidTurnException.class, () -> {
             gameService.makePrediction(invalidRequest);
         });
 
@@ -455,9 +457,9 @@ public class GameServiceImplTest {
         game.setCurrentPlayerId(player1.getPlayerId());
 
         ICard card1 = createCustomCard(CardSuit.RED, 7);
-        player1.setHandCards(new ArrayList<>(List.of(card1))); // KORREKT: Veränderbare Liste
+        player1.setHandCards(new ArrayList<>(List.of(card1)));
         ICard card2 = createCustomCard(CardSuit.BLUE, 8);
-        player2.setHandCards(new ArrayList<>(List.of(card2))); // KORREKT: Veränderbare Liste
+        player2.setHandCards(new ArrayList<>(List.of(card2)));
 
 
         injectGameIntoService(game);
@@ -509,7 +511,7 @@ public class GameServiceImplTest {
         GameRequest request = new GameRequest(TEST_GAME_ID, player1.getPlayerId());
         request.setCard(createDefaultCard().toString());
 
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
+        Exception exception = assertThrows(GameExceptions.GameNotActiveException.class, () -> {
             gameService.playCard(request);
         });
 
@@ -528,12 +530,11 @@ public class GameServiceImplTest {
         GameRequest request = new GameRequest(TEST_GAME_ID, "unknownPlayer");
         request.setCard(createDefaultCard().toString());
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception = assertThrows(GameExceptions.PlayerNotFoundException.class, () -> {
             gameService.playCard(request);
         });
 
-        assertTrue(exception.getMessage().contains("Spieler nicht gefunden."));
-    }
+        assertTrue(exception.getMessage().contains("Spieler nicht gefunden."));}
 
     @Test
     void playCard_notPlayersTurn_throwsException() throws Exception {
@@ -549,7 +550,7 @@ public class GameServiceImplTest {
         GameRequest request = new GameRequest(TEST_GAME_ID, player2.getPlayerId()); // Bob versucht zu spielen
         request.setCard(createDefaultCard().toString());
 
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
+        Exception exception = assertThrows(GameExceptions.InvalidTurnException.class, () -> {
             gameService.playCard(request);
         });
 
@@ -574,13 +575,11 @@ public class GameServiceImplTest {
         String cardString = cardNotInHand.getSuit().name() + "_" + cardNotInHand.getValue();
         request.setCard(cardString);
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception = assertThrows(com.aau.wizard.GameExceptions.CardNotInHandException.class, () -> {
             gameService.playCard(request);
         });
-
-        assertTrue(exception.getMessage().contains("Karte nicht in der Hand des Spielers:"));
+        assertTrue(exception.getMessage().contains("Die Karte ist nicht in deiner Hand."));
     }
-
     @Test
     void playCard_roundServiceNotInitialized_throwsException() throws Exception {
         Game game = new Game(TEST_GAME_ID);
@@ -595,12 +594,11 @@ public class GameServiceImplTest {
         GameRequest request = new GameRequest(TEST_GAME_ID, player1.getPlayerId());
         request.setCard(createDefaultCard().toString());
 
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
+        Exception exception = assertThrows(com.aau.wizard.GameExceptions.RoundLogicException.class, () -> {
             gameService.playCard(request);
         });
 
-        assertTrue(exception.getMessage().contains("Runden-Logik für dieses Spiel nicht gefunden."));
-    }
+        assertTrue(exception.getMessage().contains("Runden-Logik für dieses Spiel nicht gefunden."));}
 
     @SuppressWarnings("unchecked")
     private void injectGameIntoService(Game game) throws Exception {
@@ -652,7 +650,7 @@ public class GameServiceImplTest {
         GameRequest request = new GameRequest(TEST_GAME_ID, player1.getPlayerId());
         request.setCard(createDefaultCard().toString());
 
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
+        Exception exception = assertThrows(GameExceptions.GameAlreadyEndedException.class, () -> {
             gameService.playCard(request);
         });
 
@@ -664,7 +662,7 @@ public class GameServiceImplTest {
         GameRequest request = new GameRequest("invalid_game_id", "p1");
         request.setCard(createDefaultCard().toString());
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception = assertThrows(GameExceptions.GameNotFoundException.class, () -> {
             gameService.playCard(request);
         });
 
@@ -686,12 +684,12 @@ public class GameServiceImplTest {
         GameRequest request = new GameRequest(TEST_GAME_ID, player1.getPlayerId());
         request.setCard(createDefaultCard().toString());
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception = assertThrows(com.aau.wizard.GameExceptions.CardNotInHandException.class, () -> {
             gameService.playCard(request);
         });
 
-        assertTrue(exception.getMessage().contains("Karte nicht in der Hand"));
-    };
+        assertTrue(exception.getMessage().contains("Die Karte ist nicht in deiner Hand."));
+    }
 
     @Test
     void playCard_cardRemovedFromHand() throws Exception {
