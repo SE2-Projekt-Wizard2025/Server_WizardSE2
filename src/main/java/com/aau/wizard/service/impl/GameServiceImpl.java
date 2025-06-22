@@ -63,7 +63,9 @@ public class GameServiceImpl implements GameService {
      * @param requestingPlayerId the player for whom the response is built
      * @return a fully populated GameResponse
      */
-    private GameResponse createGameResponse(Game game, String requestingPlayerId, ICard trumpCard) {
+
+    @Override
+    public GameResponse createGameResponse(Game game, String requestingPlayerId, ICard trumpCard) {
         List<PlayerDto> playerDtos = mapOrEmpty(game.getPlayers(), PlayerDto::from);
         Player requestingPlayer = game.getPlayerById(requestingPlayerId);
         List<CardDto> handCards = CardDto.safeFromPlayer(requestingPlayer);
@@ -71,8 +73,13 @@ public class GameServiceImpl implements GameService {
         String currentPredictionPlayerId = null;
         if (game.getStatus() == GameStatus.PREDICTION) {
             long predictedCount = game.getPlayers().stream().filter(p -> p.getPrediction() != null).count();
-            currentPredictionPlayerId = game.getPredictionOrder().get((int) predictedCount);
+            if (!game.getPredictionOrder().isEmpty() && (int)predictedCount < game.getPredictionOrder().size()) {
+                currentPredictionPlayerId = game.getPredictionOrder().get((int) predictedCount);
+            }else{
+                logger.warn("Prediction order is empty or index out of bounds. Predicted count: {}", predictedCount);
+            }
         }
+        CardDto trumpCardDto = trumpCard != null ? CardDto.from(trumpCard) : null;
 
         return new GameResponse(
                 game.getGameId(),
@@ -81,7 +88,7 @@ public class GameServiceImpl implements GameService {
                 playerDtos,
                 handCards,
                 null,// lastPlayedCard can be set here later on
-                trumpCard != null ? CardDto.from(trumpCard) : null,
+                trumpCardDto,
                 game.getCurrentRound(),
                 currentPredictionPlayerId
         );
@@ -127,7 +134,6 @@ public class GameServiceImpl implements GameService {
         RoundServiceImpl roundService = new RoundServiceImpl(game, messagingTemplate, this);
         roundService.startRound(game.getCurrentRound());
         ICard trumpCard = roundService.trumpCard;
-        // CardDto trumpCardDto = trumpCard != null ? CardDto.from(trumpCard) : null;
         roundServices.put(gameId, roundService);
 
         for (Player player : game.getPlayers()) {
@@ -229,6 +235,7 @@ public class GameServiceImpl implements GameService {
 
     public PlayerDto toDto(Player player) {
         PlayerDto dto = new PlayerDto();
+        dto.setPlayerId(player.getPlayerId());
         dto.setPlayerName(player.getName());
         dto.setPrediction(player.getPrediction() != null ? player.getPrediction() : 0);
         dto.setTricksWon(player.getTricksWon());
@@ -251,7 +258,13 @@ public class GameServiceImpl implements GameService {
     @Override
     public void processEndOfRound(String gameId){
         Game game = games.get(gameId);
-        if(game==null || game.getStatus() != GameStatus.PLAYING){
+        if(game == null){
+            logger.error("Attempted to process end of round for non-existent game: {}", gameId);
+            return;
+        }
+
+        if(game.getStatus() == GameStatus.ENDED){
+            logger.info("Spiel {} ist bereits beendet, überspringe Rundenende-Prozessierung.", gameId);
             return;
         }
 
@@ -263,18 +276,28 @@ public class GameServiceImpl implements GameService {
                 GameResponse finalResponse = createGameResponse(game, player.getPlayerId(), null);
                 messagingTemplate.convertAndSend("/topic/game/" + player.getPlayerId(), finalResponse);
             }
-        }else{
-            game.setCurrentRound(game.getCurrentRound()+1);
-            logger.info("Starte Runde {} für Spiel {}", game.getMaxRound(), gameId);
+        }else {
+            try {
+                game.setCurrentRound(game.getCurrentRound() + 1);
+                logger.info("Starte Runde {} für Spiel {}", game.getCurrentRound(), gameId);
 
-            RoundServiceImpl roundService=roundServices.get(gameId);
-            roundService.startRound(game.getCurrentRound());
+                RoundServiceImpl roundService = roundServices.get(gameId);
+                if (roundService == null) {
+                    logger.error("RoundService for game {} not found during end of round processing.", gameId);
+                    return;
+                }
+                roundService.startRound(game.getCurrentRound());
 
-            for(Player player:game.getPlayers()){
-                GameResponse response=createGameResponse(game, player.getPlayerId(), roundService.trumpCard);
-                messagingTemplate.convertAndSend("/topic/game/" + player.getPlayerId(), response);            }
+                for (Player player : game.getPlayers()) {
+                    GameResponse response = createGameResponse(game, player.getPlayerId(), roundService.trumpCard);
+                    messagingTemplate.convertAndSend("/topic/game/" + player.getPlayerId(), response);
+                }
+            } catch (Exception e) {
+
+                logger.error("ERROR: Ausnahme während des Rundenfortschritts für Spiel {}: {}", gameId, e.getMessage(), e);
+                throw new RuntimeException("Fehler beim Start der nächsten Runde in processEndOfRound", e);
+            }
         }
-
     }
     @Override
     public void proceedToNextRound(String gameId) {
@@ -312,6 +335,7 @@ public class GameServiceImpl implements GameService {
                 .orElseThrow(() -> new IllegalArgumentException("Karte nicht in der Hand des Spielers: " + request.getCard()));
 
         roundService.playCard(player, cardToPlay);
+        GameResponse responseToRequester = null;
 
         // Prüfen, ob der Stich beendet ist
         if (roundService.getPlayedCards().size() == game.getPlayers().size()) {
@@ -328,15 +352,12 @@ public class GameServiceImpl implements GameService {
             if (trickWinner.getHandCards().isEmpty()) {
                 logger.info("Alle Stiche in Runde {} gespielt. Beende Runde...", game.getCurrentRound());
                 roundService.endRound();
+                responseToRequester = null;
             }else {
-                GameResponse response = createGameResponse(game, request.getPlayerId(), roundService.getTrumpCard());
-                response.setLastPlayedCard(cardToPlay.toString());
-                return response;
+                responseToRequester = createGameResponse(game, request.getPlayerId(), roundService.getTrumpCard());
+                responseToRequester.setLastPlayedCard(cardToPlay.toString());
+                responseToRequester.setLastTrickWinnerId(trickWinner.getPlayerId()); // Stichgewinner setzen
             }
-
-            GameResponse response = createGameResponse(game, request.getPlayerId(), roundService.getTrumpCard());
-            response.setLastPlayedCard(cardToPlay.toString());
-            return response;
         } else {
             int currentPlayerIndex = game.getPlayers().indexOf(player);
             int nextPlayerIndex = (currentPlayerIndex + 1) % game.getPlayers().size();
@@ -348,9 +369,10 @@ public class GameServiceImpl implements GameService {
                 messagingTemplate.convertAndSend("/topic/game/" + p.getPlayerId(), playerResponse);
             }
 
-            GameResponse response = createGameResponse(game, request.getPlayerId(), roundService.getTrumpCard());
-            response.setLastPlayedCard(cardToPlay.toString());
-            return response;        }
+            responseToRequester = createGameResponse(game, request.getPlayerId(), roundService.getTrumpCard());
+            responseToRequester.setLastPlayedCard(cardToPlay.toString());
+        }
+        return  responseToRequester;
     }
 }
 

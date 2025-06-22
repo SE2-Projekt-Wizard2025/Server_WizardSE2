@@ -2,6 +2,7 @@ package com.aau.wizard.dto;
 
 import com.aau.wizard.model.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,6 +27,7 @@ public class PlayerDto {
         this.playerName = playerName;
         this.score = score;
         this.ready = ready;
+        this.roundScores = new ArrayList<>();
     }
 
     /**
@@ -40,6 +42,7 @@ public class PlayerDto {
     public static PlayerDto from(Player p) {
         PlayerDto dto = new PlayerDto(p.getPlayerId(), p.getName(), p.getScore(), p.isReady());
         dto.setPrediction(p.getPrediction());
+        dto.setTricksWon(p.getTricksWon());
         dto.setRoundScores(p.getRoundScores());
         return dto;
     }

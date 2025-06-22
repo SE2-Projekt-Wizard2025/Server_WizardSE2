@@ -4,11 +4,16 @@ import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.model.enums.CardSuit;
 import com.aau.wizard.model.enums.CardType;
+import org.slf4j.LoggerFactory;
 
 import java.util.Comparator;
 import java.util.List;
+import org.slf4j.Logger; // <<< DIES IST DER KORREKTE IMPORT FÜR DEN LOGGER
+import org.slf4j.LoggerFactory;
 
 public final class TrickRules {
+    private static final Logger logger = LoggerFactory.getLogger(TrickRules.class);
+
     private TrickRules() {
         //wird gebraucht...
     }
@@ -65,6 +70,7 @@ public final class TrickRules {
     }
 
     public static boolean isValidPlay(Player player, ICard card, List<Pair<Player, ICard>> currentTrick, CardSuit trumpCardSuit) {
+
         if (card.getType() == CardType.WIZARD || card.getType() == CardType.JESTER) {
             return true;
         }
@@ -76,16 +82,21 @@ public final class TrickRules {
         boolean hasLeadSuit = player.getHandCards().stream().anyMatch(c -> c.getSuit() == leadCardSuit);
         boolean hasTrumpSuitInHand = player.getHandCards().stream().anyMatch(c -> c.getSuit() == trumpCardSuit);
 
+        boolean isValid;
+
         if (hasLeadSuit) {
-            return card.getSuit() == leadCardSuit; // MUSS die Anspielfarbe legen
+            isValid = card.getSuit() == leadCardSuit;
+            return isValid;
         }
-        // Spieler hat die farbe nicht
+
         else {
             if (hasTrumpSuitInHand) {
-                return card.getSuit() == trumpCardSuit;
+                isValid = card.getSuit() == trumpCardSuit;
+               return isValid;
             }
             else {
-                return true;
+                isValid = true; // Darf jede beliebige Karte legen
+                return isValid;
             }
         }
     }

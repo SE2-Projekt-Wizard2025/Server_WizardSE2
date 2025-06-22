@@ -6,6 +6,7 @@ import com.aau.wizard.model.Game;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.model.enums.CardSuit;
 import com.aau.wizard.model.enums.CardType;
+import com.aau.wizard.model.enums.GameStatus;
 import com.aau.wizard.service.impl.RoundServiceImpl;
 import com.aau.wizard.util.Pair;
 import org.junit.jupiter.api.BeforeEach;
@@ -99,6 +100,12 @@ class RoundServiceImplTest {
         prepareGameAndStartRound(3, "p1");
         Player player = players.get(0);
         player.getHandCards().clear();
+
+        player.getHandCards().addAll(List.of(
+                CardFactory.createCard(CardSuit.RED, 1),
+                CardFactory.createCard(CardSuit.GREEN, 2)
+        ));
+
         ICard invalidCard = CardFactory.createCard(CardSuit.BLUE, 5);
 
 
@@ -124,6 +131,7 @@ class RoundServiceImplTest {
     @Test
     void playCard_playerHasLeadingSuit_mustFollowSuit() {
         prepareGameAndStartRound(3, "p1");
+        roundService.trumpCardSuit = CardSuit.YELLOW;
         Player player1 = players.get(0);
         Player player2 = players.get(1);
 
@@ -143,6 +151,7 @@ class RoundServiceImplTest {
     @Test
     void playCard_playerHasLeadingSuit_cannotPlayOtherSuit() {
         prepareGameAndStartRound(3, "p1");
+        roundService.trumpCardSuit = CardSuit.YELLOW;
         Player player1 = players.get(0);
         Player player2 = players.get(1);
 
@@ -162,6 +171,7 @@ class RoundServiceImplTest {
     @Test
     void playCard_playerHasNoLeadingSuit_canPlayAnyCard() {
         prepareGameAndStartRound(3, "p1");
+        roundService.trumpCardSuit = CardSuit.YELLOW;
         Player player1 = players.get(0);
         Player player2 = players.get(1);
 
@@ -180,6 +190,7 @@ class RoundServiceImplTest {
     @Test
     void playCard_jesterCard_canAlwaysBePlayed() {
         prepareGameAndStartRound(3, "p1");
+        roundService.trumpCardSuit = CardSuit.YELLOW;
         Player player1 = players.get(0);
         Player player2 = players.get(1);
 
@@ -199,6 +210,7 @@ class RoundServiceImplTest {
     @Test
     void playCard_wizardCard_canAlwaysBePlayed() {
         prepareGameAndStartRound(3, "p1");
+        roundService.trumpCardSuit = CardSuit.YELLOW;
         Player player1 = players.get(0);
         Player player2 = players.get(1);
 
@@ -214,6 +226,55 @@ class RoundServiceImplTest {
         assertDoesNotThrow(() -> roundService.playCard(player2, wizard));
         assertEquals(2, roundService.playedCards.size());
         assertTrue(player2.getHandCards().contains(player2RedCard)); // Rote Karte sollte noch da sein
+    }
+
+    @Test
+    void playCard_playerHasNoLeadingSuitButHasTrump_mustPlayTrump() {
+        prepareGameAndStartRound(3, "p1");
+        roundService.trumpCardSuit = CardSuit.YELLOW;
+
+        Player player1 = players.get(0);
+        Player player2 = players.get(1);
+
+
+        ICard leadingRedCard = CardFactory.createCard(CardSuit.RED, 5);
+        roundService.playedCards.add(new Pair<>(player1, leadingRedCard));
+
+        // Spieler hat GELBE Trumpfkarte, aber KEINE ROTE
+        ICard player2YellowTrumpCard = CardFactory.createCard(CardSuit.YELLOW, 7); // Trumpfkarte
+        ICard player2BlueCard = CardFactory.createCard(CardSuit.BLUE, 2); // Nicht-Trumpf, Nicht-Anspiel
+        player2.getHandCards().clear();
+        player2.getHandCards().addAll(List.of(player2YellowTrumpCard, player2BlueCard));
+
+        assertDoesNotThrow(() -> roundService.playCard(player2, player2YellowTrumpCard),
+                "Sollte erlaubt sein, da Spieler Anspielfarbe nicht hat und Trumpf legen MUSS.");
+
+        assertEquals(2, roundService.playedCards.size());
+        assertFalse(player2.getHandCards().contains(player2YellowTrumpCard));
+    }
+
+    @Test
+    void playCard_playerHasNoLeadingSuitButHasTrump_cannotPlayNonTrump() {
+        prepareGameAndStartRound(3, "p1");
+        roundService.trumpCardSuit = CardSuit.YELLOW;
+        Player player1 = players.get(0);
+        Player player2 = players.get(1);
+
+        ICard leadingRedCard = CardFactory.createCard(CardSuit.RED, 5);
+        roundService.playedCards.add(new Pair<>(player1, leadingRedCard));
+
+        ICard player2YellowTrumpCard = CardFactory.createCard(CardSuit.YELLOW, 7); // Trumpfkarte
+        ICard player2BlueCard = CardFactory.createCard(CardSuit.BLUE, 2); // Nicht-Trumpf, Nicht-Anspiel
+        player2.getHandCards().clear();
+        player2.getHandCards().addAll(List.of(player2YellowTrumpCard, player2BlueCard));
+
+
+        assertThrows(IllegalStateException.class,
+                () -> roundService.playCard(player2, player2BlueCard),
+                "Sollte fehlschlagen, da Spieler Anspielfarbe nicht hat, aber Trumpf legen MUSS.");
+
+        assertEquals(1, roundService.playedCards.size());
+        assertTrue(player2.getHandCards().contains(player2BlueCard));
     }
 
 
@@ -330,7 +391,12 @@ class RoundServiceImplTest {
         assertEquals(40, players.get(0).getScore());  // 20 + 2*10
         assertEquals(-20, players.get(1).getScore());  // -10 * 2
         assertEquals(-20, players.get(2).getScore()); // -10*2
-}
+
+        assertEquals(List.of(40), players.get(0).getRoundScores(), "Spieler 1: roundScores");
+        assertEquals(List.of(-20), players.get(1).getRoundScores(), "Spieler 2: roundScores");
+        assertEquals(List.of(-20), players.get(2).getRoundScores(), "Spieler 3: roundScores");
+
+    }
 
     @Test
     void endRound_setsPredictionOrderStartingWithWinner() {
@@ -355,6 +421,26 @@ class RoundServiceImplTest {
         prepareGameAndStartRound(3, "p1");
 
         players.forEach(p -> assertNull(p.getPrediction(), "Prediction sollte zurückgesetzt sein"));
+    }
+
+    @Test
+    void endRound_setsStatusToRoundEndSummaryAndSendsScoreboard() {
+        prepareGameAndStartRound(3, "p1");
+        players.get(0).setPrediction(1); players.get(0).setTricksWon(1);
+        players.get(1).setPrediction(0); players.get(1).setTricksWon(0);
+        players.get(2).setPrediction(0); players.get(2).setTricksWon(0);
+
+        roundService.endRound();
+
+        assertEquals(GameStatus.ROUND_END_SUMMARY, game.getStatus(),
+                "Spielstatus sollte ROUND_END_SUMMARY sein.");
+
+        verify(messagingTemplate, times(1)).convertAndSend(
+                eq("/topic/game/" + game.getGameId() + "/scoreboard"),
+                any(List.class)
+        );
+
+        verify(gameService, never()).processEndOfRound(anyString());
     }
 
 }

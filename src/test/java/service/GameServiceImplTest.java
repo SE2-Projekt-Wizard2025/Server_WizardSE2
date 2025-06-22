@@ -1,9 +1,11 @@
 package service;
 
+import com.aau.wizard.dto.CardDto;
 import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.request.PredictionRequest;
 import com.aau.wizard.dto.response.GameResponse;
+import com.aau.wizard.model.CardFactory;
 import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Game;
 import com.aau.wizard.model.Player;
@@ -35,6 +37,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import static testutil.TestDataFactory.*;
 import static testutil.TestConstants.*;
+
 
 @ExtendWith(MockitoExtension.class)
 public class GameServiceImplTest {
@@ -601,6 +604,8 @@ public class GameServiceImplTest {
 
         assertTrue(exception.getMessage().contains("Runden-Logik für dieses Spiel nicht gefunden."));
     }
+
+
 
 
     @SuppressWarnings("unchecked")

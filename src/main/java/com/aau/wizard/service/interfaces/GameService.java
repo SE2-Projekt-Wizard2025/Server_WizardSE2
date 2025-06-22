@@ -4,6 +4,8 @@ import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.request.PredictionRequest;
 import com.aau.wizard.dto.response.GameResponse;
+import com.aau.wizard.model.Game;
+import com.aau.wizard.model.ICard;
 
 import java.util.List;
 
@@ -16,6 +18,7 @@ public interface GameService {
     void processEndOfRound(String gameId);
     GameResponse playCard(GameRequest request);
     void proceedToNextRound(String gameId);
+    GameResponse createGameResponse(Game game, String requestingPlayerId, ICard trumpCard);
 }
 
 

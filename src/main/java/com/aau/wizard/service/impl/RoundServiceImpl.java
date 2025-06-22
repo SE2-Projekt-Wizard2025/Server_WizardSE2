@@ -1,6 +1,7 @@
 package com.aau.wizard.service.impl;
 
 import com.aau.wizard.controller.GameWebSocketController;
+import com.aau.wizard.dto.response.GameResponse;
 import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Deck;
 import com.aau.wizard.model.Game;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors; // <<< WICHTIG: Diesen Import hinzufügen!
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,12 +29,13 @@ public class RoundServiceImpl {
     public Deck deck;
     public ICard trumpCard = null;
     public CardSuit trumpCardSuit = null;
-    public final List<Pair<Player, ICard>> playedCards = new ArrayList<>();
+    public final List<Pair<Player, ICard>> playedCards = new ArrayList<>(); // Diese Liste ist das Problem
     public int currentTrickNumber = 0;
     private final Game game;
     private final SimpMessagingTemplate messagingTemplate;
     private final GameService gameService;
     private static final Logger logger = LoggerFactory.getLogger(RoundServiceImpl.class);
+
 
     public RoundServiceImpl(Game game, SimpMessagingTemplate messagingTemplate, GameService gameService) {
         this.players = game.getPlayers();
@@ -58,8 +61,6 @@ public class RoundServiceImpl {
             player.setPrediction(null);
         }
 
-        //trumpCard = new Card(CardSuit.SPECIAL, 0); // 14 = Wizard --> nur für test
-        //trumpCardSuit = trumpCard.getSuit();        // = SPECIAL --> nur für test
         if (deck.size() < 1) {
             trumpCard = null;
             trumpCardSuit = null;
@@ -70,7 +71,7 @@ public class RoundServiceImpl {
         }
 
         currentTrickNumber = 0;
-        playedCards.clear();
+        playedCards.clear(); // <<< WICHTIG: Sicherstellen, dass dies bei Rundenstart passiert
 
         logger.info("Trumpf: {}", trumpCardSuit != null ? trumpCardSuit : "Kein Trumpf");
     }
@@ -79,13 +80,15 @@ public class RoundServiceImpl {
         if (!player.getHandCards().contains(card)) {
             throw new IllegalArgumentException("Player doesn't have that card");
         }
+        synchronized (playedCards) {
 
-        if (!playedCards.isEmpty() && !TrickRules.isValidPlay(player, card, playedCards, trumpCardSuit)) {
-            throw new IllegalStateException("Invalid card play: " + card + " by " + player.getName());
+            if (!playedCards.isEmpty() && !TrickRules.isValidPlay(player, card, playedCards, trumpCardSuit)) {
+                throw new IllegalStateException("Invalid card play: " + card + " by " + player.getName());
+            }
+
+            player.getHandCards().remove(card);
+            playedCards.add(new Pair<>(player, card));
         }
-
-        player.getHandCards().remove(card);
-        playedCards.add(new Pair<>(player, card));
     }
 
     public Player endTrick() {
@@ -97,7 +100,7 @@ public class RoundServiceImpl {
         winner.setTricksWon(winner.getTricksWon() + 1);
         logger.info("Stich {} gewonnen von {} ({} Stiche)", currentTrickNumber + 1, winner.getName(), winner.getTricksWon());
 
-        playedCards.clear();
+        playedCards.clear(); // <<< DIESE ZEILE SOLLTE playedCards ZURÜCKSETZEN >>>
         currentTrickNumber++;
         return winner;
     }
@@ -114,7 +117,11 @@ public class RoundServiceImpl {
         }
 
         if (startIndex == -1) {
-            throw new IllegalArgumentException("Startspieler nicht gefunden");
+          if (players.isEmpty()) {
+                throw new IllegalArgumentException("Keine Spieler im Spiel.");
+            }
+            startIndex = 0;
+            logger.warn("Startspieler '{}' nicht gefunden, verwende '{}' als Startspieler für Vorhersagereihenfolge.", startingPlayerId, players.get(0).getName());
         }
 
         for (int i = 0; i < players.size(); i++) {
@@ -160,9 +167,11 @@ public class RoundServiceImpl {
                 "/topic/game/" + gameId + "/scoreboard",
                 gameService.getScoreboard(gameId)
         );
-        logger.info("Scoreboard nach Runde {} an Client gesendet. Status: ROUND_END_SUMMARY.", game.getCurrentRound());
 
-
+        for (Player player : players) {
+            GameResponse response = gameService.createGameResponse(game, player.getPlayerId(), trumpCard);
+            messagingTemplate.convertAndSend("/topic/game/" + player.getPlayerId(), response);
+        }
     }
 
     public List<Pair<Player, ICard>> getPlayedCards() {
