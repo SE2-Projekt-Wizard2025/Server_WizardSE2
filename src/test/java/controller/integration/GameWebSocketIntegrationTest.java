@@ -59,8 +59,12 @@ public class GameWebSocketIntegrationTest {
         stompClient = new WebSocketStompClient(new StandardWebSocketClient());
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
 
-        PlayerDto testPlayer = createDefaultPlayerDto();
-        GameResponse mockedResponse = createDefaultGameResponse(testPlayer);
+        PlayerDto player1 = createDefaultPlayerDto();
+        PlayerDto player2 = createCustomPlayerDto("Player2", "SecondPlayer", 0, true);
+        player2.setPrediction(0);
+        player2.setTricksWon(0);
+
+        GameResponse mockedResponse = createDefaultGameResponse(player1, player2);
 
         Mockito.when(gameService.joinGame(Mockito.any(GameRequest.class)))
                 .thenReturn(mockedResponse);
@@ -77,11 +81,12 @@ public class GameWebSocketIntegrationTest {
         StompSession session = connectToWebSocket();
         subscribeToGameTopic(session);
 
-        sendJoinRequest(session);
+        sendJoinRequest(session, createDefaultGameRequest());
 
         GameResponse response = blockingQueue.poll(5, TimeUnit.SECONDS);
         assertJoinResponse(response);
     }
+
 
     /**
      * Connects to the WebSocket endpoint using STOMP.
@@ -120,8 +125,8 @@ public class GameWebSocketIntegrationTest {
      *
      * @param session the active {@link StompSession} used to send the message
      */
-    private void sendJoinRequest(StompSession session) {
-        session.send(JOIN_ENDPOINT, createDefaultGameRequest());
+    private void sendJoinRequest(StompSession session, GameRequest request) {
+        session.send(JOIN_ENDPOINT, request);
     }
 
     /**
@@ -136,4 +141,34 @@ public class GameWebSocketIntegrationTest {
         assertThat(response.getPlayers()).hasSize(2);
         assertThat(response.getPlayers().get(0).getPlayerId()).isEqualTo(TEST_PLAYER_ID);
     }
+
+    @Test
+    @Timeout(10)
+    void testJoinGameWebSocketEndpoint_twoPlayersJoin() throws Exception {
+        StompSession session = connectToWebSocket();
+        subscribeToGameTopic(session);
+
+        // Erster Spieler join
+        sendJoinRequest(session, createDefaultGameRequest());
+
+        // Zweiter Spieler join mit angepasstem Request
+        sendJoinRequest(session, createSecondPlayerGameRequest());
+
+        GameResponse response = blockingQueue.poll(5, TimeUnit.SECONDS);
+        assertThat(response).isNotNull();
+        assertThat(response.getPlayers()).hasSize(2);
+
+        // Spieler-IDs prüfen (anpassen, falls andere IDs verwendet werden)
+        assertThat(response.getPlayers().stream()
+                .map(PlayerDto::getPlayerName)) // Prüft jetzt auf den Namen
+                .containsExactlyInAnyOrder("TestPlayer", "SecondPlayer");}
+
+    private GameRequest createSecondPlayerGameRequest() {
+        GameRequest request = new GameRequest();
+        request.setGameId(TEST_GAME_ID);
+        request.setPlayerId("SecondPlayerId");
+
+        return request;
+    }
+
 }

@@ -1,14 +1,19 @@
 package com.aau.wizard.controller;
 
+import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.response.GameResponse;
 import com.aau.wizard.service.interfaces.GameService;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import com.aau.wizard.dto.request.PredictionRequest;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -20,6 +25,7 @@ import com.aau.wizard.dto.request.PredictionRequest;
 public class GameWebSocketController {
     private final GameService gameService;
     private final SimpMessagingTemplate messagingTemplate;
+    private static final Logger logger = LoggerFactory.getLogger(GameWebSocketController.class);
     /**
      * Injects the game service to delegate game logic operations.
      *
@@ -37,32 +43,50 @@ public class GameWebSocketController {
      * The resulting {@link GameResponse} is broadcast to all clients subscribed to "/topic/game".
      *
      * @param gameRequest the request payload containing game and player info
-     * @return the updated game state as a response
+     * //@return the updated game state as a response
      */
     @MessageMapping("/game/join")
     public void joinGame(GameRequest gameRequest) {
-        System.out.println("Received join request from: " + gameRequest.getPlayerName() +
-                " (ID: " + gameRequest.getPlayerId() + ") for Game: " + gameRequest.getGameId());
+        logger.info("Received join request from: {} (ID: {}) for Game: {}",
+                gameRequest.getPlayerName(), gameRequest.getPlayerId(), gameRequest.getGameId());
 
         GameResponse response = gameService.joinGame(gameRequest);
         messagingTemplate.convertAndSend("/topic/game", response);
     }
 
     @MessageMapping("/game/start")
-    @SendTo("/topic/game")
-    public GameResponse startGame(@Payload String gameId) {
+    public void startGame(@Payload String gameId) {
         if (gameId != null && gameId.startsWith("\"") && gameId.endsWith("\"")) {
             gameId = gameId.substring(1, gameId.length() - 1);
         }
 
-        System.out.println("Start game with ID: " + gameId);
-        return gameService.startGame(gameId);
+        logger.info("Start game with ID: {}", gameId);
+        gameService.startGame(gameId); // keine Rückgabe → personalisierte Nachrichten werden dort verschickt
     }
 
     @MessageMapping("/game/predict")
+    public void handlePrediction(PredictionRequest request) {
+        try {
+            GameResponse response = gameService.makePrediction(request);
+            messagingTemplate.convertAndSend("/topic/game/" + request.getPlayerId(), response);
+        } catch (IllegalArgumentException e) {
+            messagingTemplate.convertAndSend(
+                    "/topic/errors/" + request.getPlayerId(),
+                    e.getMessage()
+            );
+        }
+    }
+
+    @MessageMapping("/game/play")
     @SendTo("/topic/game")
-    public GameResponse handlePrediction(PredictionRequest request) {
-        return gameService.makePrediction(request);
+    public GameResponse playCard(GameRequest request) {
+        return gameService.playCard(request);
+    }
+
+    @MessageMapping("/game/{gameId}/scoreboard")
+    @SendTo("/topic/game/{gameId}/scoreboard")
+    public List<PlayerDto> sendScoreboard(@DestinationVariable String gameId) {
+        return gameService.getScoreboard(gameId);
     }
 
 }

@@ -1,15 +1,21 @@
 package service;
 
+import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.request.PredictionRequest;
 import com.aau.wizard.dto.response.GameResponse;
 import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Game;
 import com.aau.wizard.model.Player;
+import com.aau.wizard.model.enums.CardSuit;
+import com.aau.wizard.model.enums.GameStatus;
 import com.aau.wizard.service.impl.GameServiceImpl;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.mockito.Mockito.*;
 
+import com.aau.wizard.service.impl.RoundServiceImpl;
+import com.aau.wizard.util.Pair;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,8 +25,10 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -153,26 +161,32 @@ public class GameServiceImplTest {
         player.setHandCards(List.of(card));
     }
 
-    @Test
 
+    @Test
     void testStartGameSuccess() {
-        gameService.joinGame(createDefaultGameRequest());
+        // Spieler ins Spiel einfügen
+        gameService.joinGame(createDefaultGameRequest()); // Player1
         gameService.joinGame(createCustomGameRequest(TEST_GAME_ID, "p2", "Player2"));
         gameService.joinGame(createCustomGameRequest(TEST_GAME_ID, "p3", "Player3"));
 
+        // Spiel starten
         GameResponse response = gameService.startGame(TEST_GAME_ID);
 
+        // Assertions zur Spiel-Response
         assertNotNull(response);
-        assertEquals("PLAYING", response.getStatus().name());
-        assertEquals(3, response.getPlayers().size());
+        assertEquals("PREDICTION", response.getStatus().name());
 
-        //Stellt sicher, dass der currentPlayer überhaupt unter den Spielern ist
         List<String> playerIds = response.getPlayers().stream()
                 .map(p -> p.getPlayerId())
                 .toList();
 
+        assertEquals(3, playerIds.size());
         assertTrue(playerIds.contains(response.getCurrentPlayerId()), "Current player must be in the list");
-        verify(messagingTemplate, atLeast(1)).convertAndSend(eq("/topic/game"), any(GameResponse.class));    }
+
+        for (String playerId : playerIds) {
+            verify(messagingTemplate).convertAndSend(eq("/topic/game/" + playerId), any(GameResponse.class));
+        }
+    }
 
     @Test
     void testStartGameThrowsIfGameNotFound() {
@@ -184,19 +198,16 @@ public class GameServiceImplTest {
     }
     @Test
     void testStartGameFailsIfCannotStart() {
+
         gameService.joinGame(createDefaultGameRequest());
 
-        //startGame sollte trotzdem erfolgreich sein
-        GameResponse response = gameService.startGame(TEST_GAME_ID);
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            gameService.startGame(TEST_GAME_ID);
+        });
 
-        // Assert: Spiel wurde gestartet
-        assertNotNull(response);
-        assertEquals("PLAYING", response.getStatus().name());
-        assertEquals(1, response.getPlayers().size());
-        assertEquals(TEST_GAME_ID, response.getGameId());
-
-        // Der eine Spieler ist auch der currentPlayer
-        assertEquals(TEST_PLAYER_ID, response.getCurrentPlayerId());
+        String expectedMessage = "Spiel konnte nicht gestartet werden";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 
     @Test
@@ -316,7 +327,302 @@ public class GameServiceImplTest {
 
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    void getScoreboard_shouldReturnCorrectDtoList() throws Exception {
+
+        Game game = new Game("game-123");
+        Player player = new Player("p1", "Alice");
+        player.setPrediction(3);
+        player.setTricksWon(3);
+        player.setScore(50);
+        game.getPlayers().add(player);
+
+        GameServiceImpl service = new GameServiceImpl(mock(SimpMessagingTemplate.class));
+        Field gamesField = GameServiceImpl.class.getDeclaredField("games");
+        gamesField.setAccessible(true);
+        Map<String, Game> gamesMap = (Map<String, Game>) gamesField.get(service);
+        gamesMap.put("game-123", game);
+
+        List<PlayerDto> scoreboard = service.getScoreboard("game-123");
+
+        assertEquals(1, scoreboard.size());
+        PlayerDto dto = scoreboard.get(0);
+        assertEquals("Alice", dto.getPlayerName());
+        assertEquals(3, dto.getPrediction());
+        assertEquals(3, dto.getTricksWon());
+        assertEquals(50, dto.getScore());
+    }
+
+    @Test
+    void startGame_shouldInitializeRoundCountersCorrectly() throws Exception{
+        Game game = new Game(TEST_GAME_ID);
+        game.getPlayers().addAll(List.of(
+                new Player("p1", "Alice"),
+                new Player("p2", "Bob"),
+                new Player("p3", "Charlie"),
+                new Player("p4", "Dana")
+        ));
+                injectGameIntoService(game);
+                gameService.startGame(TEST_GAME_ID);
+
+        assertEquals(1, game.getCurrentRound(), "Die erste Runde sollte 1 sein.");
+        assertEquals(15, game.getMaxRound(), "Bei 4 Spielern sollte es 15 Runden geben (60/4).");
+    }
+
+    @Test
+    void processEndOfRound_shouldStartNextRound_whenGameIsNotOver() throws Exception{
+        Game game = new Game(TEST_GAME_ID);
+        game.getPlayers().addAll(List.of(new Player("p1", "Alice"), new Player("p2", "Bob"), new Player("p3", "Charlie")));
+        game.setStatus(GameStatus.PLAYING);
+        game.setCurrentRound(5);
+        game.setMaxRound(20);
+        injectGameIntoService(game);
+
+        RoundServiceImpl mockRoundService = mock(RoundServiceImpl.class);
+        injectRoundServiceIntoService(mockRoundService, game.getGameId());
+
+        gameService.processEndOfRound(TEST_GAME_ID);
+
+        assertEquals(6, game.getCurrentRound(), "Die Rundenzahl sollte auf 6 erhöht worden sein.");
+        assertEquals(GameStatus.PLAYING, game.getStatus(), "Der Spielstatus sollte weiterhin PLAYING sein.");
+        verify(mockRoundService, times(1)).startRound(6);
+
+    }
+
+    @Test
+    void processEndOfRound_shouldEndGame_whenMayRoundReached() throws Exception{
+        Game game = new Game(TEST_GAME_ID);
+        game.getPlayers().addAll(List.of(new Player("p1", "Alice"), new Player("p2", "Bob"), new Player("p3", "Charlie")));
+        game.setStatus(GameStatus.PLAYING);
+        game.setCurrentRound(20);
+        game.setMaxRound(20);
+        injectGameIntoService(game);
+
+        gameService.processEndOfRound(TEST_GAME_ID);
+
+        assertEquals(GameStatus.ENDED, game.getStatus(), "Der Spielstatus sollte auf ENDED gesetzt sein.");
+
+        for (Player player : game.getPlayers()) {
+            verify(messagingTemplate).convertAndSend(eq("/topic/game/" + player.getPlayerId()), any(GameResponse.class));
+        }
+    }
+
+    @Test
+    void playCard_success_updatesCurrentPlayerAndBroadcasts() throws Exception {
+
+        Game game = new Game(TEST_GAME_ID);
+        Player player1 = new Player("p1", "Alice");
+        Player player2 = new Player("p2", "Bob");
+        Player player3 = new Player("p3", "Charlie");
+        game.getPlayers().addAll(List.of(player1, player2, player3));
+        game.setStatus(GameStatus.PLAYING);
+        game.setCurrentRound(1);
+        game.setMaxRound(1);
+        game.setCurrentPlayerId(player1.getPlayerId());
+
+        ICard cardToPlay = createCustomCard(CardSuit.RED, 7);
+        player1.setHandCards(new ArrayList<>(List.of(cardToPlay, createDefaultCard())));
+
+        injectGameIntoService(game);
+
+        RoundServiceImpl realRoundService = new RoundServiceImpl(game, messagingTemplate, gameService);
+        injectRoundServiceIntoService(realRoundService, TEST_GAME_ID);
+
+        GameRequest request = new GameRequest(TEST_GAME_ID, player1.getPlayerId());
+        request.setCard(cardToPlay.getSuit().name() + "_" + cardToPlay.getValue());
 
 
-}
+        GameResponse response = gameService.playCard(request);
+
+        assertNotNull(response);
+        assertEquals(TEST_GAME_ID, response.getGameId());
+        assertEquals(GameStatus.PLAYING, response.getStatus());
+        // Überprüfen, ob der nächste Spieler am Zug ist
+        assertEquals(player2.getPlayerId(), response.getCurrentPlayerId());
+        assertEquals(player2.getPlayerId(), game.getCurrentPlayerId());
+
+        assertEquals(cardToPlay.toString(), response.getLastPlayedCard());
+
+        verify(messagingTemplate).convertAndSend(eq("/topic/game/" + player2.getPlayerId()), any(GameResponse.class));
+    }
+
+    @Test
+    void playCard_trickEnds_determinesWinnerAndResetsForNextTrick() throws Exception {
+
+        Game game = new Game(TEST_GAME_ID);
+        Player player1 = new Player("p1", "Alice");
+        Player player2 = new Player("p2", "Bob");
+        game.getPlayers().addAll(List.of(player1, player2));
+        game.setStatus(GameStatus.PLAYING);
+        game.setCurrentPlayerId(player1.getPlayerId());
+
+        ICard card1 = createCustomCard(CardSuit.RED, 7);
+        player1.setHandCards(new ArrayList<>(List.of(card1))); // KORREKT: Veränderbare Liste
+        ICard card2 = createCustomCard(CardSuit.BLUE, 8);
+        player2.setHandCards(new ArrayList<>(List.of(card2))); // KORREKT: Veränderbare Liste
+
+
+        injectGameIntoService(game);
+        RoundServiceImpl mockRoundService = mock(RoundServiceImpl.class);
+        injectRoundServiceIntoService(mockRoundService, TEST_GAME_ID);
+
+        when(mockRoundService.getPlayedCards()).thenReturn(List.of(new Pair<>(player1, card1)));
+
+        // Simuliere den ersten Zug (Alice spielt)
+        GameRequest request1 = new GameRequest(TEST_GAME_ID, player1.getPlayerId());
+        String card1String = card1.getSuit().name() + "_" + card1.getValue();
+        request1.setCard(card1String);
+        gameService.playCard(request1);
+
+        // Überprüfe den Zustand
+        verify(mockRoundService).playCard(player1, card1);
+        verify(mockRoundService, never()).endTrick();
+        assertEquals("p2", game.getCurrentPlayerId(), "Nach Alice sollte Bob an der Reihe sein.");
+
+        // Jetzt Bob
+
+        when(mockRoundService.getPlayedCards()).thenReturn(List.of(new Pair<>(player1, card1), new Pair<>(player2, card2)));
+        when(mockRoundService.endTrick()).thenReturn(player2); // Lege fest, dass Bob den Stich gewinnt.
+
+        GameRequest request2 = new GameRequest(TEST_GAME_ID, player2.getPlayerId());
+        String card2String = card2.getSuit().name() + "_" + card2.getValue();
+        request2.setCard(card2String);
+        gameService.playCard(request2);
+
+        verify(mockRoundService).playCard(player2, card2);
+        verify(mockRoundService, times(1)).endTrick();
+
+
+        assertThat(game.getCurrentPlayerId())
+                .withFailMessage("Der Gewinner (Bob) sollte den nächsten Stich beginnen.")
+                .isEqualTo("p2");
+    }
+
+    @Test
+    void playCard_playerNotActive_throwsException() throws Exception {
+        Game game = new Game(TEST_GAME_ID);
+        Player player1 = new Player("p1", "Alice");
+        game.getPlayers().add(player1);
+        game.setStatus(GameStatus.LOBBY); // nicht Status PLAYING
+
+        injectGameIntoService(game);
+
+        GameRequest request = new GameRequest(TEST_GAME_ID, player1.getPlayerId());
+        request.setCard(createDefaultCard().toString());
+
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            gameService.playCard(request);
+        });
+
+        assertTrue(exception.getMessage().contains("Das Spiel ist nicht aktiv oder wurde nicht gefunden."));
+    }
+
+    @Test
+    void playCard_playerNotFound_throwsException() throws Exception {
+        Game game = new Game(TEST_GAME_ID);
+        game.setStatus(GameStatus.PLAYING);
+
+        injectGameIntoService(game);
+
+        GameRequest request = new GameRequest(TEST_GAME_ID, "unknownPlayer");
+        request.setCard(createDefaultCard().toString());
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            gameService.playCard(request);
+        });
+
+        assertTrue(exception.getMessage().contains("Spieler nicht gefunden."));
+    }
+
+    @Test
+    void playCard_notPlayersTurn_throwsException() throws Exception {
+        Game game = new Game(TEST_GAME_ID);
+        Player player1 = new Player("p1", "Alice");
+        Player player2 = new Player("p2", "Bob");
+        game.getPlayers().addAll(List.of(player1, player2));
+        game.setStatus(GameStatus.PLAYING);
+        game.setCurrentPlayerId(player1.getPlayerId()); // Alice ist dran
+
+        injectGameIntoService(game);
+
+        GameRequest request = new GameRequest(TEST_GAME_ID, player2.getPlayerId()); // Bob versucht zu spielen
+        request.setCard(createDefaultCard().toString());
+
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            gameService.playCard(request);
+        });
+
+        assertTrue(exception.getMessage().contains("Du bist nicht an der Reihe."));
+    }
+
+    @Test
+    void playCard_cardNotInHand_throwsException() throws Exception {
+        Game game = new Game(TEST_GAME_ID);
+        Player player1 = new Player("p1", "Alice");
+        game.getPlayers().add(player1);
+        game.setStatus(GameStatus.PLAYING);
+        game.setCurrentPlayerId(player1.getPlayerId()); // Alice ist dran
+        // Alice hat keine Karten oder nicht die gesuchte Karte
+        player1.setHandCards(List.of(createCustomCard(CardSuit.BLUE, 5)));
+
+        injectGameIntoService(game);
+        injectRoundServiceIntoService(mock(RoundServiceImpl.class), TEST_GAME_ID);
+
+        GameRequest request = new GameRequest(TEST_GAME_ID, player1.getPlayerId());
+        ICard cardNotInHand = createCustomCard(CardSuit.RED, 7);
+        String cardString = cardNotInHand.getSuit().name() + "_" + cardNotInHand.getValue();
+        request.setCard(cardString);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            gameService.playCard(request);
+        });
+
+        assertTrue(exception.getMessage().contains("Karte nicht in der Hand des Spielers:"));
+    }
+
+    @Test
+    void playCard_roundServiceNotInitialized_throwsException() throws Exception {
+        Game game = new Game(TEST_GAME_ID);
+        Player player1 = new Player("p1", "Alice");
+        game.getPlayers().add(player1);
+        game.setStatus(GameStatus.PLAYING);
+        game.setCurrentPlayerId(player1.getPlayerId());
+        player1.setHandCards(List.of(createDefaultCard()));
+
+        injectGameIntoService(game);
+
+        GameRequest request = new GameRequest(TEST_GAME_ID, player1.getPlayerId());
+        request.setCard(createDefaultCard().toString());
+
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            gameService.playCard(request);
+        });
+
+        assertTrue(exception.getMessage().contains("Runden-Logik für dieses Spiel nicht gefunden."));
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private void injectGameIntoService(Game game) throws Exception {
+        Field gamesField = GameServiceImpl.class.getDeclaredField("games");
+        gamesField.setAccessible(true);
+        Map<String, Game> gamesMap = (Map<String, Game>) gamesField.get(gameService);
+        gamesMap.put(game.getGameId(), game);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void injectRoundServiceIntoService(RoundServiceImpl roundService, String gameId) throws Exception {
+        Field roundServicesField = GameServiceImpl.class.getDeclaredField("roundServices");
+        roundServicesField.setAccessible(true);
+        Map<String, RoundServiceImpl> roundServicesMap = (Map<String, RoundServiceImpl>) roundServicesField.get(gameService);
+        roundServicesMap.put(gameId, roundService);
+    }
+
+    }
+
+
+
+
+
 

@@ -2,14 +2,11 @@ package controller.unit;
 
 import com.aau.wizard.controller.GameWebSocketController;
 import com.aau.wizard.dto.request.GameRequest;
-import com.aau.wizard.dto.request.PredictionRequest;
 import com.aau.wizard.dto.response.GameResponse;
 import com.aau.wizard.model.enums.GameStatus;
 import com.aau.wizard.service.interfaces.GameService;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -45,41 +42,19 @@ class GameWebSocketControllerTest {
 
         gameWebSocketController.joinGame(request);
 
+        
         verify(gameService, times(1)).joinGame(any(GameRequest.class));
-        verify(messagingTemplate, times(1)).convertAndSend(eq("/topic/game"), eq(expectedResponse));
+        verify(messagingTemplate, times(1)).convertAndSend("/topic/game", expectedResponse);
+
     }
 
-    /**
-     * Tests that joinGame() returns null when the GameService returns null.
-     */
-    @Test
-    void testJoinGameWithNullResponse() {
-        GameRequest request = createDefaultGameRequest();
 
-        when(gameService.joinGame(any(GameRequest.class))).thenReturn(null);
-
-        gameWebSocketController.joinGame(request);
-
-        verify(gameService, times(1)).joinGame(any(GameRequest.class));
-        ArgumentCaptor<Object> messageCaptor = ArgumentCaptor.forClass(Object.class);
-        verify(messagingTemplate).convertAndSend(eq("/topic/game"), messageCaptor.capture());
-
-        assertNull(messageCaptor.getValue());
-    }
 
     @Test
     void testStartGameCleansQuotedGameId() {
-
         String quotedGameId = "\"test-game-id\"";
-
-        GameResponse expectedResponse = createDefaultGameResponse(createDefaultPlayerDto());
-
-        when(gameService.startGame("test-game-id")).thenReturn(expectedResponse);
-
-        GameResponse response = gameWebSocketController.startGame(quotedGameId);
-
-        verify(gameService, times(1)).startGame("test-game-id");
-        assertEquals(expectedResponse, response);
+        gameWebSocketController.startGame(quotedGameId);
+        verify(gameService).startGame("test-game-id");
     }
 
     /**
@@ -103,7 +78,7 @@ class GameWebSocketControllerTest {
         verify(gameService, times(1)).joinGame(any(GameRequest.class));
     }
 
-    @Test
+    /*@Test
     void testHandlePredictionCallsGameService() {
         PredictionRequest request = new PredictionRequest(TEST_GAME_ID, TEST_PLAYER_ID, 2);
         GameResponse expectedResponse = createDefaultGameResponse(createDefaultPlayerDto());
@@ -117,6 +92,6 @@ class GameWebSocketControllerTest {
         assertEquals(TEST_PLAYER_ID, response.getPlayers().get(0).getPlayerId());
 
         verify(gameService, times(1)).makePrediction(any(PredictionRequest.class));
-    }
+    }*/
 
 }

@@ -47,7 +47,6 @@ class PlayerDtoTest {
         assertEquals(TEST_PLAYER_SCORE, dto.getScore());
         assertEquals(TEST_PLAYER_READY, dto.isReady());
         assertEquals(TEST_PLAYER_PREDICTION, dto.getPrediction());
-
     }
 
     private PlayerDto createDefaultPlayerDtoNoArgsConstructor() {
