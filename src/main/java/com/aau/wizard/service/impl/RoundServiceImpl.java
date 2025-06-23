@@ -1,6 +1,6 @@
 package com.aau.wizard.service.impl;
 
-import com.aau.wizard.controller.GameWebSocketController;
+import com.aau.wizard.dto.response.GameResponse;
 import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Deck;
 import com.aau.wizard.model.Game;
@@ -13,7 +13,9 @@ import com.aau.wizard.util.Pair;
 import com.aau.wizard.util.TrickRules;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +33,7 @@ public class RoundServiceImpl {
     private final GameService gameService;
     private static final Logger logger = LoggerFactory.getLogger(RoundServiceImpl.class);
 
+
     public RoundServiceImpl(Game game, SimpMessagingTemplate messagingTemplate, GameService gameService) {
         this.players = game.getPlayers();
         this.game=game;
@@ -44,8 +47,6 @@ public class RoundServiceImpl {
 
         game.setStatus(GameStatus.PREDICTION);
         game.setPredictionOrder(createPredictionOrder(players, game.getCurrentPlayerId()));
-        //logging
-        logger.info("Neue Vorhersagereihenfolge: {}", game.getPredictionOrder());
 
         for (Player player : players) {
             List<ICard> hand = new ArrayList<>(deck.draw(roundNumber));
@@ -55,8 +56,6 @@ public class RoundServiceImpl {
             player.setPrediction(null);
         }
 
-        //trumpCard = new Card(CardSuit.SPECIAL, 0); // 14 = Wizard --> nur für test
-        //trumpCardSuit = trumpCard.getSuit();        // = SPECIAL --> nur für test
         if (deck.size() < 1) {
             trumpCard = null;
             trumpCardSuit = null;
@@ -68,21 +67,21 @@ public class RoundServiceImpl {
 
         currentTrickNumber = 0;
         playedCards.clear();
-
-        logger.info("Trumpf: {}", trumpCardSuit != null ? trumpCardSuit : "Kein Trumpf");
     }
 
     public void playCard(Player player, ICard card, boolean isCheating) {
         if (!player.getHandCards().contains(card)) {
             throw new IllegalArgumentException("Player doesn't have that card");
         }
+        synchronized (playedCards) {
 
-        if (!playedCards.isEmpty() && !TrickRules.isValidPlay(player, card, playedCards, isCheating)) {
-            throw new IllegalStateException("Invalid card play: " + card + " by " + player.getName());
+            if (!playedCards.isEmpty() && !TrickRules.isValidPlay(player, card, playedCards, trumpCardSuit, isCheating)) {
+                throw new IllegalStateException("Invalid card play: " + card + " by " + player.getName());
+            }
+
+            player.getHandCards().remove(card);
+            playedCards.add(new Pair<>(player, card));
         }
-
-        player.getHandCards().remove(card);
-        playedCards.add(new Pair<>(player, card));
     }
 
     public Player endTrick() {
@@ -92,7 +91,6 @@ public class RoundServiceImpl {
 
         Player winner = TrickRules.determineTrickWinner(playedCards, trumpCardSuit);
         winner.setTricksWon(winner.getTricksWon() + 1);
-        logger.info("Stich {} gewonnen von {} ({} Stiche)", currentTrickNumber + 1, winner.getName(), winner.getTricksWon());
 
         playedCards.clear();
         currentTrickNumber++;
@@ -111,7 +109,10 @@ public class RoundServiceImpl {
         }
 
         if (startIndex == -1) {
-            throw new IllegalArgumentException("Startspieler nicht gefunden");
+          if (players.isEmpty()) {
+                throw new IllegalArgumentException("Keine Spieler im Spiel.");
+            }
+            startIndex = 0;
         }
 
         for (int i = 0; i < players.size(); i++) {
@@ -124,22 +125,19 @@ public class RoundServiceImpl {
 
 
     public void endRound() {
+
+        String gameId = game.getGameId();
+        Map<String, Integer> scoresBeforeRound = new HashMap<>();
+        for (Player player : players) {
+            scoresBeforeRound.put(player.getPlayerId(), player.getScore());
+        }
         BiddingRules.calculateScores(players);
 
-        logger.info("=== Finale Auswertung ===");
-
-        logger.info("=== Finale Auswertung ===");
         for (Player player : players) {
-            int prediction = player.getPrediction();
-            int tricksWon = player.getTricksWon();
-            int score = player.getScore();
-            int diff = Math.abs(prediction - tricksWon);
-            int pointsThisRound = (diff == 0) ? (20 + 10 * tricksWon) : (-10 * diff);
-
-            logger.info("{}: Geboten={}, Gewonnen={}, Differenz={} → Punkte diese Runde: {} → Gesamtscore: {}",
-                    player.getName(), prediction, tricksWon, diff, pointsThisRound, score);
-
+            int pointsThisRound = player.getScore() - scoresBeforeRound.get(player.getPlayerId());
+            player.addRoundScore(pointsThisRound);
         }
+
         Player winner = players.stream()
                 .max((p1, p2) -> Integer.compare(p1.getTricksWon(), p2.getTricksWon()))
                 .orElseThrow(() -> new IllegalStateException("Kein Gewinner gefunden"));
@@ -147,16 +145,17 @@ public class RoundServiceImpl {
         List<String> predictionOrder = createPredictionOrder(players, winner.getPlayerId());
         game.setPredictionOrder(predictionOrder);
 
-        logger.info("Neue Vorhersagereihenfolge: {}", predictionOrder);
+        game.setStatus(GameStatus.ROUND_END_SUMMARY);
 
-        String gameId = game.getGameId();
         messagingTemplate.convertAndSend(
                 "/topic/game/" + gameId + "/scoreboard",
                 gameService.getScoreboard(gameId)
         );
 
-        gameService.processEndOfRound(gameId);
-
+        for (Player player : players) {
+            GameResponse response = gameService.createGameResponse(game, player.getPlayerId(), trumpCard);
+            messagingTemplate.convertAndSend("/topic/game/" + player.getPlayerId(), response);
+        }
     }
 
     public List<Pair<Player, ICard>> getPlayedCards() {
@@ -165,5 +164,9 @@ public class RoundServiceImpl {
 
     public ICard getTrumpCard() {
         return trumpCard;
+    }
+
+    public void proceedToNextRound(String gameId) {
+        gameService.processEndOfRound(gameId);
     }
 }

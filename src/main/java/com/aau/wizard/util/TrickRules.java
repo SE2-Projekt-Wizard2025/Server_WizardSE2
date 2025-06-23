@@ -1,14 +1,16 @@
 package com.aau.wizard.util;
-
 import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.model.enums.CardSuit;
 import com.aau.wizard.model.enums.CardType;
-
+import org.slf4j.LoggerFactory;
 import java.util.Comparator;
 import java.util.List;
+import org.slf4j.Logger;
+
 
 public final class TrickRules {
+
     private TrickRules() {
         //wird gebraucht...
     }
@@ -64,7 +66,7 @@ public final class TrickRules {
         return winnerInfo.player;
     }
 
-    public static boolean isValidPlay(Player player, ICard card, List<Pair<Player, ICard>> currentTrick, boolean isCheating) {
+    public static boolean isValidPlay(Player player, ICard card, List<Pair<Player, ICard>> currentTrick, CardSuit trumpCardSuit, boolean isCheating) {
         if (isCheating) {
             return true;
         }
@@ -78,7 +80,25 @@ public final class TrickRules {
 
         CardSuit leadCardSuit = currentTrick.get(0).second.getSuit();
         boolean hasLeadSuit = player.getHandCards().stream().anyMatch(c -> c.getSuit() == leadCardSuit);
-        return !hasLeadSuit || card.getSuit() == leadCardSuit;
+        boolean hasTrumpSuitInHand = player.getHandCards().stream().anyMatch(c -> c.getSuit() == trumpCardSuit);
+
+        boolean isValid;
+
+        if (hasLeadSuit) {
+            isValid = card.getSuit() == leadCardSuit;
+            return isValid;
+        }
+
+        else {
+            if (hasTrumpSuitInHand) {
+                isValid = card.getSuit() == trumpCardSuit;
+               return isValid;
+            }
+            else {
+                isValid = true; // Darf jede beliebige Karte legen
+                return isValid;
+            }
+        }
     }
 
     private static class TrickCardInfo{

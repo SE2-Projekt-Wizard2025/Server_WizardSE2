@@ -16,8 +16,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import static com.aau.wizard.util.CollectionUtils.mapOrEmpty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.aau.wizard.GameExceptions.CardNotInHandException;
+import com.aau.wizard.GameExceptions.GameAlreadyEndedException;
+import com.aau.wizard.GameExceptions.GameNotActiveException;
+import com.aau.wizard.GameExceptions.GameNotFoundException;
+import com.aau.wizard.GameExceptions.GameStartException;
+import com.aau.wizard.GameExceptions.InvalidPredictionException;
+import com.aau.wizard.GameExceptions.InvalidTurnException;
+import com.aau.wizard.GameExceptions.PlayerNotFoundException;
+import com.aau.wizard.GameExceptions.RoundLogicException;
+import com.aau.wizard.GameExceptions.RoundProgressionException;
 
 /**
  * Default implementation of the GameService interface.
@@ -33,11 +41,11 @@ public class GameServiceImpl implements GameService {
 
     private final SimpMessagingTemplate messagingTemplate;
 
+    private static final String GAME_TOPIC_PREFIX = "/topic/game/";
+
     public GameServiceImpl(SimpMessagingTemplate messagingTemplate) {
         this.messagingTemplate = messagingTemplate;
     }
-    private static final Logger logger = LoggerFactory.getLogger(GameServiceImpl.class);
-
 
     /**
      * Handles a player joining a game. Creates the game if it doesn't exist,
@@ -63,7 +71,9 @@ public class GameServiceImpl implements GameService {
      * @param requestingPlayerId the player for whom the response is built
      * @return a fully populated GameResponse
      */
-    private GameResponse createGameResponse(Game game, String requestingPlayerId, ICard trumpCard) {
+
+    @Override
+    public GameResponse createGameResponse(Game game, String requestingPlayerId, ICard trumpCard) {
         List<PlayerDto> playerDtos = mapOrEmpty(game.getPlayers(), PlayerDto::from);
         Player requestingPlayer = game.getPlayerById(requestingPlayerId);
         List<CardDto> handCards = CardDto.safeFromPlayer(requestingPlayer);
@@ -71,8 +81,11 @@ public class GameServiceImpl implements GameService {
         String currentPredictionPlayerId = null;
         if (game.getStatus() == GameStatus.PREDICTION) {
             long predictedCount = game.getPlayers().stream().filter(p -> p.getPrediction() != null).count();
-            currentPredictionPlayerId = game.getPredictionOrder().get((int) predictedCount);
+            if (!game.getPredictionOrder().isEmpty() && (int)predictedCount < game.getPredictionOrder().size()) {
+                currentPredictionPlayerId = game.getPredictionOrder().get((int) predictedCount);
+            }
         }
+        CardDto trumpCardDto = trumpCard != null ? CardDto.from(trumpCard) : null;
 
         return new GameResponse(
                 game.getGameId(),
@@ -81,7 +94,7 @@ public class GameServiceImpl implements GameService {
                 playerDtos,
                 handCards,
                 null,// lastPlayedCard can be set here later on
-                trumpCard != null ? CardDto.from(trumpCard) : null,
+                trumpCardDto,
                 game.getCurrentRound(),
                 currentPredictionPlayerId
         );
@@ -94,9 +107,8 @@ public class GameServiceImpl implements GameService {
      * @param request the request containing playerId and playerName
      */
     private void addPlayerIfAbsent(Game game, GameRequest request) {
-        if (playerNotInGame(game, request)) {
-            Player newPlayer = new Player(request.getPlayerId(), request.getPlayerName());
-            game.getPlayers().add(newPlayer);
+        if (game.getPlayerById(request.getPlayerId()) == null) {
+            game.getPlayers().add(new Player(request.getPlayerId(), request.getPlayerName()));
         }
     }
 
@@ -112,27 +124,25 @@ public class GameServiceImpl implements GameService {
     public GameResponse startGame(String gameId) {
         Game game = games.get(gameId);
         if (game == null) {
-            throw new IllegalArgumentException("Spiel nicht gefunden: " + gameId);
+            throw new GameNotFoundException("Spiel nicht gefunden: " + gameId);
         }
 
         int numPlayers=game.getPlayers().size();
         game.setMaxRound(60/numPlayers); //Wizard regel
         game.setCurrentRound(1);
 
-        boolean started = game.startGame(); // ruft neue Methode aus Game.java auf
-        if (!started) {
-            throw new IllegalStateException("Spiel konnte nicht gestartet werden – evtl. zu wenig Spieler?");
+        if (!game.startGame()) {
+            throw new GameStartException("Spiel konnte nicht gestartet werden – evtl. zu wenig Spieler?");
         }
 
         RoundServiceImpl roundService = new RoundServiceImpl(game, messagingTemplate, this);
         roundService.startRound(game.getCurrentRound());
         ICard trumpCard = roundService.trumpCard;
-        // CardDto trumpCardDto = trumpCard != null ? CardDto.from(trumpCard) : null;
         roundServices.put(gameId, roundService);
 
         for (Player player : game.getPlayers()) {
             GameResponse response = createGameResponse(game, player.getPlayerId(), trumpCard);
-            messagingTemplate.convertAndSend("/topic/game/" + player.getPlayerId(), response);
+            messagingTemplate.convertAndSend(GAME_TOPIC_PREFIX + player.getPlayerId(), response);
         }
 
 
@@ -164,83 +174,79 @@ public class GameServiceImpl implements GameService {
     public GameResponse makePrediction(PredictionRequest request) {
         Game game = games.get(request.getGameId());
         if (game == null) {
-            throw new IllegalArgumentException("Spiel nicht gefunden");
+            throw new GameNotFoundException("Spiel nicht gefunden");
         }
 
         Player player = game.getPlayerById(request.getPlayerId());
         if (player == null) {
-            throw new IllegalArgumentException("Spieler nicht gefunden");
+            throw new PlayerNotFoundException("Spieler nicht gefunden");
         }
 
-        int prediction = request.getPrediction();
+        validatePredictionTurn(game, player);
 
-        List<Player> allPlayers = game.getPlayers();
-        List<String> predictionOrder = game.getPredictionOrder();
+        validateLastPlayerPrediction(game, player, request.getPrediction());
 
-        long alreadyPredicted = allPlayers.stream().filter(p -> p.getPrediction() != null).count();
-        String expectedPlayerId = predictionOrder.get((int) alreadyPredicted);
-        //logging
-        logger.info("Vorhersage erhalten von: {}", player.getPlayerId());
-        logger.info("Erwartet wird Vorhersage von: {}", expectedPlayerId);
-        if (!expectedPlayerId.equals(player.getPlayerId())) {
-            throw new IllegalStateException("Du bist noch nicht an der Reihe, bitte warte.");
-        }
+        player.setPrediction(request.getPrediction());
 
-        boolean isLastPlayer = predictionOrder.indexOf(player.getPlayerId()) == predictionOrder.size() - 1;
-        if (isLastPlayer) {
-            int sumOfOtherPredictions = allPlayers.stream()
-                    .filter(p -> !p.getPlayerId().equals(player.getPlayerId()))
-                    .map(p -> p.getPrediction() != null ? p.getPrediction() : 0)
-                    .reduce(0, Integer::sum);
-            int totalTricks = player.getHandCards().size();
-            if (sumOfOtherPredictions + prediction == totalTricks) {
-                throw new IllegalArgumentException("Diese Vorhersage ergibt exakt die Anzahl der Stiche und ist damit verboten.");
-            }
-        }
-
-        player.setPrediction(prediction);
-
-        //Status auf PLAYING setzen, wenn alle vorhergesagt haben
-        boolean allPredicted = allPlayers.stream().allMatch(p -> p.getPrediction() != null);
+        boolean allPredicted = game.getPlayers().stream().allMatch(p -> p.getPrediction() != null);
         RoundServiceImpl roundService = roundServices.get(game.getGameId());
         ICard trumpCard = roundService != null ? roundService.getTrumpCard() : null;
 
         if (allPredicted) {
             game.setStatus(GameStatus.PLAYING);
             game.setCurrentPlayerId(game.getPredictionOrder().get(0));
-            logger.info("Vorhersagen abgeschlossen. Spiel startet. Erste SpielerIn: {}", game.getCurrentPlayerId());
 
-            //Sende aktualisierten Zustand mit Trumpfkarte an alle Spieler
-            for (Player p : game.getPlayers()) {
-                GameResponse response = createGameResponse(game, p.getPlayerId(), trumpCard);
-                messagingTemplate.convertAndSend("/topic/game/" + p.getPlayerId(), response);
-            }
-        }else{
-            for (Player p : game.getPlayers()) {
-                GameResponse updatedResponse = createGameResponse(game, p.getPlayerId(), trumpCard);
-                messagingTemplate.convertAndSend("/topic/game/" + p.getPlayerId(), updatedResponse);
+            notifyAllPlayersOfGameUpdate(game, trumpCard);
+        }
+        notifyAllPlayersOfGameUpdate(game, trumpCard);
+        return createGameResponse(game, player.getPlayerId(), trumpCard);
+    }
+    private void validatePredictionTurn(Game game, Player player) {
+        long alreadyPredicted = game.getPlayers().stream().filter(p -> p.getPrediction() != null).count();
+        String expectedPlayerId = game.getPredictionOrder().get((int) alreadyPredicted);
+        if (!expectedPlayerId.equals(player.getPlayerId())) {
+            throw new InvalidTurnException("Du bist noch nicht an der Reihe, bitte warte.");
+        }
+    }
+
+    private void validateLastPlayerPrediction(Game game, Player player, int prediction) {
+        boolean isLastPlayer = game.getPredictionOrder().indexOf(player.getPlayerId()) == game.getPredictionOrder().size() - 1;
+        if (isLastPlayer) {
+            int sumOfOtherPredictions = game.getPlayers().stream()
+                    .filter(p -> !p.getPlayerId().equals(player.getPlayerId()))
+                    .map(p -> p.getPrediction() != null ? p.getPrediction() : 0)
+                    .reduce(0, Integer::sum);
+            int totalTricks = player.getHandCards().size();
+            if (sumOfOtherPredictions + prediction == totalTricks) {
+                throw new InvalidPredictionException("Diese Vorhersage ergibt exakt die Anzahl der Stiche und ist damit verboten.");
             }
         }
+    }
 
+    private void notifyAllPlayersOfGameUpdate(Game game, ICard trumpCard) {
+        for (Player p : game.getPlayers()) {
+            GameResponse response = createGameResponse(game, p.getPlayerId(), trumpCard);
 
-        //Normale Antwort (nur für den Spieler, der gerade vorhersagt)
-        return createGameResponse(game, player.getPlayerId(), trumpCard);
+            messagingTemplate.convertAndSend(GAME_TOPIC_PREFIX + p.getPlayerId(), response);
+        }
     }
 
     public PlayerDto toDto(Player player) {
         PlayerDto dto = new PlayerDto();
+        dto.setPlayerId(player.getPlayerId());
         dto.setPlayerName(player.getName());
         dto.setPrediction(player.getPrediction() != null ? player.getPrediction() : 0);
         dto.setTricksWon(player.getTricksWon());
         dto.setScore(player.getScore());
+        dto.setRoundScores(player.getRoundScores());
         return dto;
     }
 
     public List<PlayerDto> getScoreboard(String gameId) {
         Game game = games.get(gameId);
         if (game == null) {
-            throw new IllegalArgumentException("Spiel nicht gefunden");
-        }
+            throw new GameNotFoundException("Spiel nicht gefunden");
+         }
 
         return game.getPlayers().stream()
                 .map(this::toDto)
@@ -250,65 +256,67 @@ public class GameServiceImpl implements GameService {
     @Override
     public void processEndOfRound(String gameId){
         Game game = games.get(gameId);
-        if(game==null || game.getStatus() != GameStatus.PLAYING){
+        if (game == null) {
             return;
         }
+        if (game.getStatus() == GameStatus.ENDED) return;
 
         if(game.getCurrentRound() >= game.getMaxRound()){
             game.setStatus(GameStatus.ENDED);
-            logger.info("Spiel {} ist beendet.", gameId);
 
             for (Player player : game.getPlayers()){
                 GameResponse finalResponse = createGameResponse(game, player.getPlayerId(), null);
-                messagingTemplate.convertAndSend("/topic/game/" + player.getPlayerId(), finalResponse);
+                messagingTemplate.convertAndSend(GAME_TOPIC_PREFIX + player.getPlayerId(), finalResponse);
             }
-        }else{
-            game.setCurrentRound(game.getCurrentRound()+1);
-            logger.info("Starte Runde {} für Spiel {}", game.getMaxRound(), gameId);
+        }else {
+            try {
+                game.setCurrentRound(game.getCurrentRound() + 1);
 
-            RoundServiceImpl roundService=roundServices.get(gameId);
-            roundService.startRound(game.getCurrentRound());
+                RoundServiceImpl roundService = roundServices.get(gameId);
+                if (roundService == null) {
+                   throw new RoundLogicException("RoundService for game " + gameId + " not found during end of round processing.");
+                }
+                roundService.startRound(game.getCurrentRound());
 
-            for(Player player:game.getPlayers()){
-                GameResponse response=createGameResponse(game, player.getPlayerId(), roundService.trumpCard);
-                messagingTemplate.convertAndSend("/topic/game/" + player.getPlayerId(), response);            }
+                for (Player player : game.getPlayers()) {
+                    GameResponse response = createGameResponse(game, player.getPlayerId(), roundService.trumpCard);
+                    messagingTemplate.convertAndSend(GAME_TOPIC_PREFIX + player.getPlayerId(), response);
+                }
+            } catch (Exception e) {
+                throw new RoundProgressionException("Fehler beim Start der nächsten Runde in processEndOfRound", e);
+            }
         }
-
+    }
+    @Override
+    public void proceedToNextRound(String gameId) {
+        processEndOfRound(gameId);
     }
 
     @Override
     public GameResponse playCard(GameRequest request) {
         Game game = games.get(request.getGameId());
+
         boolean isCheating = Boolean.TRUE.equals(request.getIsCheating());
-        if (game == null || game.getStatus() != GameStatus.PLAYING) {
-            throw new IllegalStateException("Das Spiel ist nicht aktiv oder wurde nicht gefunden.");
+
+        if (game == null) {
+            throw new GameNotFoundException("Spiel nicht gefunden");
         }
 
-        Player player = game.getPlayerById(request.getPlayerId());
-        if (player == null) {
-            throw new IllegalArgumentException("Spieler nicht gefunden.");
-        }
-        //logging
-        logger.info("Server erwartet: {}", game.getCurrentPlayerId());
-        logger.info("Spieler sendet: {}", request.getPlayerId());
-        if (!game.getCurrentPlayerId().equals(player.getPlayerId())) {
-            throw new IllegalStateException("Du bist nicht an der Reihe.");
+        if (game.getStatus() == GameStatus.ENDED) {
+            throw new GameAlreadyEndedException("Das Spiel ist bereits beendet.");
         }
 
-        RoundServiceImpl roundService = roundServices.get(request.getGameId());
-        if (roundService == null) {
-            throw new IllegalStateException("Runden-Logik für dieses Spiel nicht gefunden.");
+        if (game.getStatus() != GameStatus.PLAYING) {
+            throw new GameNotActiveException("Das Spiel ist nicht aktiv oder wurde nicht gefunden.");
         }
 
-        ICard cardObject = ICard.fromString(request.getCard());
+        Player player = getPlayerOrThrow(game, request.getPlayerId());
+        validatePlayerTurn(game, player);
 
-        ICard cardToPlay = player.getHandCards().stream()
-                .filter(c -> c.equals(cardObject))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Karte nicht in der Hand des Spielers: " + request.getCard()));
+        RoundServiceImpl roundService = getRoundServiceOrThrow(request.getGameId());
+        ICard cardToPlay = resolveCardToPlay(player, request.getCard());
 
-        roundService.playCard(player, cardToPlay, isCheating);
-
+        /*
         // Prüfen, ob der Stich beendet ist
         if (roundService.getPlayedCards().size() == game.getPlayers().size()) {
             Player trickWinner = roundService.endTrick();
@@ -341,7 +349,96 @@ public class GameServiceImpl implements GameService {
 
             GameResponse response = createGameResponse(game, request.getPlayerId(), roundService.getTrumpCard());
             response.setLastPlayedCard(cardToPlay.toString());
-            return response;        }
+            return response;        }*/
+
+        roundService.playCard(player, cardToPlay, isCheating);
+        return handlePostPlay(game, roundService, player, cardToPlay);
     }
+
+    private Game getActiveGameOrThrow(String gameId) {
+        Game game = games.get(gameId);
+        if (game == null || game.getStatus() != GameStatus.PLAYING) {
+            throw new GameNotActiveException("Das Spiel ist nicht aktiv oder wurde nicht gefunden.");
+        }
+        return game;
+    }
+
+    private Player getPlayerOrThrow(Game game, String playerId) {
+        Player player = game.getPlayerById(playerId);
+        if (player == null) {
+            throw new PlayerNotFoundException("Spieler nicht gefunden.");
+        }
+        return player;
+    }
+
+    private void validatePlayerTurn(Game game, Player player) {
+        String currentPlayerId = game.getCurrentPlayerId();
+        if (currentPlayerId == null || !currentPlayerId.equals(player.getPlayerId())) {
+            throw new InvalidTurnException("Du bist nicht an der Reihe.");
+        }
+    }
+
+    private RoundServiceImpl getRoundServiceOrThrow(String gameId) {
+        RoundServiceImpl roundService = roundServices.get(gameId);
+        if (roundService == null) {
+            throw new RoundLogicException("Runden-Logik für dieses Spiel nicht gefunden.");
+        }
+        return roundService;
+    }
+
+    private ICard resolveCardToPlay(Player player, String cardStr) {
+        ICard cardObject = ICard.fromString(cardStr);
+        if (!player.getHandCards().contains(cardObject)) {
+            throw new CardNotInHandException("Die Karte ist nicht in deiner Hand.");
+        }
+        return cardObject;
+    }
+
+    private GameResponse handlePostPlay(Game game, RoundServiceImpl roundService, Player player, ICard cardToPlay) {
+        if (roundService.getPlayedCards().size() == game.getPlayers().size()) {
+            return handleEndOfTrick(game, roundService, cardToPlay);
+        } else {
+            return handleNextPlayer(game, roundService, player, cardToPlay);
+        }
+    }
+
+    private GameResponse handleEndOfTrick(Game game, RoundServiceImpl roundService, ICard cardToPlay) {
+        Player trickWinner = roundService.endTrick();
+        game.setCurrentPlayerId(trickWinner.getPlayerId());
+
+        for (Player p : game.getPlayers()) {
+            GameResponse response = createGameResponse(game, p.getPlayerId(), roundService.getTrumpCard());
+            response.setLastPlayedCard(cardToPlay.toString());
+            response.setLastTrickWinnerId(trickWinner.getPlayerId());
+            messagingTemplate.convertAndSend(GAME_TOPIC_PREFIX + p.getPlayerId(), response);
+        }
+
+        if (trickWinner.getHandCards().isEmpty()) {
+            roundService.endRound();
+            return null;
+        }
+
+        GameResponse response = createGameResponse(game, trickWinner.getPlayerId(), roundService.getTrumpCard());
+        response.setLastPlayedCard(cardToPlay.toString());
+        response.setLastTrickWinnerId(trickWinner.getPlayerId());
+        return response;
+    }
+
+    private GameResponse handleNextPlayer(Game game, RoundServiceImpl roundService, Player currentPlayer, ICard cardToPlay) {
+        int currentPlayerIndex = game.getPlayers().indexOf(currentPlayer);
+        int nextPlayerIndex = (currentPlayerIndex + 1) % game.getPlayers().size();
+        game.setCurrentPlayerId(game.getPlayers().get(nextPlayerIndex).getPlayerId());
+
+        for (Player p : game.getPlayers()) {
+            GameResponse response = createGameResponse(game, p.getPlayerId(), roundService.getTrumpCard());
+            response.setLastPlayedCard(cardToPlay.toString());
+            messagingTemplate.convertAndSend(GAME_TOPIC_PREFIX + p.getPlayerId(), response);
+        }
+
+        GameResponse response = createGameResponse(game, currentPlayer.getPlayerId(), roundService.getTrumpCard());
+        response.setLastPlayedCard(cardToPlay.toString());
+        return response;
+    }
+
 }
 
