@@ -3,6 +3,7 @@ package com.aau.wizard.dto.request;
 public class GameRequest extends BaseRequest {
     private String card;
     private String action;
+    private Boolean isCheating;
 
     /**
      * No args constructor needed for Jackson / JSON deserialization
@@ -33,5 +34,13 @@ public class GameRequest extends BaseRequest {
 
     public void setAction(String action) {
         this.action = action;
+    }
+
+    public Boolean getIsCheating() {
+        return isCheating;
+    }
+
+    public void setIsCheating(Boolean isCheating) {
+        this.isCheating = isCheating;
     }
 }

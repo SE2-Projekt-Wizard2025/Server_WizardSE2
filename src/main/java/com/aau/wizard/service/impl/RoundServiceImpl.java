@@ -69,13 +69,13 @@ public class RoundServiceImpl {
         playedCards.clear();
     }
 
-    public void playCard(Player player, ICard card) {
+    public void playCard(Player player, ICard card, boolean isCheating) {
         if (!player.getHandCards().contains(card)) {
             throw new IllegalArgumentException("Player doesn't have that card");
         }
         synchronized (playedCards) {
 
-            if (!playedCards.isEmpty() && !TrickRules.isValidPlay(player, card, playedCards, trumpCardSuit)) {
+            if (!playedCards.isEmpty() && !TrickRules.isValidPlay(player, card, playedCards, trumpCardSuit, isCheating)) {
                 throw new IllegalStateException("Invalid card play: " + card + " by " + player.getName());
             }
 
