@@ -243,7 +243,7 @@ class RoundServiceImplTest {
         player2.getHandCards().clear();
         player2.getHandCards().addAll(List.of(player2YellowTrumpCard, player2BlueCard));
 
-        assertDoesNotThrow(() -> roundService.playCard(player2, player2YellowTrumpCard),
+        assertDoesNotThrow(() -> roundService.playCard(player2, player2YellowTrumpCard, false),
                 "Sollte erlaubt sein, da Spieler Anspielfarbe nicht hat und Trumpf legen MUSS.");
 
         assertEquals(2, roundService.playedCards.size());
@@ -267,7 +267,7 @@ class RoundServiceImplTest {
 
 
         assertThrows(IllegalStateException.class,
-                () -> roundService.playCard(player2, player2BlueCard),
+                () -> roundService.playCard(player2, player2BlueCard, false),
                 "Sollte fehlschlagen, da Spieler Anspielfarbe nicht hat, aber Trumpf legen MUSS.");
 
         assertEquals(1, roundService.playedCards.size());
