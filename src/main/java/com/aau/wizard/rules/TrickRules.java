@@ -1,8 +1,10 @@
-package com.aau.wizard.util;
+package com.aau.wizard.rules;
 import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.model.enums.CardSuit;
 import com.aau.wizard.model.enums.CardType;
+import com.aau.wizard.util.Pair;
+
 import java.util.Comparator;
 import java.util.List;
 
