@@ -7,7 +7,7 @@ import com.aau.wizard.model.WizardCard;
 import org.junit.jupiter.api.Test;
 import com.aau.wizard.model.enums.CardSuit;
 
-public class JesterCardTest {
+class JesterCardTest {
 
     @Test
     void equals_ShouldBeReflexive() {
