@@ -7,7 +7,7 @@ import com.aau.wizard.model.WizardCard;
 import com.aau.wizard.model.enums.CardSuit;
 import org.junit.jupiter.api.Test;
 
-public class NumberCardTest {
+class NumberCardTest {
     @Test
     void constructor_InvalidValueBelowRange_ThrowsException() {
         assertThrows(IllegalArgumentException.class, () ->
