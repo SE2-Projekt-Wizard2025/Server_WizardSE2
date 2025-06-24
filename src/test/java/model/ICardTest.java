@@ -7,7 +7,7 @@ import com.aau.wizard.model.enums.CardSuit;
 import com.aau.wizard.model.enums.CardType;
 import org.junit.jupiter.api.Test;
 
-public class ICardTest {
+class ICardTest {
 
 
     @Test
