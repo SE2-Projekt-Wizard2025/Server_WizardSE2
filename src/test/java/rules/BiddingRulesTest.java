@@ -73,7 +73,7 @@ class BiddingRulesTest {
 
     @Test
     void calculateScores_emptyPlayerList() {
-        BiddingRules.calculateScores(List.of());
+        assertDoesNotThrow(() -> BiddingRules.calculateScores(List.of()));
     }
 
     @Test
