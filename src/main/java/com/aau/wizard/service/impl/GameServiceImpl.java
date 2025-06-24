@@ -448,34 +448,42 @@ public class GameServiceImpl implements GameService {
     @Override
     public void abortGame(String gameId) {
         Game game = getGameById(gameId);
+        String sanitizedId = sanitize(gameId);
 
         if (game == null) {
             throw new GameExceptions.GameNotFoundException("Spiel mit ID " + sanitize(gameId) + " für Abbruch nicht gefunden.");
         }
 
         game.setStatus(GameStatus.ENDED);
-        logger.info("Spiel {} wurde abgebrochen und Status auf ENDED gesetzt.", sanitize(gameId));
-
+        if (logger.isInfoEnabled()) {
+            logger.info("Spiel {} wurde abgebrochen und Status auf ENDED gesetzt.", sanitizedId);
+        }
         GameResponse finalResponse = createGameResponse(game, null, null);
 
-        logger.info("Sende Spielende-Nachricht an alle Spieler für Spiel {}.", sanitize(gameId));
+        if (logger.isInfoEnabled()) {
+            logger.info("Sende Spielende-Nachricht an alle Spieler für Spiel {}.", sanitizedId);
+        }
 
         for (Player player : game.getPlayers()) {
-            messagingTemplate.convertAndSend("/topic/game/" + player.getPlayerId(), finalResponse);
+            messagingTemplate.convertAndSend(GAME_TOPIC_PREFIX + player.getPlayerId(), finalResponse);
         }
     }
 
     @Override
     public void signalReturnToLobby(String gameId) {
         Game game = getGameById(gameId);
+        String sanitizedId = sanitize(gameId);
+
         if (game == null) {
             logger.error("Spiel mit ID {} für 'Return-to-Lobby' nicht gefunden.", sanitize(gameId));
             return;
         }
 
-        logger.info("Sende 'Return-to-Lobby'-Signal für Spiel {}.", sanitize(gameId));
+        if (logger.isInfoEnabled()) {
+            logger.info("Sende 'Return-to-Lobby'-Signal für Spiel {}.", sanitizedId);
+        }
 
-        messagingTemplate.convertAndSend("/topic/game/" + gameId + "/lobby", "RETURN");
+        messagingTemplate.convertAndSend(GAME_TOPIC_PREFIX + gameId + "/lobby", "RETURN");
     }
 
     private String sanitize(String input) {

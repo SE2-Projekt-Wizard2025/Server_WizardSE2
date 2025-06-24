@@ -4,7 +4,6 @@ import com.aau.wizard.GameExceptions;
 import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.response.GameResponse;
-import com.aau.wizard.service.impl.GameServiceImpl;
 import com.aau.wizard.service.interfaces.GameService;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
