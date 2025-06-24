@@ -106,29 +106,6 @@ public class GameServiceImplTest {
         assertTrue(response.getHandCards().isEmpty(), "Hand cards should be empty for new player");
     }
 
-    /**
-     * Verifies that the joinGame method correctly maps a player's hand cards
-     * using CardDto.from(...) when the player already exists and has at least one card.
-     * <p>
-     * This test ensures that the internal stream().map(...) logic is actually executed.
-     */
-    /*@Test
-    void testJoinGameWithPlayerAndCard() {
-        GameRequest request = createDefaultGameRequest();
-        gameService.joinGame(request);
-
-        givePlayerCard(TEST_GAME_ID, TEST_PLAYER_ID, TEST_CARD);
-
-        GameResponse response = gameService.joinGame(request);
-
-        assertNotNull(response);
-        assertEquals(1, response.getHandCards().size());
-
-        CardDto card = response.getHandCards().get(0);
-        assertEquals(TEST_CARD_COLOR, card.getColor());
-        assertEquals(TEST_CARD_VALUE, card.getValue());
-        assertEquals(TEST_CARD_TYPE, card.getType());
-    }*/
 
     /**
      * Asserts that the given {@link GameResponse} contains the expected basic join information.
