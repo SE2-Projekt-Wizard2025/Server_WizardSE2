@@ -183,10 +183,10 @@ public class GameWebSocketController {
             gameService.abortGame(gameId);
 
         } catch (GameExceptions.GameNotFoundException e) {
-            logger.error("Fehler beim Abbrechen von Spiel {}: {}", gameId, e.getMessage());
+            logger.error("Fehler beim Abbrechen von Spiel {}: {}", sanitize(gameId), e.getMessage());
 
         } catch (Exception e) {
-             logger.error("Unerwarteter Fehler beim Abbrechen von Spiel {}: {}", gameId, e.getMessage(), e);
+            logger.error("Unerwarteter Fehler beim Abbrechen von Spiel {}: {}", sanitize(gameId), e.getMessage(), e);
         }
     }
 
@@ -198,7 +198,14 @@ public class GameWebSocketController {
         try {
             gameService.signalReturnToLobby(gameId);
         } catch (Exception e) {
-            logger.error("Fehler bei der Rückkehr zur Lobby für Spiel {}: {}", gameId, e.getMessage(), e);
+            logger.error("Fehler bei der Rückkehr zur Lobby für Spiel {}: {}", sanitize(gameId), e.getMessage(), e);
         }
+    }
+
+    private String sanitize(String input) {
+        if (input == null) {
+            return null;
+        }
+        return input.replace('\n', '_').replace('\r', '_');
     }
 }
