@@ -32,16 +32,6 @@ class CardDtoTest {
         assertCardDtoFields(dto);
     }
 
-    /**
-     * Verifies that CardDto.from(Card) correctly maps all enum values to strings.
-     */
-    /*@Test
-    void testFromCard() {
-        Card card = createDefaultCard();
-        CardDto dto = CardDto.from(card);
-
-        assertCardDtoFields(dto);
-    }*/
 
     /**
      * Verifies that safeFromPlayer returns an empty list when player is null.
@@ -66,23 +56,6 @@ class CardDtoTest {
         assertEmptyCardList(result);
     }
 
-    /**
-     * Verifies that safeFromPlayer correctly maps a player's hand cards.
-     */
-    /*@Test
-    void testSafeFromPlayerWithCard() {
-        Card card = createDefaultCard();
-        Player player = createDefaultPlayer();
-        player.setHandCards(List.of(card));
-
-        List<CardDto> result = CardDto.safeFromPlayer(player);
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
-
-        CardDto dto = result.get(0);
-        assertCardDtoFields(dto);
-    }*/
 
     private void assertCardDtoFields(CardDto cardDto) {
         assertEquals(TEST_CARD_COLOR, cardDto.getColor());
