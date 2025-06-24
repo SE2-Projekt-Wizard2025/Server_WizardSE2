@@ -57,8 +57,17 @@ public class GameServiceImpl implements GameService {
      */
     @Override
     public GameResponse joinGame(GameRequest request) {
-        // check if there is a game, if not create one with the given id
-        Game game = games.computeIfAbsent(request.getGameId(), Game::new);
+
+        String gameId = request.getGameId();
+        Game existingGame = games.get(gameId);
+
+        if (existingGame != null && existingGame.getStatus() == GameStatus.ENDED) {
+            games.remove(gameId);
+            roundServices.remove(gameId);
+        }
+
+        Game game = games.computeIfAbsent(gameId, id -> new Game(id));
+
         addPlayerIfAbsent(game, request);
 
         return createGameResponse(game, request.getPlayerId(), null);
@@ -125,6 +134,11 @@ public class GameServiceImpl implements GameService {
             throw new GameNotFoundException("Spiel nicht gefunden: " + gameId);
         }
 
+        for (Player player : game.getPlayers()) {
+            player.setPrediction(null);
+            player.setTricksWon(0);
+        }
+
         int numPlayers=game.getPlayers().size();
         game.setMaxRound(60/numPlayers); //Wizard regel
         game.setCurrentRound(1);
@@ -142,7 +156,6 @@ public class GameServiceImpl implements GameService {
             GameResponse response = createGameResponse(game, player.getPlayerId(), trumpCard);
             messagingTemplate.convertAndSend(GAME_TOPIC_PREFIX + player.getPlayerId(), response);
         }
-
 
         return createGameResponse(game, game.getCurrentPlayerId(), trumpCard);
     }
@@ -233,7 +246,7 @@ public class GameServiceImpl implements GameService {
         PlayerDto dto = new PlayerDto();
         dto.setPlayerId(player.getPlayerId());
         dto.setPlayerName(player.getName());
-        dto.setPrediction(player.getPrediction() != null ? player.getPrediction() : 0);
+        dto.setPrediction(player.getPrediction());
         dto.setTricksWon(player.getTricksWon());
         dto.setScore(player.getScore());
         dto.setRoundScores(player.getRoundScores());
