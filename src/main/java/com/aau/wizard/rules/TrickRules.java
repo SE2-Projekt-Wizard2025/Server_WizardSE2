@@ -74,7 +74,7 @@ public final class TrickRules {
         if (card.getType() == CardType.WIZARD || card.getType() == CardType.JESTER) {
             return true;
         }
-        if (currentTrick.isEmpty()) {
+        if (currentTrick.isEmpty() || currentTrick.get(0).second.getType()==CardType.JESTER || currentTrick.get(0).second.getType()==CardType.WIZARD) { //auf Jester oder Wizard darf alles gelegt werden!
             return true;
         }
 
