@@ -17,8 +17,7 @@ import com.aau.wizard.GameExceptions.GameNotFoundException;
 import com.aau.wizard.GameExceptions.PlayerNotFoundException;
 import com.aau.wizard.GameExceptions.InvalidTurnException;
 import com.aau.wizard.GameExceptions.InvalidPredictionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 /**
  * WebSocket controller that handles game-related messages from clients.
@@ -29,7 +28,6 @@ import org.slf4j.LoggerFactory;
 public class GameWebSocketController {
     private final GameService gameService;
     private final SimpMessagingTemplate messagingTemplate;
-    private static final Logger logger = LoggerFactory.getLogger(GameWebSocketController.class);
      /**
      * Injects the game service to delegate game logic operations.
      *
@@ -180,12 +178,7 @@ public class GameWebSocketController {
 
         try {
             gameService.abortGame(gameId);
-
-        } catch (GameExceptions.GameNotFoundException e) {
-            logger.error("Fehler beim Abbrechen von Spiel {}: {}", sanitize(gameId), e.getMessage());
-
         } catch (Exception e) {
-            logger.error("Unerwarteter Fehler beim Abbrechen von Spiel {}: {}", sanitize(gameId), e.getMessage(), e);
         }
     }
 
@@ -197,14 +190,6 @@ public class GameWebSocketController {
         try {
             gameService.signalReturnToLobby(gameId);
         } catch (Exception e) {
-            logger.error("Fehler bei der Rückkehr zur Lobby für Spiel {}: {}", sanitize(gameId), e.getMessage(), e);
         }
-    }
-
-    private String sanitize(String input) {
-        if (input == null) {
-            return null;
-        }
-        return input.replace('\n', '_').replace('\r', '_');
     }
 }

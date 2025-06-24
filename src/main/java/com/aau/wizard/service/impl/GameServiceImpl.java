@@ -11,8 +11,6 @@ import com.aau.wizard.model.Player;
 import com.aau.wizard.model.enums.GameStatus;
 import com.aau.wizard.service.interfaces.GameService;
 import com.google.common.annotations.VisibleForTesting;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import java.util.HashMap;
@@ -45,8 +43,6 @@ public class GameServiceImpl implements GameService {
     private final SimpMessagingTemplate messagingTemplate;
 
     private static final String GAME_TOPIC_PREFIX = "/topic/game/";
-
-    private static final Logger logger = LoggerFactory.getLogger(GameServiceImpl.class);
 
     public GameServiceImpl(SimpMessagingTemplate messagingTemplate) {
         this.messagingTemplate = messagingTemplate;
@@ -411,21 +407,13 @@ public class GameServiceImpl implements GameService {
     @Override
     public void abortGame(String gameId) {
         Game game = getGameById(gameId);
-        String sanitizedId = sanitize(gameId);
 
         if (game == null) {
-            throw new GameExceptions.GameNotFoundException("Spiel mit ID " + sanitize(gameId) + " für Abbruch nicht gefunden.");
+            throw new GameExceptions.GameNotFoundException("Spiel mit ID " + gameId + " für Abbruch nicht gefunden.");
         }
 
         game.setStatus(GameStatus.ENDED);
-        if (logger.isInfoEnabled()) {
-            logger.info("Spiel {} wurde abgebrochen und Status auf ENDED gesetzt.", sanitizedId);
-        }
         GameResponse finalResponse = createGameResponse(game, null, null);
-
-        if (logger.isInfoEnabled()) {
-            logger.info("Sende Spielende-Nachricht an alle Spieler für Spiel {}.", sanitizedId);
-        }
 
         for (Player player : game.getPlayers()) {
             messagingTemplate.convertAndSend(GAME_TOPIC_PREFIX + player.getPlayerId(), finalResponse);
@@ -435,27 +423,10 @@ public class GameServiceImpl implements GameService {
     @Override
     public void signalReturnToLobby(String gameId) {
         Game game = getGameById(gameId);
-        String sanitizedId = sanitize(gameId);
-
         if (game == null) {
-            logger.error("Spiel mit ID {} für 'Return-to-Lobby' nicht gefunden.", sanitizedId);
             return;
         }
-
-        if (logger.isInfoEnabled()) {
-            logger.info("Sende 'Return-to-Lobby'-Signal für Spiel {}.", sanitizedId);
-        }
-
-
         messagingTemplate.convertAndSend(GAME_TOPIC_PREFIX + gameId + "/lobby", "RETURN");
     }
-
-    private String sanitize(String input) {
-        if (input == null) {
-            return null;
-        }
-       return input.replace('\n', '_').replace('\r', '_');
-    }
-
 }
 
