@@ -8,7 +8,7 @@ import com.aau.wizard.model.WizardCard;
 import com.aau.wizard.model.enums.CardSuit;
 import org.junit.jupiter.api.Test;
 
-public class WizardCardTest {
+class WizardCardTest {
 
     @Test
     void equals_SameInstance_ReturnsTrue() {
