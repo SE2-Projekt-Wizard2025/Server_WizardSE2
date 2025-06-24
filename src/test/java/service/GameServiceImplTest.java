@@ -128,12 +128,6 @@ public class GameServiceImplTest {
         assertEquals(TEST_PLAYER_NAME, response.getPlayers().get(0).getPlayerName());
     }
 
-    private void givePlayerCard(String gameId, String playerId, ICard card) {
-        Game game = gameService.getGameById(gameId);
-        Player player = game.getPlayerById(playerId);
-        player.setHandCards(List.of(card));
-    }
-
 
     @Test
     void testStartGameSuccess() {
