@@ -3,10 +3,8 @@ import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.model.enums.CardSuit;
 import com.aau.wizard.model.enums.CardType;
-import org.slf4j.LoggerFactory;
 import java.util.Comparator;
 import java.util.List;
-import org.slf4j.Logger;
 
 
 public final class TrickRules {
