@@ -4,6 +4,7 @@ import com.aau.wizard.GameExceptions;
 import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.response.GameResponse;
+import com.aau.wizard.service.impl.GameServiceImpl;
 import com.aau.wizard.service.interfaces.GameService;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -13,13 +14,12 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import com.aau.wizard.dto.request.PredictionRequest;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.aau.wizard.GameExceptions.GameNotFoundException;
 import com.aau.wizard.GameExceptions.PlayerNotFoundException;
 import com.aau.wizard.GameExceptions.InvalidTurnException;
 import com.aau.wizard.GameExceptions.InvalidPredictionException;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * WebSocket controller that handles game-related messages from clients.
@@ -31,7 +31,7 @@ public class GameWebSocketController {
     private final GameService gameService;
     private final SimpMessagingTemplate messagingTemplate;
     private static final Logger logger = LoggerFactory.getLogger(GameWebSocketController.class);
-    /**
+     /**
      * Injects the game service to delegate game logic operations.
      *
      * @param gameService the service handling core game logic
@@ -178,7 +178,6 @@ public class GameWebSocketController {
 
         String gameId = (jsonGameId != null && jsonGameId.startsWith("\"") && jsonGameId.endsWith("\"")) ?
                 jsonGameId.substring(1, jsonGameId.length() - 1) : jsonGameId;
-        logger.info("SERVER: Spielabbruch-Anfrage für Game ID '{}' erhalten.", gameId);
 
         try {
             gameService.abortGame(gameId);
@@ -196,8 +195,10 @@ public class GameWebSocketController {
         String gameId = (jsonGameId != null && jsonGameId.startsWith("\"") && jsonGameId.endsWith("\"")) ?
                 jsonGameId.substring(1, jsonGameId.length() - 1) : jsonGameId;
 
-        logger.info("SERVER: 'Return-to-Lobby'-Anfrage für Game ID '{}' erhalten.", gameId);
-
-        gameService.signalReturnToLobby(gameId);
+        try {
+            gameService.signalReturnToLobby(gameId);
+        } catch (Exception e) {
+            logger.error("Fehler bei der Rückkehr zur Lobby für Spiel {}: {}", gameId, e.getMessage(), e);
+        }
     }
 }

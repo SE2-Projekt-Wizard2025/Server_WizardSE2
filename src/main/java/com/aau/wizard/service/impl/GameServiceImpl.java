@@ -450,15 +450,15 @@ public class GameServiceImpl implements GameService {
         Game game = getGameById(gameId);
 
         if (game == null) {
-            throw new GameExceptions.GameNotFoundException("Spiel mit ID " + gameId + " für Abbruch nicht gefunden.");
+            throw new GameExceptions.GameNotFoundException("Spiel mit ID " + sanitize(gameId) + " für Abbruch nicht gefunden.");
         }
 
         game.setStatus(GameStatus.ENDED);
-        logger.info("Spiel {} wurde abgebrochen und Status auf ENDED gesetzt.", gameId);
+        logger.info("Spiel {} wurde abgebrochen und Status auf ENDED gesetzt.", sanitize(gameId));
 
-       GameResponse finalResponse = createGameResponse(game, null, null);
+        GameResponse finalResponse = createGameResponse(game, null, null);
 
-        logger.info("Sende Spielende-Nachricht an alle Spieler für Spiel {}.", gameId);
+        logger.info("Sende Spielende-Nachricht an alle Spieler für Spiel {}.", sanitize(gameId));
 
         for (Player player : game.getPlayers()) {
             messagingTemplate.convertAndSend("/topic/game/" + player.getPlayerId(), finalResponse);
@@ -469,13 +469,20 @@ public class GameServiceImpl implements GameService {
     public void signalReturnToLobby(String gameId) {
         Game game = getGameById(gameId);
         if (game == null) {
-            logger.error("Spiel mit ID {} für 'Return-to-Lobby' nicht gefunden.", gameId);
+            logger.error("Spiel mit ID {} für 'Return-to-Lobby' nicht gefunden.", sanitize(gameId));
             return;
         }
 
-        logger.info("Sende 'Return-to-Lobby'-Signal für Spiel {}.", gameId);
+        logger.info("Sende 'Return-to-Lobby'-Signal für Spiel {}.", sanitize(gameId));
 
         messagingTemplate.convertAndSend("/topic/game/" + gameId + "/lobby", "RETURN");
+    }
+
+    private String sanitize(String input) {
+        if (input == null) {
+            return null;
+        }
+       return input.replace('\n', '_').replace('\r', '_');
     }
 
 }

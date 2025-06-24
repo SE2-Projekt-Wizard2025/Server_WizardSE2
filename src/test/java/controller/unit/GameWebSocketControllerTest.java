@@ -372,4 +372,57 @@ class GameWebSocketControllerTest {
 
         verify(gameService, times(1)).signalReturnToLobby(TEST_GAME_ID);
     }
+
+    @Test
+    void testHandleGameAbort_withUnquotedGameId() {
+         String unquotedGameId = TEST_GAME_ID;
+        doNothing().when(gameService).abortGame(unquotedGameId);
+
+        gameWebSocketController.handleGameAbort(unquotedGameId);
+
+        verify(gameService, times(1)).abortGame(unquotedGameId);
+    }
+
+    @Test
+    void testHandleGameAbort_throwsGameNotFoundException() {
+        String gameId = TEST_GAME_ID;
+        doThrow(new GameExceptions.GameNotFoundException("Test Fehler"))
+                .when(gameService).abortGame(gameId);
+
+         gameWebSocketController.handleGameAbort(gameId);
+
+        verify(gameService, times(1)).abortGame(gameId);
+    }
+
+    @Test
+    void testHandleGameAbort_throwsUnexpectedException() {
+        String gameId = TEST_GAME_ID;
+        doThrow(new RuntimeException("Unerwarteter Test Fehler"))
+                .when(gameService).abortGame(gameId);
+
+        gameWebSocketController.handleGameAbort(gameId);
+
+        verify(gameService, times(1)).abortGame(gameId);
+    }
+
+    @Test
+    void testHandleReturnToLobby_withUnquotedGameId() {
+        String unquotedGameId = TEST_GAME_ID;
+        doNothing().when(gameService).signalReturnToLobby(unquotedGameId);
+
+        gameWebSocketController.handleReturnToLobby(unquotedGameId);
+
+        verify(gameService, times(1)).signalReturnToLobby(unquotedGameId);
+    }
+
+    @Test
+    void testHandleReturnToLobby_throwsException() {
+        String gameId = TEST_GAME_ID;
+        doThrow(new RuntimeException("Test Fehler"))
+                .when(gameService).signalReturnToLobby(gameId);
+
+        gameWebSocketController.handleReturnToLobby(gameId);
+
+        verify(gameService, times(1)).signalReturnToLobby(gameId);
+    }
 }
