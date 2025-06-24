@@ -8,32 +8,32 @@ import com.aau.wizard.model.WizardCard;
 import com.aau.wizard.model.enums.CardSuit;
 import org.junit.jupiter.api.Test;
 
-public class WizardCardTest {
+class WizardCardTest {
 
     @Test
     void equals_SameInstance_ReturnsTrue() {
         WizardCard card = new WizardCard(CardSuit.SPECIAL);
-        assertTrue(card.equals(card)); // Reflexivität
+        assertEquals(card, card); // Reflexivität
     }
 
     @Test
     void equals_Null_ReturnsFalse() {
         WizardCard card = new WizardCard(CardSuit.SPECIAL);
-        assertFalse(card.equals(null)); // Nicht-null-Prüfung
+        assertNotEquals(null, card); // Nicht-null-Prüfung
     }
 
     @Test
     void equals_DifferentClass_ReturnsFalse() {
         WizardCard wizard = new WizardCard(CardSuit.SPECIAL);
         JesterCard jester = new JesterCard(CardSuit.SPECIAL);
-        assertFalse(wizard.equals(jester)); // Typenprüfung
+        assertNotEquals(wizard, jester); // Typenprüfung
     }
 
     @Test
     void equals_SameClass_ReturnsTrue() {
         WizardCard wizard1 = new WizardCard(CardSuit.SPECIAL);
         WizardCard wizard2 = new WizardCard(CardSuit.SPECIAL);
-        assertTrue(wizard1.equals(wizard2)); // Gleichheit bei gleicher Klasse
+        assertEquals(wizard1, wizard2); // Gleichheit bei gleicher Klasse
     }
 
     @Test

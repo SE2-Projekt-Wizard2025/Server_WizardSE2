@@ -8,7 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.List;
 
-public class DeckTest {
+class DeckTest {
     private Deck deck;
 
     @BeforeEach
@@ -36,7 +36,7 @@ public class DeckTest {
 
         assertEquals(1, drawnCard.size());
         assertEquals(initialSize - 1, deck.size());
-        assertFalse(deck.size() == initialSize);
+        assertNotEquals(deck.size(), initialSize);
     }
 
     @Test
@@ -46,7 +46,7 @@ public class DeckTest {
 
         assertEquals(deckSize, allCards.size());
         assertEquals(0, deck.size());
-        assertTrue(deck.size() == 0);
+        assertEquals(0, deck.size());
     }
 
     @Test

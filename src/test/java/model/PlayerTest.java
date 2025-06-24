@@ -54,9 +54,6 @@ class PlayerTest {
         player.setTricksWon(2);
         assertEquals(2, player.getTricksWon());
 
-        //player.setPrediction(3);
-        //assertEquals(3, player.getPrediction());
-
         player.setReady(true);
         assertTrue(player.isReady());
 
@@ -98,18 +95,6 @@ class PlayerTest {
         assertEquals(initialHash, player.hashCode());
     }
 
-    /*@Test
-    void hashCode_changesWhenFieldsChange() {
-        int initialHash = player.hashCode();
-        player.setScore(10);
-        assertNotEquals(initialHash, player.hashCode());
-    }
-
-    @Test
-    void hashCode_equalForEqualObjects() {
-        Player samePlayer = new Player(TEST_ID, TEST_NAME);
-        assertEquals(player.hashCode(), samePlayer.hashCode());
-    } */
 
     @Test
     void toString_containsClassName() {

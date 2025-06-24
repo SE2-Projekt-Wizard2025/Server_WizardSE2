@@ -2,7 +2,6 @@ package service;
 
 import com.aau.wizard.model.*;
 import com.aau.wizard.model.enums.CardSuit;
-import com.aau.wizard.model.enums.CardType;
 import com.aau.wizard.model.enums.GameStatus;
 import com.aau.wizard.service.impl.RoundServiceImpl;
 import com.aau.wizard.util.Pair;
@@ -442,8 +441,8 @@ class RoundServiceImplTest {
 
     @Test
     void getPlayedCards_ShouldReturnEmptyListInitially() {
-        RoundServiceImpl roundService = new RoundServiceImpl(game, messagingTemplate, gameService);
-        List<Pair<Player, ICard>> playedCards = roundService.getPlayedCards();
+        RoundServiceImpl roundServiceImpl = new RoundServiceImpl(game, messagingTemplate, gameService);
+        List<Pair<Player, ICard>> playedCards = roundServiceImpl.getPlayedCards();
 
         assertNotNull(playedCards);
         assertTrue(playedCards.isEmpty());

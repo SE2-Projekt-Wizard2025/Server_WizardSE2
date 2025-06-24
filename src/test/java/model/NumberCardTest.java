@@ -7,7 +7,7 @@ import com.aau.wizard.model.WizardCard;
 import com.aau.wizard.model.enums.CardSuit;
 import org.junit.jupiter.api.Test;
 
-public class NumberCardTest {
+class NumberCardTest {
     @Test
     void constructor_InvalidValueBelowRange_ThrowsException() {
         assertThrows(IllegalArgumentException.class, () ->
@@ -31,41 +31,41 @@ public class NumberCardTest {
     @Test
     void equals_SameInstance_ReturnsTrue() {
         NumberCard card = new NumberCard(CardSuit.YELLOW, 7);
-        assertTrue(card.equals(card));
+        assertEquals(card, card);
     }
 
     @Test
     void equals_Null_ReturnsFalse() {
         NumberCard card = new NumberCard(CardSuit.RED, 3);
-        assertFalse(card.equals(null));
+        assertNotEquals(null, card);
     }
 
     @Test
     void equals_DifferentClass_ReturnsFalse() {
         NumberCard card = new NumberCard(CardSuit.BLUE, 10);
         WizardCard wizard = new WizardCard(CardSuit.SPECIAL);
-        assertFalse(card.equals(wizard));
+        assertNotEquals(card, wizard);
     }
 
     @Test
     void equals_SameSuitAndValue_ReturnsTrue() {
         NumberCard card1 = new NumberCard(CardSuit.GREEN, 2);
         NumberCard card2 = new NumberCard(CardSuit.GREEN, 2);
-        assertTrue(card1.equals(card2));
+        assertEquals(card1, card2);
     }
 
     @Test
     void equals_DifferentSuit_ReturnsFalse() {
         NumberCard card1 = new NumberCard(CardSuit.YELLOW, 5);
         NumberCard card2 = new NumberCard(CardSuit.RED, 5);
-        assertFalse(card1.equals(card2));
+        assertNotEquals(card1, card2);
     }
 
     @Test
     void equals_DifferentValue_ReturnsFalse() {
         NumberCard card1 = new NumberCard(CardSuit.BLUE, 8);
         NumberCard card2 = new NumberCard(CardSuit.BLUE, 9);
-        assertFalse(card1.equals(card2));
+        assertNotEquals(card1, card2);
     }
 
 
