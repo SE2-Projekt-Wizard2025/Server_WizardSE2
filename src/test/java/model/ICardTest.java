@@ -11,21 +11,21 @@ class ICardTest {
 
 
     @Test
-    public void testFromString_Wizard() {
+    void testFromString_Wizard() {
         ICard card = ICard.fromString("WIZARD");
         assertEquals(CardSuit.SPECIAL, card.getSuit());
         assertEquals(CardType.WIZARD, card.getType());
     }
 
     @Test
-    public void testFromString_Jester() {
+    void testFromString_Jester() {
         ICard card = ICard.fromString("JESTER");
         assertEquals(CardSuit.SPECIAL, card.getSuit());
         assertEquals(CardType.JESTER, card.getType());
     }
 
     @Test
-    public void testFromString_NumberCard() {
+    void testFromString_NumberCard() {
         ICard card = ICard.fromString("RED_10");
         assertEquals(CardSuit.RED, card.getSuit());
         assertEquals(10, card.getValue());
@@ -33,27 +33,27 @@ class ICardTest {
     }
 
     @Test
-    public void testFromString_EmptyString_ThrowsException() {
+    void testFromString_EmptyString_ThrowsException() {
         assertThrows(IllegalArgumentException.class, () -> ICard.fromString(""));
     }
 
     @Test
-    public void testFromString_InvalidFormat_ThrowsException() {
+    void testFromString_InvalidFormat_ThrowsException() {
         assertThrows(IllegalArgumentException.class, () -> ICard.fromString("RED_10_EXTRA"));
     }
 
     @Test
-    public void testFromString_InvalidSuit_ThrowsException() {
+    void testFromString_InvalidSuit_ThrowsException() {
         assertThrows(IllegalArgumentException.class, () -> ICard.fromString("INVALID_5"));
     }
 
     @Test
-    public void testFromString_InvalidValue_ThrowsException() {
+    void testFromString_InvalidValue_ThrowsException() {
         assertThrows(IllegalArgumentException.class, () -> ICard.fromString("RED_INVALID"));
     }
 
     @Test
-    public void testFromString_NullInput_ThrowsException() {
+    void testFromString_NullInput_ThrowsException() {
         assertThrows(IllegalArgumentException.class, () -> ICard.fromString(null));
     }
 }
