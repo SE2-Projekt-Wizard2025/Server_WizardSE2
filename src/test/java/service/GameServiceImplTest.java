@@ -5,16 +5,12 @@ import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.request.GameRequest;
 import com.aau.wizard.dto.request.PredictionRequest;
 import com.aau.wizard.dto.response.GameResponse;
-import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Game;
+import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.model.enums.CardSuit;
 import com.aau.wizard.model.enums.GameStatus;
 import com.aau.wizard.service.impl.GameServiceImpl;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import static org.mockito.Mockito.*;
-
 import com.aau.wizard.service.impl.RoundServiceImpl;
 import com.aau.wizard.util.Pair;
 import org.junit.jupiter.api.Test;
@@ -23,15 +19,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static testutil.TestDataFactory.*;
+import static org.mockito.Mockito.*;
 import static testutil.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static testutil.TestDataFactory.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -682,6 +680,91 @@ public class GameServiceImplTest {
 
         assertFalse(player1.getHandCards().contains(cardToPlay), "Gespielte Karte sollte aus der Hand entfernt sein.");
     }
+
+    @Test
+    void testAbortGame_shouldSetStatusToEndedAndNotifyPlayers() throws Exception {
+
+        Game game = new Game(TEST_GAME_ID);
+        Player player1 = new Player("p1", "Alice");
+        Player player2 = new Player("p2", "Bob");
+        game.getPlayers().addAll(List.of(player1, player2));
+        game.setStatus(GameStatus.PLAYING);
+
+        injectGameIntoService(game);
+
+        gameService.abortGame(TEST_GAME_ID);
+
+        assertEquals(GameStatus.ENDED, game.getStatus(), "Der Spielstatus sollte auf ENDED sein.");
+
+        verify(messagingTemplate, times(1)).convertAndSend(eq("/topic/game/" + player1.getPlayerId()), any(GameResponse.class));
+        verify(messagingTemplate, times(1)).convertAndSend(eq("/topic/game/" + player2.getPlayerId()), any(GameResponse.class));
+    }
+
+    @Test
+    void testSignalReturnToLobby_shouldBroadcastToLobbyTopic() throws Exception {
+        Game game = new Game(TEST_GAME_ID);
+        injectGameIntoService(game);
+
+        gameService.signalReturnToLobby(TEST_GAME_ID);
+
+        verify(messagingTemplate, times(1)).convertAndSend(
+                "/topic/game/" + TEST_GAME_ID + "/lobby",
+                "RETURN"
+        );
+    }
+
+    @Test
+    void signalReturnToLobby_shouldLogAndReturn_whenGameIsNotFound() {
+         String nonExistentGameId = "diese-id-gibt-es-nicht";
+
+         gameService.signalReturnToLobby(nonExistentGameId);
+
+         verify(messagingTemplate, never()).convertAndSend(anyString(), (Object) any());
+    }
+
+    @Test
+    void makePrediction_throwsGameNotFoundException_whenGameDoesNotExist() {
+        PredictionRequest request = new PredictionRequest("non-existent-game", TEST_PLAYER_ID, 1);
+
+        assertThrows(GameExceptions.GameNotFoundException.class, () -> {
+            gameService.makePrediction(request);
+        });
+    }
+
+    @Test
+    void makePrediction_throwsPlayerNotFoundException_whenPlayerDoesNotExist() throws Exception {
+        Game game = new Game(TEST_GAME_ID);
+        injectGameIntoService(game);
+
+        PredictionRequest request = new PredictionRequest(TEST_GAME_ID, "non-existent-player", 1);
+
+        assertThrows(GameExceptions.PlayerNotFoundException.class, () -> {
+            gameService.makePrediction(request);
+        });
+    }
+
+    @Test
+    void processEndOfRound_doesNothing_whenGameNotFound() {
+        assertDoesNotThrow(() -> {
+            gameService.processEndOfRound("non-existent-game");
+        });
+
+        verify(messagingTemplate, never()).convertAndSend(anyString(), any(Object.class));
+    }
+
+   @Test
+    void processEndOfRound_throwsRoundLogicException_whenRoundServiceNotFound() throws Exception {
+        Game game = new Game(TEST_GAME_ID);
+        game.getPlayers().add(new Player("p1", "Player 1"));
+        game.setCurrentRound(1);
+        game.setMaxRound(20);
+        injectGameIntoService(game);
+
+       assertThrows(GameExceptions.RoundProgressionException.class, () -> {
+           gameService.processEndOfRound(TEST_GAME_ID);
+       });
+    }
+
     }
 
 

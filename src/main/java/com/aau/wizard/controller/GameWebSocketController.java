@@ -13,8 +13,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import com.aau.wizard.dto.request.PredictionRequest;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.aau.wizard.GameExceptions.GameNotFoundException;
 import com.aau.wizard.GameExceptions.PlayerNotFoundException;
 import com.aau.wizard.GameExceptions.InvalidTurnException;
@@ -30,8 +28,7 @@ import com.aau.wizard.GameExceptions.InvalidPredictionException;
 public class GameWebSocketController {
     private final GameService gameService;
     private final SimpMessagingTemplate messagingTemplate;
-    private static final Logger logger = LoggerFactory.getLogger(GameWebSocketController.class);
-    /**
+     /**
      * Injects the game service to delegate game logic operations.
      *
      * @param gameService the service handling core game logic
@@ -166,6 +163,33 @@ public class GameWebSocketController {
                     "/topic/errors/" + cleanGameId,
                     "Ein unerwarteter Fehler ist beim Fortfahren zur nächsten Runde aufgetreten."
             );
+        }
+    }
+
+    /**
+     * Behandelt die Anfrage eines Clients, das Spiel für alle Teilnehmer abzubrechen.
+     * @param jsonGameId Die ID des Spiels als JSON-formatierter String.
+     */
+    @MessageMapping("/game/abort")
+    public void handleGameAbort(@Payload String jsonGameId) {
+
+        String gameId = (jsonGameId != null && jsonGameId.startsWith("\"") && jsonGameId.endsWith("\"")) ?
+                jsonGameId.substring(1, jsonGameId.length() - 1) : jsonGameId;
+
+        try {
+            gameService.abortGame(gameId);
+        } catch (Exception e) {
+        }
+    }
+
+    @MessageMapping("/game/return-to-lobby")
+    public void handleReturnToLobby(@Payload String jsonGameId) {
+        String gameId = (jsonGameId != null && jsonGameId.startsWith("\"") && jsonGameId.endsWith("\"")) ?
+                jsonGameId.substring(1, jsonGameId.length() - 1) : jsonGameId;
+
+        try {
+            gameService.signalReturnToLobby(gameId);
+        } catch (Exception e) {
         }
     }
 }

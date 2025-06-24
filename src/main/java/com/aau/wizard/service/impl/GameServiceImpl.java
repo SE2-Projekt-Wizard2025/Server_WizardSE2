@@ -1,4 +1,5 @@
 package com.aau.wizard.service.impl;
+import com.aau.wizard.GameExceptions;
 import com.aau.wizard.dto.CardDto;
 import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.request.GameRequest;
@@ -116,9 +117,6 @@ public class GameServiceImpl implements GameService {
      * Checks whether the player is not yet part of the game.
      * Used to avoid duplicate joins.
      */
-    private boolean playerNotInGame(Game game, GameRequest request) {
-        return game.getPlayerById(request.getPlayerId()) == null;
-    }
 
     @Override
     public GameResponse startGame(String gameId) {
@@ -316,40 +314,6 @@ public class GameServiceImpl implements GameService {
         RoundServiceImpl roundService = getRoundServiceOrThrow(request.getGameId());
         ICard cardToPlay = resolveCardToPlay(player, request.getCard());
 
-        /*
-        // Prüfen, ob der Stich beendet ist
-        if (roundService.getPlayedCards().size() == game.getPlayers().size()) {
-            Player trickWinner = roundService.endTrick();
-            game.setCurrentPlayerId(trickWinner.getPlayerId());
-
-            for (Player p : game.getPlayers()) {
-                GameResponse playerResponse = createGameResponse(game, p.getPlayerId(), roundService.getTrumpCard());
-                playerResponse.setLastPlayedCard(cardToPlay.toString());
-                playerResponse.setLastTrickWinnerId(trickWinner.getPlayerId());
-                messagingTemplate.convertAndSend("/topic/game/" + p.getPlayerId(), playerResponse);
-            }
-
-            if (trickWinner.getHandCards().isEmpty()) {
-                roundService.endRound();
-            }
-
-            GameResponse response = createGameResponse(game, request.getPlayerId(), roundService.getTrumpCard());
-            response.setLastPlayedCard(cardToPlay.toString());
-            return response;
-        } else {
-            int currentPlayerIndex = game.getPlayers().indexOf(player);
-            int nextPlayerIndex = (currentPlayerIndex + 1) % game.getPlayers().size();
-            game.setCurrentPlayerId(game.getPlayers().get(nextPlayerIndex).getPlayerId());
-
-            for (Player p : game.getPlayers()) {
-                GameResponse playerResponse = createGameResponse(game, p.getPlayerId(), roundService.getTrumpCard());
-                playerResponse.setLastPlayedCard(cardToPlay.toString());
-                messagingTemplate.convertAndSend("/topic/game/" + p.getPlayerId(), playerResponse);
-            }
-
-            GameResponse response = createGameResponse(game, request.getPlayerId(), roundService.getTrumpCard());
-            response.setLastPlayedCard(cardToPlay.toString());
-            return response;        }*/
 
         roundService.playCard(player, cardToPlay, isCheating);
         return handlePostPlay(game, roundService, player, cardToPlay);
@@ -440,5 +404,29 @@ public class GameServiceImpl implements GameService {
         return response;
     }
 
+    @Override
+    public void abortGame(String gameId) {
+        Game game = getGameById(gameId);
+
+        if (game == null) {
+            throw new GameExceptions.GameNotFoundException("Spiel mit ID " + gameId + " für Abbruch nicht gefunden.");
+        }
+
+        game.setStatus(GameStatus.ENDED);
+        GameResponse finalResponse = createGameResponse(game, null, null);
+
+        for (Player player : game.getPlayers()) {
+            messagingTemplate.convertAndSend(GAME_TOPIC_PREFIX + player.getPlayerId(), finalResponse);
+        }
+    }
+
+    @Override
+    public void signalReturnToLobby(String gameId) {
+        Game game = getGameById(gameId);
+        if (game == null) {
+            return;
+        }
+        messagingTemplate.convertAndSend(GAME_TOPIC_PREFIX + gameId + "/lobby", "RETURN");
+    }
 }
 
