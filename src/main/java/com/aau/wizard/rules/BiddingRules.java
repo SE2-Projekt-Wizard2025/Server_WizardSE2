@@ -1,4 +1,4 @@
-package com.aau.wizard.util;
+package com.aau.wizard.rules;
 
 import com.aau.wizard.model.Player;
 

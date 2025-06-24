@@ -1,7 +1,7 @@
 package rules;
 
 import com.aau.wizard.model.Player;
-import com.aau.wizard.util.BiddingRules;
+import com.aau.wizard.rules.BiddingRules;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

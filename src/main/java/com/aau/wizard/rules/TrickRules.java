@@ -1,8 +1,10 @@
-package com.aau.wizard.util;
+package com.aau.wizard.rules;
 import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.model.enums.CardSuit;
 import com.aau.wizard.model.enums.CardType;
+import com.aau.wizard.util.Pair;
+
 import java.util.Comparator;
 import java.util.List;
 
@@ -72,7 +74,7 @@ public final class TrickRules {
         if (card.getType() == CardType.WIZARD || card.getType() == CardType.JESTER) {
             return true;
         }
-        if (currentTrick.isEmpty()) {
+        if (currentTrick.isEmpty() || currentTrick.get(0).second.getType()==CardType.JESTER || currentTrick.get(0).second.getType()==CardType.WIZARD) { //auf Jester oder Wizard darf alles gelegt werden!
             return true;
         }
 

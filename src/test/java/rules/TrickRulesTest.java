@@ -5,7 +5,7 @@ import com.aau.wizard.model.ICard;
 import com.aau.wizard.model.Player;
 import com.aau.wizard.model.enums.CardSuit;
 import com.aau.wizard.util.Pair;
-import com.aau.wizard.util.TrickRules;
+import com.aau.wizard.rules.TrickRules;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
