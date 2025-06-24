@@ -157,7 +157,6 @@ public class GameServiceImpl implements GameService {
             messagingTemplate.convertAndSend(GAME_TOPIC_PREFIX + player.getPlayerId(), response);
         }
 
-
         return createGameResponse(game, game.getCurrentPlayerId(), trumpCard);
     }
 
