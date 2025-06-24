@@ -43,8 +43,6 @@ public class GameServiceImplTest {
     @InjectMocks
     private GameServiceImpl gameService;
 
-    private static final ICard TEST_CARD = createDefaultCard();
-
     /**
      * Verifies that a new game is created and a player is added when a player joins
      * a non-existent game. Also checks that the game state is returned correctly.
