@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static testutil.TestDataFactory.*;
 import static testutil.TestConstants.*;
 
-public class GameRequestTest {
+class GameRequestTest {
     /**
      * Verifies that all fields can be set and retrieved correctly
      * when using the no-args constructor and setter methods.
