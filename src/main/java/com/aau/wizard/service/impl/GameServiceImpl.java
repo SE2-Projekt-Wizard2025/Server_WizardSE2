@@ -1,4 +1,5 @@
 package com.aau.wizard.service.impl;
+import com.aau.wizard.GameExceptions;
 import com.aau.wizard.dto.CardDto;
 import com.aau.wizard.dto.PlayerDto;
 import com.aau.wizard.dto.request.GameRequest;
@@ -10,6 +11,8 @@ import com.aau.wizard.model.Player;
 import com.aau.wizard.model.enums.GameStatus;
 import com.aau.wizard.service.interfaces.GameService;
 import com.google.common.annotations.VisibleForTesting;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import java.util.HashMap;
@@ -42,6 +45,8 @@ public class GameServiceImpl implements GameService {
     private final SimpMessagingTemplate messagingTemplate;
 
     private static final String GAME_TOPIC_PREFIX = "/topic/game/";
+
+    private static final Logger logger = LoggerFactory.getLogger(GameServiceImpl.class);
 
     public GameServiceImpl(SimpMessagingTemplate messagingTemplate) {
         this.messagingTemplate = messagingTemplate;
@@ -438,6 +443,39 @@ public class GameServiceImpl implements GameService {
         GameResponse response = createGameResponse(game, currentPlayer.getPlayerId(), roundService.getTrumpCard());
         response.setLastPlayedCard(cardToPlay.toString());
         return response;
+    }
+
+    @Override
+    public void abortGame(String gameId) {
+        Game game = getGameById(gameId);
+
+        if (game == null) {
+            throw new GameExceptions.GameNotFoundException("Spiel mit ID " + gameId + " für Abbruch nicht gefunden.");
+        }
+
+        game.setStatus(GameStatus.ENDED);
+        logger.info("Spiel {} wurde abgebrochen und Status auf ENDED gesetzt.", gameId);
+
+       GameResponse finalResponse = createGameResponse(game, null, null);
+
+        logger.info("Sende Spielende-Nachricht an alle Spieler für Spiel {}.", gameId);
+
+        for (Player player : game.getPlayers()) {
+            messagingTemplate.convertAndSend("/topic/game/" + player.getPlayerId(), finalResponse);
+        }
+    }
+
+    @Override
+    public void signalReturnToLobby(String gameId) {
+        Game game = getGameById(gameId);
+        if (game == null) {
+            logger.error("Spiel mit ID {} für 'Return-to-Lobby' nicht gefunden.", gameId);
+            return;
+        }
+
+        logger.info("Sende 'Return-to-Lobby'-Signal für Spiel {}.", gameId);
+
+        messagingTemplate.convertAndSend("/topic/game/" + gameId + "/lobby", "RETURN");
     }
 
 }

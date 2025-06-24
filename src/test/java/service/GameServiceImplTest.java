@@ -682,6 +682,39 @@ public class GameServiceImplTest {
 
         assertFalse(player1.getHandCards().contains(cardToPlay), "Gespielte Karte sollte aus der Hand entfernt sein.");
     }
+
+    @Test
+    void testAbortGame_shouldSetStatusToEndedAndNotifyPlayers() throws Exception {
+
+        Game game = new Game(TEST_GAME_ID);
+        Player player1 = new Player("p1", "Alice");
+        Player player2 = new Player("p2", "Bob");
+        game.getPlayers().addAll(List.of(player1, player2));
+        game.setStatus(GameStatus.PLAYING);
+
+        injectGameIntoService(game);
+
+        gameService.abortGame(TEST_GAME_ID);
+
+        assertEquals(GameStatus.ENDED, game.getStatus(), "Der Spielstatus sollte auf ENDED sein.");
+
+        verify(messagingTemplate, times(1)).convertAndSend(eq("/topic/game/" + player1.getPlayerId()), any(GameResponse.class));
+        verify(messagingTemplate, times(1)).convertAndSend(eq("/topic/game/" + player2.getPlayerId()), any(GameResponse.class));
+    }
+
+    @Test
+    void testSignalReturnToLobby_shouldBroadcastToLobbyTopic() throws Exception {
+        Game game = new Game(TEST_GAME_ID);
+        injectGameIntoService(game);
+
+        gameService.signalReturnToLobby(TEST_GAME_ID);
+
+        verify(messagingTemplate, times(1)).convertAndSend(
+                eq("/topic/game/" + TEST_GAME_ID + "/lobby"),
+                eq("RETURN")
+        );
+    }
+
     }
 
 

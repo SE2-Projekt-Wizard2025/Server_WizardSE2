@@ -168,4 +168,36 @@ public class GameWebSocketController {
             );
         }
     }
+
+    /**
+     * Behandelt die Anfrage eines Clients, das Spiel für alle Teilnehmer abzubrechen.
+     * @param jsonGameId Die ID des Spiels als JSON-formatierter String.
+     */
+    @MessageMapping("/game/abort")
+    public void handleGameAbort(@Payload String jsonGameId) {
+
+        String gameId = (jsonGameId != null && jsonGameId.startsWith("\"") && jsonGameId.endsWith("\"")) ?
+                jsonGameId.substring(1, jsonGameId.length() - 1) : jsonGameId;
+        logger.info("SERVER: Spielabbruch-Anfrage für Game ID '{}' erhalten.", gameId);
+
+        try {
+            gameService.abortGame(gameId);
+
+        } catch (GameExceptions.GameNotFoundException e) {
+            logger.error("Fehler beim Abbrechen von Spiel {}: {}", gameId, e.getMessage());
+
+        } catch (Exception e) {
+             logger.error("Unerwarteter Fehler beim Abbrechen von Spiel {}: {}", gameId, e.getMessage(), e);
+        }
+    }
+
+    @MessageMapping("/game/return-to-lobby")
+    public void handleReturnToLobby(@Payload String jsonGameId) {
+        String gameId = (jsonGameId != null && jsonGameId.startsWith("\"") && jsonGameId.endsWith("\"")) ?
+                jsonGameId.substring(1, jsonGameId.length() - 1) : jsonGameId;
+
+        logger.info("SERVER: 'Return-to-Lobby'-Anfrage für Game ID '{}' erhalten.", gameId);
+
+        gameService.signalReturnToLobby(gameId);
+    }
 }

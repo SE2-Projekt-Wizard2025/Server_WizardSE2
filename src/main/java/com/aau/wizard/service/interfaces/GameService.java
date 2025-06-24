@@ -19,6 +19,8 @@ public interface GameService {
     GameResponse playCard(GameRequest request);
     void proceedToNextRound(String gameId);
     GameResponse createGameResponse(Game game, String requestingPlayerId, ICard trumpCard);
+    void abortGame(String gameId);
+    void signalReturnToLobby(String gameId);
 }
 
 

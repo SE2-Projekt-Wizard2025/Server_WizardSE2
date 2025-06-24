@@ -350,4 +350,26 @@ class GameWebSocketControllerTest {
 
     private void assertBasicJoinResponse(GameResponse response) { /* ... */ }
     private void verifyJoinCalledOnce() { /* ... */ }
+
+    @Test
+    void testHandleGameAbort_shouldCallServiceCorrectly() {
+
+        String quotedGameId = "\"" + TEST_GAME_ID + "\"";
+        doNothing().when(gameService).abortGame(TEST_GAME_ID);
+
+        gameWebSocketController.handleGameAbort(quotedGameId);
+
+        verify(gameService, times(1)).abortGame(TEST_GAME_ID);
+    }
+
+    @Test
+    void testHandleReturnToLobby_shouldCallServiceCorrectly() {
+
+        String quotedGameId = "\"" + TEST_GAME_ID + "\"";
+        doNothing().when(gameService).signalReturnToLobby(TEST_GAME_ID);
+
+        gameWebSocketController.handleReturnToLobby(quotedGameId);
+
+        verify(gameService, times(1)).signalReturnToLobby(TEST_GAME_ID);
+    }
 }
